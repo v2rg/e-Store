@@ -1,16 +1,22 @@
 from django.contrib import admin
 
 # Register your models here.
-from products_app import models
+from products_app.models import (Category, Brand, Socket, MemoryType, GpuPciVersion, GpuModel, CpuLine, MbChipset,
+                                 MbFormFactor, ProductImage, ProcessorList, VideoCardList, MotherboardList, MemoryList)
 
-admin.site.register(models.Brand)
-admin.site.register(models.Socket)
-admin.site.register(models.MemoryType)
-admin.site.register(models.PciVersion)
+admin.site.register(Category)
+admin.site.register(Brand)
+admin.site.register(Socket)
+admin.site.register(MemoryType)
+admin.site.register(GpuPciVersion)
+admin.site.register(GpuModel)
+admin.site.register(CpuLine)
+admin.site.register(MbChipset)
+admin.site.register(MbFormFactor)
 
-admin.site.register(models.ProductImage)
+admin.site.register(ProductImage)
 
-admin.site.register(models.Processor)
-admin.site.register(models.Motherboard)
-admin.site.register(models.VideoCard)
-admin.site.register(models.Memory)
+admin.site.register(ProcessorList)
+admin.site.register(VideoCardList)
+admin.site.register(MotherboardList)
+admin.site.register(MemoryList)
