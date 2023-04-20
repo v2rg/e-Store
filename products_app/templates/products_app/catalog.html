@@ -1,0 +1,53 @@
+{% extends 'products_app/base.html' %}
+{% load static %}
+
+
+{% block title %}
+    qwe
+{% endblock %}
+
+
+{% block description %}
+    asdasdas
+{% endblock %}
+
+
+{% block content %}
+    <div class="col-9">
+        <h3>Товары</h3>
+        <!--Горизонтальная карточка товара-->
+        <div class="row" style="padding-top: 20px;">
+
+
+            <div class="card mb-3"
+                 style="max-width: 90%; margin-top: 25px; --bs-card-spacer-x: 2rem; --bs-card-spacer-y: 2rem;">
+                <div class="row g-0">
+                    <div class="col-md-4">
+                        <a href="#">
+                            <img src="img/189f28f2893923.jpg" class="img-fluid rounded mx-auto d-block" alt="...">
+                        </a>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <a href="#">Card title</a>
+                            </h5>
+                            <p class="card-text">This is a wider card with supporting text below as a natural lead-in to
+                                additional content. This content is a little bit longer.</p>
+                            <p class="card-text"><small class="text-body-secondary">Last updated 3 mins ago</small></p>
+                            <hr>
+                            <div class="row text-center">
+                                <div class="col fs-4">
+                                    Цена: 777
+                                </div>
+                                <div class="col">
+                                    <button class="btn btn-secondary">Добавить в корзину</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

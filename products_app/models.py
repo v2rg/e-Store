@@ -1,3 +1,5 @@
+import datetime
+
 from django.db import models
 
 # Create your models here.
@@ -35,7 +37,8 @@ class Brand(AbstractDescription):  # бренды
         verbose_name_plural = 'Бренды'
 
     def __str__(self):
-        return f'{self.brand_name} | ___ | {[cat.category_name for cat in self.category.all()]}'
+        # return f'{self.brand_name} | ___ | {[cat.category_name for cat in self.category.all()]}'
+        return self.brand_name
 
 
 class Socket(AbstractDescription):  # сокеты
@@ -96,7 +99,7 @@ class GpuModel(AbstractDescription):  # модель GPU
     GeForce RTX 4090, RTX 4080, RTX 3080ti, RTX 3070
     Radeon RX 7900 XTX, RX 7900 XT, RX 6950 XT, RX 6900 XT
     """
-
+    gpu_brand = models.ForeignKey(to=Brand, on_delete=models.CASCADE, verbose_name='Бренд GPU')
     gpu_name = models.CharField(max_length=50, unique=True, verbose_name='Модель GPU')
 
     class Meta:
@@ -114,7 +117,7 @@ class CpuLine(AbstractDescription):  # линейка процессоров
     Intel Core i9, Core i7, Core i5, Core i3
     AMD Ryzen 9, Ryzen 7, Ryzen 5, Ryzen 3
     """
-
+    cpu_brand = models.ForeignKey(to=Brand, on_delete=models.CASCADE, verbose_name='Бренд CPU')
     line_name = models.CharField(max_length=50, verbose_name='Линейка процессора')
 
     class Meta:
@@ -150,6 +153,7 @@ class MbChipset(AbstractDescription):  # чипсет материнской п�
     chipset_name = models.CharField(max_length=50, unique=True, verbose_name='Чипсет')
 
     class Meta:
+        ordering = ['chipset_name']
         verbose_name = 'чипсет мат. платы'
         verbose_name_plural = 'Чипсеты мат. плат'
 
@@ -161,7 +165,7 @@ class MbChipset(AbstractDescription):  # чипсет материнской п�
 
 
 def user_directory_path(instance, image):  # динамический путь до изображения товара (в папку sku)
-    return f'products_images/%Y/%m/%d/{instance.sku}/{image}'
+    return f'products_images/{datetime.date.today()}/{instance.sku}/{image}'
 
 
 class ProductImage(models.Model):  # изображение товара

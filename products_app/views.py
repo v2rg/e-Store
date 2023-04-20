@@ -1,29 +1,28 @@
+from random import random
+
 from django.shortcuts import render
 
-
 # Create your views here.
+from products_app.models import (Category, Brand, CpuLine, Socket, GpuModel, MemoryType, ProcessorList, VideoCardList,
+                                 MotherboardList, MemoryList)
+
 
 def index(request):
-    # # категории товаров
-    # categories = Category.objects.all()
-    #
-    # # 8 рандомных товаров
-    # random_processors = Processor.objects.order_by('?')[:6]
-    # random_motherboards = ...
-    # random_videocards = ...
-    # random_memories = ...
-    #
-    # alls = dict()
-    #
-    # for category in Category.objects.all():
-    #     alls[category.category] = Brand.objects.filter(category__category=category).values()
-    #
-    # print(alls)
-    #
-    # context = {
-    #     'categories': categories,
-    #     'products': random_processors,
-    #     'alls': alls,
-    # }
-    #
-    return render(request, 'products_app/index.html')
+    # 8 рандомных товаров (остальное из контекст процессора)
+    random_products = [
+        *ProcessorList.objects.order_by('?')[:2],
+        *VideoCardList.objects.order_by('?')[:2],
+        *MotherboardList.objects.order_by('?')[:2],
+        *MemoryList.objects.order_by('?')[:2]
+    ]
+
+    context = {
+        'title': 'e-Store - Главная',
+        'random_products': sorted(random_products, key=lambda x: random()),  # рандом
+    }
+
+    return render(request, 'products_app/index.html', context)
+
+
+def catalog(request):
+    return render(request, 'products_app/catalog.html')
