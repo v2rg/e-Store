@@ -9,6 +9,12 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %} {% endblock %}</title>
+    <style>
+        a:hover {
+            text-decoration: none;
+            color: lightseagreen;
+        }
+    </style>
     <!--Bootstrap CSS-->
     <link href="{% static "css/bootstrap.css" %}" rel="stylesheet">
     <link href="{% static "css/style.css" %}" rel="stylesheet">
@@ -93,7 +99,6 @@
 
         <!--Context-->
         <div class="row">
-
             <!--Категории-->
             <div class="col-3">
                 <h3>Категории</h3>
@@ -101,7 +106,9 @@
                      style="padding-top: 20px;">
                     {% for category in categories %}
                         <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-light"><a href="#">{{ category.category_name }}</a>
+                            <button type="button" class="btn btn-light">
+                                <a href="{% url 'products:catalog_category' category.id %}"
+                                   style="text-decoration: none">{{ category.category_name }}</a>
                             </button>
                             <button type="button" class="btn dropdown-toggle btn-light" data-bs-toggle="dropdown"
                                     aria-expanded="false">
@@ -114,11 +121,13 @@
                                 <ul class="dropdown-menu">
                                     {% if cpus %}
                                         {% for brand in cpu_brands %}
-                                            <a class="dropdown-item submenu" href="#">{{ brand.brand_name }}</a>
+                                            <a class="dropdown-item submenu"
+                                               href="{% url 'products:catalog_category_brand' category.id brand.brand_name %}">{{ brand.brand_name }}</a>
                                             <div class="dropdown-menu">
                                                 {% for cpu in cpus %}
                                                     {% if cpu.cpu_brand == brand %}
-                                                        <a class="dropdown-item" href="#">{{ cpu.line_name }}</a>
+                                                        <a class="dropdown-item"
+                                                           href="{% url 'products:catalog_category_brand_line' category.id brand.brand_name cpu.line_name %}">{{ cpu.line_name }}</a>
                                                     {% endif %}
                                                 {% endfor %}
                                             </div>
@@ -133,13 +142,12 @@
                                 <ul class="dropdown-menu">
                                     {% if gpus %}
                                         {% for manuf, models in gpus.items %}
-                                            <a class="dropdown-item submenu" href="#">{{ manuf }}</a>
+                                            <a class="dropdown-item submenu"
+                                               href="{% url 'products:catalog_category_brand' category.id manuf %}">{{ manuf }}</a>
                                             <div class="dropdown-menu">
-                                                <a href="#" class="dropdown-item">
                                                     {% for model in models %}
-                                                        <a class="dropdown-item" href="#">{{ model }}</a>
+                                                        <a class="dropdown-item" href="{% url 'products:catalog_category_brand_line' category.id manuf model %}">{{ model }}</a>
                                                     {% endfor %}
-                                                </a>
                                             </div>
                                         {% endfor %}
                                     {% endif %}
@@ -151,10 +159,11 @@
                                 <ul class="dropdown-menu">
                                     {% if cpus %}
                                         {% for manuf, mbs in mbs.items %}
-                                            <a class="dropdown-item submenu" href="#">{{ manuf }}</a>
+                                            <a class="dropdown-item submenu"
+                                               href="{% url 'products:catalog_category_brand' category.id manuf %}">{{ manuf }}</a>
                                             <div class="dropdown-menu">
                                                 {% for mb in mbs %}
-                                                    <a href="#" class="dropdown-item">{{ mb }}</a>
+                                                    <a href="{% url 'products:catalog_category_brand_line' category.id manuf mb %}" class="dropdown-item">{{ mb }}</a>
                                                 {% endfor %}
                                             </div>
                                         {% endfor %}
@@ -167,9 +176,10 @@
                                 <ul class="dropdown-menu">
                                     {% if cpus %}
                                         {% for ram in rams %}
-                                            <a href="#" class="dropdown-item">{{ ram }}</a>
+                                            <a href="{% url 'products:catalog_category_brand' category.id ram %}"
+                                               class="dropdown-item">{{ ram }}</a>
                                         {% empty %}
-                                            qwe
+
                                         {% endfor %}
                                     {% endif %}
                                 </ul>
@@ -190,10 +200,10 @@
 <!--Footer-->
 <footer class="bd-footer py-1 mt-5 bg-body-tertiary mt-auto" data-bs-theme="dark">
     <ul class="nav justify-content-center border-bottom pb-1 mb-1">
-        <li class="nav-item"><a href="https://getbootstrap.com/" class="nav-link px-2 text-body-secondary">bootstrap</a>
+        <li class="nav-item"><a href="https://getbootstrap.com/" class="nav-link px-2">bootstrap</a>
         </li>
-        <li class="nav-item"><a href="https://www.dns-shop.ru/" class="nav-link px-2 text-body-secondary">DNS</a></li>
-        <li class="nav-item"><a href="https://www.flaticon.com/" class="nav-link px-2 text-body-secondary">flaticon</a>
+        <li class="nav-item"><a href="https://www.dns-shop.ru/" class="nav-link px-2">DNS</a></li>
+        <li class="nav-item"><a href="https://www.flaticon.com/" class="nav-link px-2">flaticon</a>
         </li>
     </ul>
     <p class="text-center text-body-secondary">2023</p>

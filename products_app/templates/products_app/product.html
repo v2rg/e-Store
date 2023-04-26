@@ -1,0 +1,146 @@
+{% extends 'products_app/base.html' %}
+{% load static %}
+
+
+{% block title %}
+    e-Store карточка товара
+{% endblock %}
+
+{% block description %}
+    йцу
+{% endblock %}
+
+{% block content %}
+    <div class="col-9">
+        <h3>Карточка товара</h3>
+
+        <div class="row" style="padding-top: 25px;">
+
+            <!--Изображение товара-->
+            <div class="col-9" style="border-style: groove;">
+                <div id="carouselExampleIndicators" class="carousel slide">
+                    <div class="carousel-indicators">
+                        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="0"
+                                class="active"
+                                aria-current="true" aria-label="Slide 1"></button>
+                        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="1"
+                                aria-label="Slide 2"></button>
+                        <button type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide-to="2"
+                                aria-label="Slide 3"></button>
+                    </div>
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <img src="img/PVB48G300C6K_front.jpg" class="d-block mx-auto w-50" alt="...">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="img/PVB48G300C6K_back.jpg" class="d-block mx-auto w-50" alt="...">
+                        </div>
+                        <div class="carousel-item">
+                            <img src="img/PVB48G300C6K_box.jpg" class="d-block mx-auto w-50" alt="...">
+                        </div>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
+                            data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"
+                            data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
+            </div>
+
+            <!--Блок с ценой-->
+            <div class="col-3">
+                <div class="shadow p-3 mb-5 bg-body-tertiary rounded">
+                    <p class="text-center">/Категория/</p>
+                    <hr>
+                    <p class="text-center">
+                        Patriot Viper 4 Blackout [PVB48G300C6K] 8 ГБ
+                    </p>
+                    <hr>
+                    <p class="fs-5 text-center">Цена</p>
+                    <p class="fs-4 fw-semibold text-center">2350,00 руб.</p>
+                    <a href="#" class="btn btn-primary d-block mx-auto">
+                        Добавить в корзину
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+
+            <!--Описание / xарактеристики товара / отзывы-->
+            <div class="col" style="padding-top: 50px; min-height: 500px;">
+                <nav>
+                    <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                        <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab"
+                                data-bs-target="#nav-home"
+                                type="button" role="tab" aria-controls="nav-home" aria-selected="true">
+                            Описание
+                        </button>
+                        <button class="nav-link" id="nav-profile-tab" data-bs-toggle="tab" data-bs-target="#nav-profile"
+                                type="button" role="tab" aria-controls="nav-profile" aria-selected="false">
+                            Характеристики
+                        </button>
+                        <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact"
+                                type="button" role="tab" aria-controls="nav-contact" aria-selected="false">
+                            Отзывы
+                        </button>
+                    </div>
+                </nav>
+                <div class="tab-content" id="nav-tabContent">
+                    <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab"
+                         tabindex="0">
+                        <div>
+                            <p style="padding-top: 15px;">
+                                Соответствующая типу DDR4 оперативная память Patriot Viper Blackout [PVB48G300C6K]
+                                подходит для
+                                комплектации игровых системных блоков. Ничто не мешает вам смонтировать устройство и в
+                                составе
+                                мощных универсальных компьютеров. В 8-гигабайтный комплект входят два модуля по 4 ГБ.
+                                Повышенный
+                                уровень производительности памяти помогает обеспечить увеличенное до 1.35 В напряжение
+                                питания.
+                                Установлены массивные радиаторы, гарантирующие высокий уровень эффективности отвода
+                                тепла при
+                                работе в любых режимах.
+                                <br><br>
+                                Оперативная память Patriot Viper Blackout [PVB48G300C6K] использует тактовую частоту
+                                3000 МГц.
+                                Пропускная способность модулей равна 24000 МБ/с. Тайминги памяти – 16-18-18-36. Упаковка
+                                комплекта
+                                – привлекательно выглядящая коробка, имеющая «окно». На упаковке размещена базовая
+                                техническая
+                                информация.
+                            </p>
+                            <hr>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab"
+                         tabindex="0">
+                        <div>
+                            <p>
+                                Характеристики
+                            </p>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab"
+                         tabindex="0">
+                        <div>
+                            <p>
+                                Отзывы
+                            </p>
+                        </div>
+                    </div>
+                    <div class="tab-pane fade" id="nav-disabled" role="tabpanel" aria-labelledby="nav-disabled-tab"
+                         tabindex="0">...
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+{% endblock %}

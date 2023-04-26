@@ -9,12 +9,15 @@
 
 <!--Блок с инфой-->
 {% block description %}
-    Выводятся 8 рандомных товаров из БД (по 2 из каждой категории)
+    <p>
+        Главная страница <br>
+        Выводятся 8 рандомных товаров из БД (по 2 из каждой категории)
+    </p>
 {% endblock %}
 
 
 {% block content %}
-    <div class="col-9">
+    <div class="col-9" style="padding-bottom: 100px">
         <h3>Товары</h3>
 
         <div class="row" style="padding-top: 20px;">
@@ -23,8 +26,7 @@
                     <img src="{{ product.thumbnail.url }}" class="card-img-top" alt="{{ product.name }}"
                          style="margin-top: 20px">
                     <div class="card-body">
-                        <h6 class="card-title"><a href="#">{{ product.name }}</a></h6>
-                        {#                                <p class="card-text">{{ product.short_description }}</p>#}
+                        <h6 class="card-title"><a href="#" style="text-decoration: none">{{ product.name }}</a></h6>
                         <p class="card-text text-sm">{{ product.short_description }}</p>
                     </div>
                     <h5 class="card-title text-center">{{ product.price }} руб.</h5>

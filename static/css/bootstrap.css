@@ -4773,7 +4773,7 @@ textarea.form-control-lg {
 .page-link:hover {
   z-index: 2;
   color: var(--bs-pagination-hover-color);
-  background-color: var(--bs-pagination-hover-bg);
+  background-color: lightgray;
   border-color: var(--bs-pagination-hover-border-color);
 }
 .page-link:focus {
