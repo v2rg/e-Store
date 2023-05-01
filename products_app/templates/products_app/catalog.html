@@ -17,11 +17,20 @@
 {% block content %}
     <div class="col-9">
         <h3>Товары
-            {% for crumb in breadcrumb %}
+
+            {% for key, crumb in breadcrumb.items %}
                 {% if crumb %}
-                    > {{ crumb }}
+                    >
+                    {% if key == 'category_name' %}
+                        <a href="{% url 'products:catalog_category' all_products.0.category.id %}">{{ crumb }}</a>
+                    {% elif key == 'brand_name' %}
+                        <a href="{% url 'products:catalog_category_brand' all_products.0.category.id breadcrumb.brand_name %}">{{ crumb }}</a>
+                    {% elif key == 'line_name' %}
+                        <a href="{% url 'products:catalog_category_brand_line' all_products.0.category.id breadcrumb.brand_name breadcrumb.line_name %}">{{ crumb }}</a>
+                    {% endif %}
                 {% endif %}
             {% endfor %}
+
         </h3>
 
         <!--Горизонтальная карточка товара-->
@@ -31,7 +40,7 @@
                      style="--bs-card-spacer-x: 50px">
                     <div class="row align-items-center">
                         <div class="col-3">
-                            <a href="{% url 'products:product' product.sku %}">
+                            <a href="{% url 'products:product' product.category.id product.sku %}">
                                 <img src="{{ product.thumbnail.url }}" class="img-fluid rounded mx-auto d-block"
                                      style="max-width: 90%; padding-top: 5px; padding-bottom: 5px"
                                      alt="{{ product.name }}">
@@ -40,7 +49,7 @@
                         <div class="col-md-9">
                             <div class="card-body">
                                 <h5 class="card-title">
-                                    <a href="#" style="text-decoration: none; ">{{ product.name }}</a>
+                                    <a href="{% url 'products:product' product.category.id product.sku %}" style="text-decoration: none; ">{{ product.name }}</a>
                                 </h5>
                                 <p class="card-text">{{ product.short_description }}</p>
                                 <p class="card-text"><small class="text-body-secondary"></small>

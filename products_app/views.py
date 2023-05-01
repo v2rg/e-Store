@@ -5,7 +5,7 @@ from django.shortcuts import render
 
 # Create your views here.
 from products_app.models import (Category, Brand, CpuLine, Socket, GpuModel, MemoryType, ProcessorList, VideoCardList,
-                                 MotherboardList, MemoryList)
+                                 MotherboardList, MemoryList, ProductImage)
 
 
 def index(request):
@@ -61,11 +61,38 @@ def catalog(request, category_id=1, brand_name=None, line_name=None):
 
     context = {
         'all_products': page_obj,
-        'breadcrumb': [category.category_name, brand_name, line_name],
+        'breadcrumb': {
+            'category_name': category.category_name,
+            'brand_name': brand_name,
+            'line_name': line_name,
+        },
     }
 
     return render(request, 'products_app/catalog.html', context)
 
 
-def product(request, sku=None):
-    return render(request, 'products_app/product.html')
+def product(request, category_id=None, sku=None):  # TODO: добавить Категорию в атрибуты
+
+    current_product = None
+    product_images = None
+
+    if all([category_id, sku]):
+        product_images = ProductImage.objects.filter(sku=sku)
+        if category_id == 1:
+            current_product = ProcessorList.objects.get(sku=sku)
+        elif category_id == 2:
+            current_product = VideoCardList.objects.get(sku=sku)
+        elif category_id == 3:
+            current_product = MotherboardList.objects.get(sku=sku)
+        elif category_id == 4:
+            current_product = MemoryList.objects.get(sku=sku)
+
+    print(current_product)
+    print(product_images)
+
+    context = {
+        'current_product': current_product,
+        'product_images': product_images,
+    }
+
+    return render(request, 'products_app/product.html', context)

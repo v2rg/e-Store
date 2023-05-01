@@ -1,0 +1,117 @@
+<table class="table col-3">
+    <br>
+    <tbody>
+    <!--Основные характеристики-->
+    <tr>
+        <th scope="row">Артикул</th>
+        <td>{{ current_product.sku }}</td>
+    </tr>
+    <tr>
+        <th scope="row">Категория</th>
+        <td>{{ current_product.category.category_name }}</td>
+    </tr>
+    <tr>
+        <th scope="row">Бренд</th>
+        <td>{{ current_product.brand.brand_name }}</td>
+    </tr>
+    <tr>
+        <th scope="row">Название</th>
+        <td>{{ current_product.name }}</td>
+    </tr>
+
+    {% if current_product.category.category_name == 'Процессоры' %}
+        <tr>
+            <th scope="row">Линейка</th>
+            <td>{{ current_product.line }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Сокет</th>
+            <td>{{ current_product.socket }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Количество ядер</th>
+            <td>{{ current_product.cores }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Базовая частота</th>
+            <td>{{ current_product.base_frequency }} МГц</td>
+        </tr>
+        <tr>
+            <th scope="row">Максимальная частота</th>
+            <td>{{ current_product.max_frequency }} МГц</td>
+        </tr>
+        <tr>
+            <th scope="row">Тип памяти</th>
+            <td>{{ current_product.memory_type.type_name }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Тепловыделение (TDP)</th>
+            <td>{{ current_product.tdp }} Вт</td>
+        </tr>
+    {% elif current_product.category.category_name == 'Видеокарты' %}
+        <tr>
+            <th scope="row">Графический процессор</th>
+            <td>{{ current_product.gpu }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Частота графического процессора</th>
+            <td>{{ current_product.gpu_frequency }} МГц</td>
+        </tr>
+        <tr>
+            <th scope="row">Объем видеопамяти</th>
+            <td>{{ current_product.memory_size }} ГБ</td>
+        </tr>
+        <tr>
+            <th scope="row">Частота видеопамяти</th>
+            <td>{{ current_product.memory_frequency }} МГц</td>
+        </tr>
+        <tr>
+            <th scope="row">Версия PCI</th>
+            <td>{{ current_product.pci_version }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Длина</th>
+            <td>{{ current_product.length }} мм.</td>
+        </tr>
+    {% elif current_product.category.category_name == 'Материнские платы' %}
+        <tr>
+            <th scope="row">Сокет</th>
+            <td>{{ current_product.socket }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Форм-фактор</th>
+            <td>{{ current_product.form_factor }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Чипсет</th>
+            <td>{{ current_product.chipset }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Тип памяти</th>
+            <td>{{ current_product.memory_type }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Количество слотов ОЗУ</th>
+            <td>{{ current_product.memory_slots }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Версия PCI</th>
+            <td>{{ current_product.pci_version }}</td>
+        </tr>
+    {% elif current_product.category.category_name == 'Оперативная память' %}
+        <tr>
+            <th scope="row">Тип памяти</th>
+            <td>{{ current_product.type }}</td>
+        </tr>
+        <tr>
+            <th scope="row">Суммарный объем памяти</th>
+            <td>{{ current_product.size }} ГБ</td>
+        </tr>
+        <tr>
+            <th scope="row">Частота памяти</th>
+            <td>{{ current_product.frequency }} МГц</td>
+        </tr>
+    {% endif %}
+
+    </tbody>
+</table>

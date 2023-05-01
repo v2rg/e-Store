@@ -11,6 +11,7 @@
 {% block description %}
     <p>
         Главная страница <br>
+        Расширяет base
         Выводятся 8 рандомных товаров из БД (по 2 из каждой категории)
     </p>
 {% endblock %}
@@ -23,10 +24,13 @@
         <div class="row" style="padding-top: 20px;">
             {% for product in random_products %}
                 <div class="card" style="width: 13rem; margin-right: 30px; margin-bottom: 30px;">
-                    <img src="{{ product.thumbnail.url }}" class="card-img-top" alt="{{ product.name }}"
-                         style="margin-top: 20px">
+                    <a href="{% url 'products:product' product.category.id product.sku %}">
+                        <img src="{{ product.thumbnail.url }}" class="card-img-top" alt="{{ product.name }}"
+                             style="margin-top: 20px">
+                    </a>
                     <div class="card-body">
-                        <h6 class="card-title"><a href="#" style="text-decoration: none">{{ product.name }}</a></h6>
+                        <h6 class="card-title"><a href="{% url 'products:product' product.category.id product.sku %}"
+                                                  style="text-decoration: none">{{ product.name }}</a></h6>
                         <p class="card-text text-sm">{{ product.short_description }}</p>
                     </div>
                     <h5 class="card-title text-center">{{ product.price }} руб.</h5>

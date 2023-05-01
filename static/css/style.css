@@ -1,24 +1,39 @@
 .dropdown-menu .dropdown-menu {
-	top: auto;
-	left: 100%;
-	transform: translateY(-2rem);
+    top: auto;
+    left: 100%;
+    transform: translateY(-2rem);
 }
+
 .dropdown-item + .dropdown-menu {
-	display: none;
+    display: none;
 }
+
 .dropdown-item.submenu::after {
-	content: '▸';
-	margin-left: 0.5rem;
+    content: '▸';
+    margin-left: 0.5rem;
 }
+
 .dropdown-item:hover + .dropdown-menu,
 .dropdown-menu:hover {
-	display: block;
+    display: block;
+}
+
+.carousel-indicators [data-bs-target] {
+    background-color: orangered;
+}
+
+.carousel-control-prev {
+    left: -15px;
+}
+
+.carousel-control-next {
+    right: -15px;
 }
 
 .carousel-control-prev-icon {
-  background-image: url(/img/free-icon-chevron-8642500-left.png)
+    background-image: url(/static/img/free-icon-chevron-8642500-left.png)
 }
 
 .carousel-control-next-icon {
-  background-image: url(/img/free-icon-chevron-8642500-right.png)
+    background-image: url(/static/img/free-icon-chevron-8642500-right.png)
 }

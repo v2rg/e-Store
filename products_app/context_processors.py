@@ -30,14 +30,6 @@ def vertical_group(request):
     # оперативная память (возвращает QuerySet)
     rams = MemoryType.objects.all().order_by('-type_name')
 
-    # 8 рандомных товаров
-    random_products = [
-        *ProcessorList.objects.order_by('?')[:2],
-        *VideoCardList.objects.order_by('?')[:2],
-        *MotherboardList.objects.order_by('?')[:2],
-        *MemoryList.objects.order_by('?')[:2]
-    ]
-
     return {
         'categories': categories,
         'cpus': cpus,
