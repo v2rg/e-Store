@@ -22,7 +22,10 @@ from products_app import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('products_app.urls', namespace='products')),
+    path('', views.index, name='index'),
+    path('catalog/', include('products_app.urls')),
+    path('users/', include('users_app.urls')),
+
 ]
 
 if settings.DEBUG:

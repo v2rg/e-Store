@@ -71,8 +71,7 @@ def catalog(request, category_id=1, brand_name=None, line_name=None):
     return render(request, 'products_app/catalog.html', context)
 
 
-def product(request, category_id=None, sku=None):  # TODO: добавить Категорию в атрибуты
-
+def product(request, category_id=None, sku=None):
     current_product = None
     product_images = None
 
