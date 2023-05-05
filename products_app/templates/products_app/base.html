@@ -9,12 +9,6 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %} {% endblock %}</title>
-    <style>
-        a:hover {
-            text-decoration: none;
-            color: lightseagreen;
-        }
-    </style>
     <!--Bootstrap CSS-->
     <link href="{% static "css/bootstrap.css" %}" rel="stylesheet">
     <link href="{% static "css/style.css" %}" rel="stylesheet">
@@ -48,22 +42,22 @@
             <!--Категории-->
             <div class="col-3">
                 <h3>Категории</h3>
-                <div class="btn-group-vertical" role="group" aria-label="Vertical button group"
-                     style="padding-top: 20px;">
+                <div class="btn-group-vertical shadow p-2" role="group" aria-label="Vertical button group"
+                     style="margin-top: 25px; border-style: groove; border-width: 1px; border-radius: 5px; border-color: darkgrey">
                     {% for category in categories %}
                         <div class="btn-group" role="group">
-                            <button type="button" class="btn btn-light">
-                                <a href="{% url 'products:catalog_category' category.id %}"
-                                   style="text-decoration: none">{{ category.category_name }}</a>
-                            </button>
+                            <a href="{% url 'products:catalog_category' category.id %}">
+                                <button type="button" class="btn btn-light" style="width: 12rem">
+                                    {{ category.category_name }}
+                                </button>
+                            </a>
                             <button type="button" class="btn dropdown-toggle btn-light" data-bs-toggle="dropdown"
                                     aria-expanded="false">
                                 <span class="visually-hidden">Toggle Dropdown</span>
                             </button>
 
                             <!--Процессоры-->
-                            {% ifequal category.category_name 'Процессоры' %}
-                                проц
+                            {% if category.category_name == 'Процессоры' %}
                                 <ul class="dropdown-menu">
                                     {% if cpus %}
                                         {% for brand in cpu_brands %}
@@ -80,11 +74,9 @@
                                         {% endfor %}
                                     {% endif %}
                                 </ul>
-                            {% endifequal %}
 
-                            <!--Видеокарты-->
-                            {% if category.category_name == 'Видеокарты' %}
-                                видео
+                                <!--Видеокарты-->
+                            {% elif category.category_name == 'Видеокарты' %}
                                 <ul class="dropdown-menu">
                                     {% if gpus %}
                                         {% for manuf, models in gpus.items %}
@@ -102,7 +94,6 @@
 
                                 <!--Материнские платы-->
                             {% elif category.category_name == 'Материнские платы' %}
-                                мат
                                 <ul class="dropdown-menu">
                                     {% if cpus %}
                                         {% for manuf, mbs in mbs.items %}
@@ -120,14 +111,11 @@
 
                                 <!--Оперативная память-->
                             {% elif category.category_name == 'Оперативная память' %}
-                                пам
                                 <ul class="dropdown-menu">
                                     {% if cpus %}
                                         {% for ram in rams %}
                                             <a href="{% url 'products:catalog_category_brand' category.id ram %}"
                                                class="dropdown-item">{{ ram }}</a>
-                                        {% empty %}
-
                                         {% endfor %}
                                     {% endif %}
                                 </ul>

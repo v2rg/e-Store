@@ -23,42 +23,41 @@
                     <h3 class="text-center font-weight-light my-4">Регистрация</h3>
                 </div>
 
-                <form action="#">
+                <form action="{% url 'users:registration' %}" method="post">
+                    {% csrf_token %}
                     <div class="row" style="padding-top: 30px;">
                         <div class="col-6 mb-3" style="padding-left: 30px;">
-                            <label for="inputFirstName" class="form-label">Имя</label>
-                            <input type="text" class="form-control" id="inputFirstName" placeholder="Введите имя">
+                            <label for="{{ register_form.first_name.id_for_label }}" class="form-label">Имя</label>
+                            {{ register_form.first_name }}
                         </div>
                         <div class="col-6 mb-3" style="padding-right: 30px;">
-                            <label for="inputLastName" class="form-label">Фамилия</label>
-                            <input type="text" class="form-control" id="inputLastName"
-                                   placeholder="Введите фамилию">
+                            <label for="{{ register_form.last_name.id_for_label }}" class="form-label">Фамилия</label>
+                            {{ register_form.last_name }}
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-6 mb-3" style="padding-left: 30px;">
-                            <label for="inputUsername" class="form-label">Имя пользователя</label>
-                            <input type="text" class="form-control" id="inputUsername"
-                                   placeholder="Введите имя пользователя">
+                            <label for="{{ register_form.username.id_for_label }}" class="form-label">Имя
+                                пользователя</label>
+                            {{ register_form.username }}
                         </div>
                         <div class="col-6 mb-3" style="padding-right: 30px;">
-                            <label for="inputEmailAddress" class="form-label">Адрес электронной почты</label>
-                            <input type="email" class="form-control" id="inputEmailAddress"
-                                   placeholder="name@yandex.ru">
+                            <label for="{{ register_form.email.id_for_label }}" class="form-label">Адрес электронной
+                                почты</label>
+                            {{ register_form.email }}
                         </div>
                     </div>
 
                     <div class="row">
                         <div class="col-6 mb-3" style="padding-left: 30px;">
-                            <label for="inputPassword" class="form-label">Пароль</label>
-                            <input type="password" class="form-control" id="inputPassword"
-                                   placeholder="Введите пароль">
+                            <label for="{{ register_form.password1.id_for_label }}" class="form-label">Пароль</label>
+                            {{ register_form.password1 }}
                         </div>
                         <div class="col-6 mb-3" style="padding-right: 30px;">
-                            <label for="inputConfirmPassword" class="form-label">Подтверждение пароля</label>
-                            <input type="password" class="form-control" id="inputConfirmPassword"
-                                   placeholder="Подтвердите пароль">
+                            <label for="{{ register_form.password2.id_for_label }}" class="form-label">Подтверждение
+                                пароля</label>
+                            {{ register_form.password2 }}
                         </div>
                     </div>
 

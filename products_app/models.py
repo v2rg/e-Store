@@ -179,6 +179,7 @@ class ProductImage(models.Model):  # изображение товара
     image = models.ImageField(upload_to=user_directory_path, verbose_name='Изображение товара')
 
     class Meta:
+        ordering = ['category', 'sku', 'carousel_id']
         verbose_name = 'изображение товара'
         verbose_name_plural = 'Изображения товаров'
 
