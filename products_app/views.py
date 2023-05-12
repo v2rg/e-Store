@@ -86,8 +86,8 @@ def product(request, category_id=None, sku=None):
         elif category_id == 4:
             current_product = MemoryList.objects.get(sku=sku)
 
-    print(current_product)
-    print(product_images)
+    # print(current_product)
+    # print(product_images)
 
     context = {
         'current_product': current_product,

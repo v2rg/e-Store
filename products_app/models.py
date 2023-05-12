@@ -168,7 +168,7 @@ class MbChipset(AbstractDescription):  # чипсет материнской п�
 """Изображения товара"""
 
 
-def user_directory_path(instance, image):  # динамический путь до изображения товара (в папку sku)
+def user_directory_path(instance, image):  # динамический путь до изображения товара (category, sku)
     return f'products_images/{instance.category.category_name_eng}/{instance.sku}/{image}'
 
 

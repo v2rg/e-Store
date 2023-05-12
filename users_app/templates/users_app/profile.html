@@ -1,0 +1,73 @@
+{% extends 'users_app/base.html' %}
+{% load static %}
+
+
+{% block title %}
+    Профиль
+{% endblock %}
+
+
+{% block description %}
+
+{% endblock %}
+
+
+{% block content %}
+    <!--Профиль-->
+    <div class="row justify-content-center">
+        <div class="col-lg-7">
+
+            <div class="card-header">
+                <h3 class="text-center font-weight-light my-4">Профиль</h3>
+            </div>
+
+            <form action="{% url 'users:profile' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="row" style="padding-top: 30px;">
+                    <div class="col-6 mb-3" style="padding-left: 30px;">
+                        <label for="{{ profile_form.first_name.id_for_label }}" class="form-label">Имя</label>
+                        {{ profile_form.first_name }}
+                    </div>
+                    <div class="col-6 mb-3" style="padding-right: 30px;">
+                        <label for="{{ profile_form.last_name.id_for_label }}" class="form-label">Фамилия</label>
+                        {{ profile_form.last_name }}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-6 mb-3" style="padding-left: 30px;">
+                        <label for="{{ profile_form.username.id_for_label }}" class="form-label">Имя
+                            пользователя</label>
+                        {{ profile_form.username }}
+                    </div>
+                    <div class="col-6 mb-3" style="padding-right: 30px;">
+                        <label for="{{ profile_form.email.id_for_label }}" class="form-label">Адрес электронной
+                            почты</label>
+                        {{ profile_form.email }}
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-3 mb-3 text-center">
+                        <img src="{% if user.avatar %} {{ user.avatar.url }} {% else %} {% static '/img/default_avatar.png' %} {% endif %}"
+                             alt="avatar" style="width: 128px; height: 128px;">
+                    </div>
+                    <div class="col-9 mb-3" style="padding-left: 30px; padding-right: 30px;">
+                        <label for="{{ profile_form.avatar.id_for_label }}" class="form-label">Аватар (128x128)</label>
+                        {{ profile_form.avatar }}
+                    </div>
+                </div>
+
+                <hr>
+
+                <div class="row">
+                    <div class="d-grid gap-2" style="padding: 30px">
+                        <input class="btn btn-secondary d-grid" type="submit" value="Изменить данные">
+                    </div>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+{% endblock %}

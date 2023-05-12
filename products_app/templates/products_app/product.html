@@ -72,7 +72,7 @@
                     <hr>
                     <p class="fs-5 text-center">Цена</p>
                     <p class="fs-4 fw-semibold text-center">{{ current_product.price }} руб.</p>
-                    <a href="#" class="btn btn-primary d-block mx-auto">
+                    <a href="{% url 'basket:basket_add' product_sku=current_product.sku category_id=current_product.category.id %}" class="btn btn-primary d-block mx-auto">
                         Добавить в корзину
                     </a>
                 </div>
@@ -82,7 +82,7 @@
         <div class="row">
 
             <!--Описание / xарактеристики товара / отзывы-->
-            <div class="col" style="padding-top: 50px; padding-bottom: 100px; min-height: 500px;">
+            <div class="col" style="padding-top: 50px; min-height: 500px;">
                 <nav>
                     <div class="nav nav-tabs" id="nav-tab" role="tablist">
                         <button class="nav-link active" id="nav-home-tab" data-bs-toggle="tab"

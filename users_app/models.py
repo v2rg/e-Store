@@ -4,8 +4,12 @@ from django.db import models
 
 # Create your models here.
 
+def user_directory_path(instance, image):
+    return f'users_avatars/{instance.id}/{image}'
+
+
 class User(AbstractUser):  # расширение для модели User
-    avatar = models.ImageField(upload_to='media/users_avatar', null=True, blank=True, verbose_name='Аватар')
+    avatar = models.ImageField(upload_to=user_directory_path, null=True, blank=True, verbose_name='Аватар')
     is_verified_email = models.BooleanField(default=False, verbose_name='Почта подтверждена')
 
     class Meta:

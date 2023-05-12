@@ -25,6 +25,7 @@ urlpatterns = [
     path('', views.index, name='index'),
     path('catalog/', include('products_app.urls')),
     path('users/', include('users_app.urls')),
+    path('basket/', include('basket_app.urls')),
 
 ]
 

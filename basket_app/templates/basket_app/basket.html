@@ -1,0 +1,92 @@
+{% extends 'users_app/base.html' %}
+{% load static %}
+
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+
+{% block description %}
+    <p>
+        Корзина:
+        <br>
+        - общее кол-во товара, кол-во по одной позиции, сумма по одной позиции, общая сумма
+    </p>
+{% endblock %}
+
+
+{% block content %}
+    <!--Корзина-->
+    <div class="row justify-content-center">
+        <div class="col-lg-10">
+
+            {% if not current_basket %}
+                <div class="card-header">
+                    <h3 class="text-center font-weight-light my-4">Корзина пуста</h3>
+                </div>
+            {% else %}
+                <div class="card-header">
+                    <h3 class="text-center font-weight-light my-4">
+                        Корзина
+                        <b style="color: #cb0c00">
+
+                            {{ total_quantity }}
+                        </b>
+                    </h3>
+                </div>
+
+                {% for value in current_basket %}
+                    <div class="row text-center border mb-3" style="background-color: white">
+
+                        <div class="col-2">
+                            <img src="/media/{{ value.thumbnail }}" alt="pic" style="height: 120px;">
+                        </div>
+
+                        <div class="col-1" style="margin: auto;">
+                            {{ value.sku }}
+                        </div>
+
+                        <div class="col-6" style="margin: auto;">
+                            {{ value.name }}
+                        </div>
+
+                        <div class="col-1" style="margin: auto;">
+                            <input class="form-control" type="number" name="basket" id=""
+                                   value="{{ value.basket_quantity }}" min="0" max="99">
+                        </div>
+
+                        <div class="col-2" style="margin: auto;">
+                            {{ value.product_sum }} руб.
+                            <br>
+                            <a href="{% url 'basket:basket_remove' value.sku %}" class="link-info">Удалить</a>
+                        </div>
+                    </div>
+                {% endfor %}
+
+                <hr style="color: darkslategrey;">
+
+                <div class="row text-center mb-3">
+                    <div class="col-9"></div>
+                    <div class="col-1">
+                        <h5>
+                            Итого:
+                        </h5>
+                    </div>
+                    <div class="col-2">
+                        <h5>
+                            {{ total_sum }} руб.
+                        </h5>
+                    </div>
+                </div>
+                <div class="row text-center mb-3">
+                    <div class="col-9"></div>
+                    <div class="col-3">
+                        <a href="#" type="button" class="btn btn-success col-12">Оформить заказ</a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}

@@ -1,3 +1,6 @@
+{% load static %}
+
+
 <!--Navbar-->
 <nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top" data-bs-theme="dark">
     <div class="container">
@@ -34,8 +37,10 @@
                 {% else %}
                     <!--Профиль-->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown"
+                        <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"
                            aria-expanded="false">
+                            <img src="{% if user.avatar %} {{ user.avatar.url }} {% else %} {% static 'img/default_avatar.png' %}
+                            {% endif %}" alt="avatar" style="width: 2rem; height: 2rem; border-style: groove; border-width: 1px; border-color: grey">
                             {% if user.is_superuser %}
                                 {{ user.username }} (admin)
                             {% else %}
@@ -43,8 +48,8 @@
                             {% endif %}
                         </a>
                         <ul class="dropdown-menu">
-                            <li><a class="dropdown-item" href="#">Профиль</a></li>
-                            <li><a class="dropdown-item" href="#">Корзина</a></li>
+                            <li><a class="dropdown-item" href="{% url 'users:profile' %}">Профиль</a></li>
+                            <li><a class="dropdown-item" href="{% url 'basket:basket' %}">Корзина</a></li>
                             <li><a class="dropdown-item" href="#">Заказы</a></li>
                             {% if user.is_superuser %}
                                 <li>
