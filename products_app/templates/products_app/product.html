@@ -3,7 +3,7 @@
 
 
 {% block title %}
-    e-Store карточка товара
+    {{ title }}
 {% endblock %}
 
 {% block description %}
@@ -64,6 +64,8 @@
                         <b>
                             {{ current_product.name }}
                         </b>
+                    <p class="text-center">
+                        В наличии: {{ current_product.quantity }}
                     </p>
                     <hr>
                     <p class="text-center">
@@ -72,7 +74,8 @@
                     <hr>
                     <p class="fs-5 text-center">Цена</p>
                     <p class="fs-4 fw-semibold text-center">{{ current_product.price }} руб.</p>
-                    <a href="{% url 'basket:basket_add' product_sku=current_product.sku category_id=current_product.category.id %}" class="btn btn-primary d-block mx-auto">
+                    <a href="{% url 'basket:basket_add' product_sku=current_product.sku category_id=current_product.category.id %}"
+                       class="btn btn-primary d-block mx-auto">
                         Добавить в корзину
                     </a>
                 </div>

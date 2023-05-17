@@ -60,6 +60,7 @@ def catalog(request, category_id=1, brand_name=None, line_name=None):
     page_obj = paginator.get_page(page_number)
 
     context = {
+        'title': 'e-Store - Каталог',
         'all_products': page_obj,
         'breadcrumb': {
             'category_name': category.category_name,
@@ -90,6 +91,7 @@ def product(request, category_id=None, sku=None):
     # print(product_images)
 
     context = {
+        'title': 'e-Store - Карточка товара',
         'current_product': current_product,
         'product_images': product_images,
     }

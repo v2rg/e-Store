@@ -30,7 +30,6 @@
                     <h3 class="text-center font-weight-light my-4">
                         Корзина
                         <b style="color: #cb0c00">
-
                             {{ total_quantity }}
                         </b>
                     </h3>
@@ -47,13 +46,34 @@
                             {{ value.sku }}
                         </div>
 
-                        <div class="col-6" style="margin: auto;">
+                        <div class="col-5" style="margin: auto;">
                             {{ value.name }}
                         </div>
 
+                        <div class="col-1" style="margin: auto">
+                            {{ value.price }}
+                        </div>
+
                         <div class="col-1" style="margin: auto;">
-                            <input class="form-control" type="number" name="basket" id=""
-                                   value="{{ value.basket_quantity }}" min="0" max="99">
+                            <div class="row">
+                                {% if value.basket_quantity < value.quantity %}
+                                    <a href="{% url 'basket:basket_update' value.sku 'incr' %}" class="btn">▲</a>
+                                {% else %}
+                                    <a href="#" class="btn" style="color: lightgrey">▲</a>
+                                {% endif %}
+                            </div>
+                            <div class="row">
+                                <span>
+                                    {{ value.basket_quantity }}
+                                </span>
+                            </div>
+                            <div class="row">
+                                {% if value.basket_quantity > 1 %}
+                                    <a href="{% url 'basket:basket_update' value.sku 'decr' %}" class="btn">▼</a>
+                                {% else %}
+                                    <a href="#" class="btn" style="color: lightgrey">▼</a>
+                                {% endif %}
+                            </div>
                         </div>
 
                         <div class="col-2" style="margin: auto;">

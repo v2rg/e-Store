@@ -1,4 +1,5 @@
 from django.contrib import auth
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.urls import reverse
 
@@ -43,11 +44,13 @@ def registration(request):  # регистрация
     return render(request, 'users_app/registration.html', context)
 
 
+@login_required
 def logout(request):  # логаут
     auth.logout(request)
     return HttpResponsePermanentRedirect(reverse('users:login'))
 
 
+@login_required()
 def profile(request):  # профиль пользователя
     current_user = User.objects.get(id=request.user.id)
     if request.method == 'POST':

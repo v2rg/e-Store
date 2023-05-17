@@ -40,16 +40,28 @@
                         <a class="nav-link dropdown-toggle" role="button" data-bs-toggle="dropdown"
                            aria-expanded="false">
                             <img src="{% if user.avatar %} {{ user.avatar.url }} {% else %} {% static 'img/default_avatar.png' %}
-                            {% endif %}" alt="avatar" style="width: 2rem; height: 2rem; border-style: groove; border-width: 1px; border-color: grey">
+                            {% endif %}" alt="avatar"
+                                 style="width: 2rem; height: 2rem; border-style: groove; border-width: 1px; border-color: grey">
                             {% if user.is_superuser %}
                                 {{ user.username }} (admin)
                             {% else %}
                                 {{ user.username }}
+                                {% if request.session.basket %}
+                                    <img src="{% static 'img/bubble-red-png.png' %}" alt="red-dot" style="height: 7px">
+                                {% endif %}
                             {% endif %}
                         </a>
                         <ul class="dropdown-menu">
                             <li><a class="dropdown-item" href="{% url 'users:profile' %}">Профиль</a></li>
-                            <li><a class="dropdown-item" href="{% url 'basket:basket' %}">Корзина</a></li>
+                            <li>
+                                <a class="dropdown-item" href="{% url 'basket:basket' %}">
+                                    {% if request.session.basket %}
+                                        <img src="{% static 'img/bubble-red-png.png' %}" alt="red-dot-basket"
+                                             style="height: 5px">
+                                    {% endif %}
+                                    Корзина
+                                </a>
+                            </li>
                             <li><a class="dropdown-item" href="#">Заказы</a></li>
                             {% if user.is_superuser %}
                                 <li>

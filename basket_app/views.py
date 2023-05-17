@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, HttpResponseRedirect
 from django.urls import reverse
 
@@ -6,10 +7,11 @@ from products_app.models import ProcessorList, VideoCardList, MotherboardList, M
 
 # Create your views here.
 
+@login_required
 def basket(request):
     if request.session.get('basket'):
         session = request.session['basket']
-        # print(session)
+        print(session)
         current_basket = []
         current_product = None
 
@@ -35,7 +37,7 @@ def basket(request):
         total_quantity = None
         total_sum = None
 
-    print(current_basket)
+    # print(current_basket)
 
     context = {
         'title': 'e-Store - Корзина',
@@ -47,6 +49,7 @@ def basket(request):
     return render(request, 'basket_app/basket.html', context)
 
 
+@login_required()
 def basket_add(request, category_id=None, product_sku=None, quantity=None):  # добавление в корзину (sku, quantity)
     if request.session.get('basket'):  # проверяем, есть ли basket в сессии
         if request.session['basket'].get(str(product_sku)):
@@ -69,6 +72,7 @@ def basket_add(request, category_id=None, product_sku=None, quantity=None):  # �
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 
+@login_required()
 def basket_remove(request, product_sku=None):
     session = request.session.get('basket')
     if session:
@@ -83,5 +87,17 @@ def basket_remove(request, product_sku=None):
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
 
 
-def basket_update(request):
-    ...
+def basket_update(request, product_sku=None, slug=None):
+    session = request.session.get('basket')
+    # print(session)
+    if session:
+        if str(product_sku) in session:
+            if slug == 'incr':
+                session[str(product_sku)]['quantity'] += 1
+                request.session.modified = True
+            elif slug == 'decr':
+                if session[str(product_sku)]['quantity'] >= 2:
+                    session[str(product_sku)]['quantity'] -= 1
+                    request.session.modified = True
+
+    return HttpResponseRedirect(request.META['HTTP_REFERER'])
