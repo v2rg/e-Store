@@ -1,5 +1,4 @@
-from products_app.models import (Category, CpuLine, Brand, GpuModel, Socket, MemoryType, ProcessorList, VideoCardList,
-                                 MotherboardList, MemoryList)
+from products_app.models import (Category, CpuLine, Brand, GpuModel, Socket, MemoryType)
 
 
 # левое меню с категориями
