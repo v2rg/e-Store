@@ -1,6 +1,6 @@
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm
-from users_app.models import User
+from users_app.models import User, UserAddress
 
 
 class UserLoginForm(AuthenticationForm):
@@ -51,3 +51,18 @@ class UserProfileForm(UserChangeForm):
     class Meta:
         model = User
         fields = ('first_name', 'last_name', 'username', 'email', 'avatar')
+
+
+class UserAddressForm(forms.ModelForm):
+    postcode = forms.IntegerField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Индекс'}))
+    city = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Город'}))
+    street = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Улица'}))
+    building = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Дом'}))
+    floor = forms.IntegerField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Этаж'}),
+                               required=False)
+    apartment = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Квартира'}),
+                                required=False)
+
+    class Meta:
+        model = UserAddress
+        fields = ('postcode', 'city', 'street', 'building', 'floor', 'apartment')

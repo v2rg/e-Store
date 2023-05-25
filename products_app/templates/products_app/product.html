@@ -12,7 +12,25 @@
 
 {% block content %}
     <div class="col-9">
-        <h3>Карточка товара</h3>
+        <h3>Товары >
+            <a href="{% url 'products:catalog_category' current_product.category.id %}">{{ current_product.category.category_name }}</a>
+            >
+            {% if current_product.category_id == 1 %}
+                <a href="{% url 'products:catalog_category_brand' current_product.category.id current_product.brand %}">{{ current_product.brand }}</a>
+                >
+                <a href="{% url 'products:catalog_category_brand_line' current_product.category.id current_product.brand current_product.line %}">{{ current_product.line }}</a>
+            {% elif current_product.category_id == 2 %}
+                <a href="{% url 'products:catalog_category_brand' current_product.category.id current_product.gpu.gpu_brand %}">{{ current_product.gpu.gpu_brand }}</a>
+                >
+                <a href="{% url 'products:catalog_category_brand_line' current_product.category.id current_product.gpu.gpu_brand current_product.gpu.gpu_name %}">{{ current_product.gpu.gpu_name }}</a>
+            {% elif current_product.category_id == 3 %}
+                <a href="{% url 'products:catalog_category_brand' current_product.category.id current_product.socket.brand_name %}">{{ current_product.socket.brand_name }}</a>
+                >
+                <a href="{% url 'products:catalog_category_brand_line' current_product.category.id current_product.socket.brand_name current_product.socket.socket_name %}">{{ current_product.socket.socket_name }}</a>
+            {% elif current_product.category_id == 4 %}
+                <a href="{% url 'products:catalog_category_brand' current_product.category.id current_product.type.type_name %}">{{ current_product.type.type_name }}</a>
+            {% endif %}
+        </h3>
 
         <div class="row" style="padding-top: 25px;">
 

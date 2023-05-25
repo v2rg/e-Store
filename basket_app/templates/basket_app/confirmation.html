@@ -1,0 +1,133 @@
+{% extends 'users_app/base.html' %}
+{% load static %}
+
+
+{% block title %}
+
+{% endblock %}
+
+
+{% block description %}
+
+{% endblock %}
+
+
+{% block content %}
+    <!--Корзина-->
+    <div class="row">
+        <div class="col-5">
+            <h3 class="text-center font-weight-light my-4">
+                Заказ
+            </h3>
+
+            <ul class="list-group">
+                {% for value in current_basket %}
+                    <li class="list-group-item d-flex justify-content-between">
+                        <div>
+                            <h6 class="my-2" style="width: 90%">
+                                {{ value.name }}
+                            </h6>
+                            <small class="text-muted text-center">
+                                {{ value.price }} руб. |
+                                {{ value.basket_quantity }} шт.
+                            </small>
+                        </div>
+                        <span class="text-muted text-center">
+                            {{ value.product_sum }}
+                            <br>руб.
+                        </span>
+                    </li>
+                {% endfor %}
+
+                <hr>
+
+                <li class="list-group-item d-flex justify-content-between">
+                    <h5 class="text-danger">
+                        Сумма заказа:
+                    </h5>
+                    <h5>
+                        {{ total_sum }} руб.
+                    </h5>
+                </li>
+
+            </ul>
+
+        </div>
+
+        <div class="col-1"></div>
+
+        <div class="col-6">
+
+            <h3 class="text-center font-weight-light my-4">
+                Адрес доставки
+            </h3>
+
+            <form action="">
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <label for="firstName" class="form-label">Фамилия</label>
+                        <input type="text" class="form-control" id="firstName" placeholder="Иванов" value=""
+                               required="">
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label for="firstName" class="form-label">Имя</label>
+                        <input type="text" class="form-control" id="firstName" placeholder="Иван" value=""
+                               required="">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-2 mb-3">
+                        <label for="firstName" class="form-label">Индекс</label>
+                        <input type="text" class="form-control" id="firstName" placeholder="600600" value=""
+                               required="">
+                    </div>
+                    <div class="col-4 mb-3">
+                        <label for="firstName" class="form-label">Город</label>
+                        <input type="text" class="form-control" id="firstName" placeholder="Москва" value=""
+                               required="">
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label for="firstName" class="form-label">Улица</label>
+                        <input type="text" class="form-control" id="firstName" placeholder="Ленина" value=""
+                               required="">
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-6 mb-3">
+                        <label for="firstName" class="form-label">Email</label>
+                        <input type="text" class="form-control" id="firstName" placeholder="qwe@aqawe.ey" value=""
+                               required="" disabled>
+                    </div>
+                    <div class="col-2 mb-3">
+                        <label for="firstName" class="form-label">Дом</label>
+                        <input type="text" class="form-control" id="firstName" placeholder="10" value=""
+                               required="">
+                    </div>
+                    <div class="col-2 mb-3">
+                        <label for="firstName" class="form-label">Этаж</label>
+                        <input type="text" class="form-control" id="firstName" placeholder="3" value=""
+                               required="">
+                    </div>
+                    <div class="col-2 mb-3">
+                        <label for="firstName" class="form-label">Квартира</label>
+                        <input type="text" class="form-control" id="firstName" placeholder="27" value=""
+                               required="">
+                    </div>
+                </div>
+
+                <hr class="my-4">
+
+                <div class="row">
+                    <div class="d-grid gap-4" style="padding: 30px">
+                        <input class="btn btn-secondary d-grid" type="submit" value="Подтвердить заказ">
+                    </div>
+                </div>
+
+            </form>
+
+        </div>
+    </div>
+
+{% endblock %}

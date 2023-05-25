@@ -67,6 +67,7 @@ TEMPLATES = [
                 'django.contrib.auth.context_processors.auth',
                 'django.contrib.messages.context_processors.messages',
                 'products_app.context_processors.vertical_group',  # вертикальное меню (с категориями товара)
+                'basket_app.context_processors.basket',  # корзина (сессия)
             ],
         },
     },
@@ -134,3 +135,6 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # User
 AUTH_USER_MODEL = 'users_app.User'
+
+# Login
+LOGIN_URL = '/users/login/'

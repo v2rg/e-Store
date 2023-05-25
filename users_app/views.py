@@ -4,8 +4,8 @@ from django.shortcuts import render, HttpResponseRedirect, HttpResponsePermanent
 from django.urls import reverse
 
 # Create your views here.
-from users_app.forms import UserLoginForm, UserRegistrationForm, UserProfileForm
-from users_app.models import User
+from users_app.forms import UserLoginForm, UserRegistrationForm, UserProfileForm, UserAddressForm
+from users_app.models import User, UserAddress
 
 
 def login(request):  # авторизация
@@ -52,18 +52,49 @@ def logout(request):  # логаут
 
 @login_required()
 def profile(request):  # профиль пользователя
+
     current_user = User.objects.get(id=request.user.id)
+    current_user_address = UserAddress.objects.get(user_id=request.user.id)
+
     if request.method == 'POST':
         profile_form = UserProfileForm(instance=current_user, data=request.POST, files=request.FILES)
+        profile_address_form = UserAddressForm(instance=current_user_address, data=request.POST)
+
         if profile_form.is_valid():
             profile_form.save()
-            return HttpResponseRedirect(reverse('users:profile'))
+
+        if profile_address_form.is_valid():
+            profile_address_form.save()
+
+        return HttpResponseRedirect(reverse('users:profile'))
+
     else:
         profile_form = UserProfileForm(instance=current_user)
+        profile_address_form = UserAddressForm(instance=current_user_address)
 
     context = {
         'title': 'e-Store - Профиль',
         'current_user_avatar': current_user.avatar,
-        'profile_form': profile_form
+        'profile_form': profile_form,
+        'profile_form_address': profile_address_form
     }
     return render(request, 'users_app/profile.html', context)
+
+
+# def add_address(request):
+#     current_user_address = UserAddress.objects.get(user_id=request.user.id)
+#
+#     if request.method == 'POST':
+#         address_form = UserAddressForm(instance=current_user_address, data=request.POST)
+#         if address_form.is_valid():
+#             address_form.save()
+#             return HttpResponseRedirect(reverse('users:profile'))
+#     else:
+#         address_form = UserAddressForm(instance=current_user_address)
+#
+#     context = {
+#         'title': '',
+#         'address_form': address_form,
+#     }
+#
+#     return HttpResponseRedirect(reverse('users:profile'))
