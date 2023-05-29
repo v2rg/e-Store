@@ -1,4 +1,4 @@
-from django.contrib import auth
+from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.urls import reverse
@@ -54,17 +54,20 @@ def logout(request):  # логаут
 def profile(request):  # профиль пользователя
 
     current_user = User.objects.get(id=request.user.id)
-    current_user_address = UserAddress.objects.get(user_id=request.user.id)
+    # добавляет запись в таблицу UserAddress, когда пользователь впервые заходит в профиль, или получает адрес
+    current_user_address, _ = UserAddress.objects.get_or_create(user_id=request.user)
 
     if request.method == 'POST':
         profile_form = UserProfileForm(instance=current_user, data=request.POST, files=request.FILES)
-        profile_address_form = UserAddressForm(instance=current_user_address, data=request.POST)
-
         if profile_form.is_valid():
             profile_form.save()
 
+        # if current_user_address:
+        profile_address_form = UserAddressForm(instance=current_user_address, data=request.POST)
         if profile_address_form.is_valid():
             profile_address_form.save()
+
+        messages.success(request, ' обновлен')
 
         return HttpResponseRedirect(reverse('users:profile'))
 
@@ -79,7 +82,6 @@ def profile(request):  # профиль пользователя
         'profile_form_address': profile_address_form
     }
     return render(request, 'users_app/profile.html', context)
-
 
 # def add_address(request):
 #     current_user_address = UserAddress.objects.get(user_id=request.user.id)

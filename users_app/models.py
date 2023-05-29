@@ -18,14 +18,17 @@ class User(AbstractUser):  # расширение для модели User
 
 
 class UserAddress(models.Model):  # адрес пользователя
-    user_id = models.PositiveIntegerField(verbose_name='ID пользователя')
-    postcode = models.PositiveIntegerField(verbose_name='Почтовый индекс')
-    city = models.CharField(max_length=64, verbose_name='Город')
-    street = models.CharField(max_length=64, verbose_name='Улица')
-    building = models.CharField(max_length=10, verbose_name='Дом')
-    floor = models.PositiveSmallIntegerField(blank=True, verbose_name='Этаж')
-    apartment = models.CharField(max_length=10, blank=True, verbose_name='Квартира')
+    user_id = models.OneToOneField(to=User, on_delete=models.CASCADE, verbose_name='Пользователь')
+    postcode = models.PositiveIntegerField(null=True, blank=True, verbose_name='Почтовый индекс')
+    city = models.CharField(max_length=64, null=True, blank=True, verbose_name='Город')
+    street = models.CharField(max_length=64, null=True, blank=True, verbose_name='Улица')
+    building = models.CharField(max_length=10, null=True, blank=True, verbose_name='Дом')
+    floor = models.PositiveSmallIntegerField(null=True, blank=True, verbose_name='Этаж')
+    apartment = models.CharField(max_length=10, null=True, blank=True, verbose_name='Квартира')
 
     class Meta:
         verbose_name = 'адрес'
         verbose_name_plural = 'Адресы'
+
+    def __str__(self):
+        return f'{self.user_id.id} | {self.user_id} | OK' if self.postcode else f'{self.user_id.id} | {self.user_id}'
