@@ -34,9 +34,21 @@
                         <p class="card-text text-sm">{{ product.short_description }}</p>
                     </div>
                     <h5 class="card-title text-center">{{ product.price }} руб.</h5>
-                    <a href="#" class="btn btn-primary" style="margin-top: 20px; margin-bottom: 20px">
-                        В корзину
-                    </a>
+
+                    {% if product.quantity > 0 %}
+                        {% if product.sku in skus %}
+                            <a href="{% url 'basket:basket' %}"
+                               class="btn btn-secondary d-block mx-auto" style="margin-top: 20px; margin-bottom: 20px">В корзине
+                            </a>
+                        {% else %}
+                            <a href="{% url 'basket:basket_add' product_sku=product.sku category_id=product.category.id %}"
+                               class="btn btn-primary d-block mx-auto" style="margin-top: 20px; margin-bottom: 20px">Добавить в корзину
+                            </a>
+                        {% endif %}
+                    {% else %}
+                        <button class="btn btn-dark" style="margin-top: 20px; margin-bottom: 20px" disabled>Нет в наличии</button>
+                    {% endif %}
+
                 </div>
             {% endfor %}
         </div>

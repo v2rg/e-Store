@@ -9,12 +9,12 @@ from products_app.models import (Category, Brand, CpuLine, Socket, GpuModel, Mem
 
 
 def index(request):
-    # 8 рандомных товаров (остальное из контекст-процессора)
+    # 8 рандомных товаров
     random_products = [
-        *ProcessorList.objects.order_by('?')[:2],
-        *VideoCardList.objects.order_by('?')[:2],
-        *MotherboardList.objects.order_by('?')[:2],
-        *MemoryList.objects.order_by('?')[:2]
+        *ProcessorList.objects.filter(quantity__gt=0).order_by('?')[:2],
+        *VideoCardList.objects.filter(quantity__gt=0).order_by('?')[:2],
+        *MotherboardList.objects.filter(quantity__gt=0).order_by('?')[:2],
+        *MemoryList.objects.filter(quantity__gt=0).order_by('?')[:2]
     ]
 
     context = {
@@ -75,9 +75,11 @@ def catalog(request, category_id=1, brand_name=None, line_name=None):
 def product(request, category_id=None, sku=None):
     current_product = None
     product_images = None
+    in_basket = False
 
     if all([category_id, sku]):
         product_images = ProductImage.objects.filter(sku=sku)
+
         if category_id == 1:
             current_product = ProcessorList.objects.get(sku=sku)
         elif category_id == 2:
@@ -87,6 +89,11 @@ def product(request, category_id=None, sku=None):
         elif category_id == 4:
             current_product = MemoryList.objects.get(sku=sku)
 
+        if request.session['basket']:
+            for i in request.session['basket']:
+                if int(i) == current_product.sku:
+                    in_basket = True
+
     # print(current_product)
     # print(product_images)
 
@@ -94,6 +101,7 @@ def product(request, category_id=None, sku=None):
         'title': 'e-Store - Карточка товара',
         'current_product': current_product,
         'product_images': product_images,
+        'in_basket': in_basket,
     }
 
     return render(request, 'products_app/product.html', context)

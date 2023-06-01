@@ -28,7 +28,7 @@ class UserAddress(models.Model):  # адрес пользователя
 
     class Meta:
         verbose_name = 'адрес'
-        verbose_name_plural = 'Адресы'
+        verbose_name_plural = 'Адреса'
 
     def __str__(self):
         return f'{self.user_id.id} | {self.user_id} | OK' if self.postcode else f'{self.user_id.id} | {self.user_id}'

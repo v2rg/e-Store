@@ -92,10 +92,20 @@
                     <hr>
                     <p class="fs-5 text-center">Цена</p>
                     <p class="fs-4 fw-semibold text-center">{{ current_product.price }} руб.</p>
-                    <a href="{% url 'basket:basket_add' product_sku=current_product.sku category_id=current_product.category.id %}"
-                       class="btn btn-primary d-block mx-auto">
-                        Добавить в корзину
-                    </a>
+
+                    {% if current_product.quantity > 0 %}
+                        {% if in_basket %}
+                            <a href="{% url 'basket:basket' %}" class="btn btn-secondary d-block mx-auto">В корзине
+                            </a>
+                        {% else %}
+                            <a href="{% url 'basket:basket_add' product_sku=current_product.sku category_id=current_product.category.id %}"
+                               class="btn btn-primary d-block mx-auto">Добавить в корзину
+                            </a>
+                        {% endif %}
+                    {% else %}
+                        <a href="#" class="btn btn-secondary d-block mx-auto disabled">Нет в наличии
+                        </a>
+                    {% endif %}
                 </div>
             </div>
         </div>

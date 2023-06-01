@@ -77,26 +77,8 @@ def profile(request):  # профиль пользователя
 
     context = {
         'title': 'e-Store - Профиль',
-        'current_user_avatar': current_user.avatar,
+        # 'current_user_avatar': current_user.avatar,
         'profile_form': profile_form,
         'profile_form_address': profile_address_form
     }
     return render(request, 'users_app/profile.html', context)
-
-# def add_address(request):
-#     current_user_address = UserAddress.objects.get(user_id=request.user.id)
-#
-#     if request.method == 'POST':
-#         address_form = UserAddressForm(instance=current_user_address, data=request.POST)
-#         if address_form.is_valid():
-#             address_form.save()
-#             return HttpResponseRedirect(reverse('users:profile'))
-#     else:
-#         address_form = UserAddressForm(instance=current_user_address)
-#
-#     context = {
-#         'title': '',
-#         'address_form': address_form,
-#     }
-#
-#     return HttpResponseRedirect(reverse('users:profile'))

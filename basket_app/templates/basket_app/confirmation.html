@@ -3,7 +3,7 @@
 
 
 {% block title %}
-
+    {{ title }}
 {% endblock %}
 
 
@@ -62,58 +62,68 @@
                 Адрес доставки
             </h3>
 
-            <form action="">
+
+            <form action="{% url 'basket:order_confirmation' %}" method="post">
+                {% csrf_token %}
                 <div class="row">
                     <div class="col-6 mb-3">
-                        <label for="firstName" class="form-label">Фамилия</label>
-                        <input type="text" class="form-control" id="firstName" placeholder="Иванов" value=""
-                               required="">
+                        <label for="{{ current_user_form.last_name.id_for_label }}" class="form-label">Фамилия</label>
+                        {{ current_user_form.last_name }}
                     </div>
                     <div class="col-6 mb-3">
-                        <label for="firstName" class="form-label">Имя</label>
-                        <input type="text" class="form-control" id="firstName" placeholder="Иван" value=""
-                               required="">
+                        <label for="{{ current_user_form.first_name.id_for_label }}" class="form-label">Имя</label>
+                        {{ current_user_form.first_name }}
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-2 mb-3">
-                        <label for="firstName" class="form-label">Индекс</label>
-                        <input type="text" class="form-control" id="firstName" placeholder="600600" value=""
-                               required="">
+                        <label for="{{ current_user_address_form.postcode.id_for_label }}"
+                               class="form-label">Индекс</label>
+                        {{ current_user_address_form.postcode }}
                     </div>
                     <div class="col-4 mb-3">
-                        <label for="firstName" class="form-label">Город</label>
-                        <input type="text" class="form-control" id="firstName" placeholder="Москва" value=""
-                               required="">
+                        <label for="{{ current_user_address_form.city.id_for_label }}" class="form-label">Город</label>
+                        {{ current_user_address_form.city }}
                     </div>
                     <div class="col-6 mb-3">
-                        <label for="firstName" class="form-label">Улица</label>
-                        <input type="text" class="form-control" id="firstName" placeholder="Ленина" value=""
-                               required="">
+                        <label for="{{ current_user_address_form.street.id_for_label }}"
+                               class="form-label">Улица</label>
+                        {{ current_user_address_form.street }}
                     </div>
                 </div>
 
                 <div class="row">
                     <div class="col-6 mb-3">
-                        <label for="firstName" class="form-label">Email</label>
-                        <input type="text" class="form-control" id="firstName" placeholder="qwe@aqawe.ey" value=""
-                               required="" disabled>
+                        <label for="id_comment" class="form-label">Комментарий</label>
+                        <input type="text" class="form-control" id="id_comment" placeholder="Комментарий"
+                               name="comment">
                     </div>
                     <div class="col-2 mb-3">
-                        <label for="firstName" class="form-label">Дом</label>
-                        <input type="text" class="form-control" id="firstName" placeholder="10" value=""
-                               required="">
+                        <label for="{{ current_user_address_form.building.id_for_label }}"
+                               class="form-label">Дом</label>
+                        {{ current_user_address_form.building }}
                     </div>
                     <div class="col-2 mb-3">
-                        <label for="firstName" class="form-label">Этаж</label>
-                        <input type="text" class="form-control" id="firstName" placeholder="3" value=""
-                               required="">
+                        <label for="{{ current_user_address_form.floor.id_for_label }}" class="form-label">Этаж</label>
+                        {{ current_user_address_form.floor }}
                     </div>
                     <div class="col-2 mb-3">
-                        <label for="firstName" class="form-label">Квартира</label>
-                        <input type="text" class="form-control" id="firstName" placeholder="27" value=""
-                               required="">
+                        <label for="{{ current_user_address_form.apartment.id_for_label }}"
+                               class="form-label">Квартира</label>
+                        {{ current_user_address_form.apartment }}
+                    </div>
+
+                    <!--total_quantity, total_sum-->
+                    <div class="col-6 mb-3">
+                        <label for="id_total_quantity" class="form-label"></label>
+                        <input type="text" class="form-control" id="id_total_quantity" name="total_quantity"
+                               value="{{ total_quantity }}" hidden>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label for="id_total_sum" class="form-label"></label>
+                        <input type="text" class="form-control" id="id_total_sum" name="total_sum"
+                               value="{{ total_sum }}" hidden>
                     </div>
                 </div>
 

@@ -1,8 +1,13 @@
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.shortcuts import render, HttpResponseRedirect
 from django.urls import reverse
 
+from users_app.models import User, UserAddress
 from products_app.models import ProcessorList, VideoCardList, MotherboardList, MemoryList
+from users_app.forms import UserProfileForm, UserAddressForm
+from basket_app.models import Order
 
 
 # Create your views here.
@@ -73,4 +78,58 @@ def basket_update(request, product_sku=None, slug=None):
 
 @login_required
 def order_confirmation(request):
-    return render(request, 'basket_app/confirmation.html')
+    try:
+        current_user = User.objects.get(id=request.user.id)
+        current_user_address = UserAddress.objects.get(user_id=current_user.id)
+    except ObjectDoesNotExist:
+        print(f'Объект {request.user.id} не существует')
+    except MultipleObjectsReturned:
+        print('Найдено более одного объекта')
+    else:
+        if request.method == 'POST':
+            # print(request.POST)
+            # print(request.session['basket'])
+            for sku, value in request.session['basket'].items():
+                if value['category_id'] == 1:
+                    current_product = ProcessorList.objects.get(sku=sku)
+                    if current_product.quantity >= value['quantity']:
+                        current_product.quantity -= value['quantity']
+                        current_product.save()
+                        print(f'{sku} обновлено')
+                    else:
+                        messages.error(request, '')
+
+                print(sku, value)
+
+            # сохраняем заказ в таблице Order
+            Order.objects.create(
+                user_id=request.user,
+                first_name=request.POST['first_name'],
+                last_name=request.POST['last_name'],
+
+                postcode=request.POST['postcode'],
+                city=request.POST['city'],
+                street=request.POST['street'],
+                building=request.POST['building'],
+                floor=request.POST['floor'] if request.POST['floor'] else 0,
+                apartment=request.POST['apartment'] if request.POST['apartment'] else 0,
+
+                total_quantity=request.POST['total_quantity'],
+                total_sum=request.POST['total_sum'],
+                comment=request.POST['comment']
+            )
+            print('OK')
+
+            return HttpResponseRedirect(reverse('users:profile'))
+        else:
+            current_user_form = UserProfileForm(instance=current_user)
+            current_user_address_form = UserAddressForm(instance=current_user_address)
+
+    context = {
+        'title': 'e-Store - Подтверждение заказа',
+        'current_user_form': current_user_form,
+        'current_user_address_form': current_user_address_form,
+
+    }
+
+    return render(request, 'basket_app/confirmation.html', context)

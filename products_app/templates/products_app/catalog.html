@@ -61,7 +61,19 @@
                                         Цена: {{ product.price }}
                                     </div>
                                     <div class="col-5">
-                                        <button class="btn btn-secondary">Добавить в корзину</button>
+                                        {% if product.quantity > 0 %}
+                                            {% if product.sku in skus %}
+                                                <a href="{% url 'basket:basket' %}"
+                                                   class="btn btn-secondary d-block mx-auto">В корзине
+                                                </a>
+                                            {% else %}
+                                                <a href="{% url 'basket:basket_add' product_sku=product.sku category_id=product.category.id %}"
+                                                   class="btn btn-primary d-block mx-auto">Добавить в корзину
+                                                </a>
+                                            {% endif %}
+                                        {% else %}
+                                            <button class="btn btn-dark" disabled>Нет в наличии</button>
+                                        {% endif %}
                                     </div>
                                 </div>
                             </div>
