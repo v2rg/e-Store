@@ -1,3 +1,4 @@
+import products_app
 from products_app.models import ProcessorList, VideoCardList, MotherboardList, MemoryList
 
 
@@ -19,21 +20,23 @@ def basket(request):
             elif value['category_id'] == 4:
                 current_product = MemoryList.objects.values().get(sku=int(sku))
 
-            current_product['basket_quantity'] = value['quantity']  # количество товара по одной позиции
-            current_product['product_sum'] = current_product['price'] * current_product[
-                'basket_quantity']  # сумма одной позиции
+            current_product['basket_quantity'] = (
+                current_product['quantity'] if value['quantity'] > current_product['quantity']
+                else value['quantity'])  # количество товара по одной позиции
+            current_product['product_sum'] = (
+                    current_product['price'] * current_product['basket_quantity'])  # сумма одной позиции
             current_basket.append(current_product)
             skus.append(current_product['sku'])
 
         total_quantity = sum([x['basket_quantity'] for x in current_basket])  # общее количество товара в корзине
         total_sum = sum([x['product_sum'] for x in current_basket])  # общая сумма по корзине
+        basket_is_active = False if any(x['quantity'] < 1 for x in current_basket) else True
     else:
         current_basket = None
         total_quantity = None
         total_sum = None
         skus = None
-
-    print(skus)
+        basket_is_active = None
 
     return {
         'title': 'e-Store - Корзина',
@@ -41,5 +44,6 @@ def basket(request):
         'total_quantity': total_quantity,
         'total_sum': total_sum,
         'skus': skus,
+        'basket_is_active': basket_is_active,
 
     }

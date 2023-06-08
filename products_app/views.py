@@ -89,13 +89,14 @@ def product(request, category_id=None, sku=None):
         elif category_id == 4:
             current_product = MemoryList.objects.get(sku=sku)
 
-        if request.session['basket']:
+        try:
+            session = request.session['basket']
+        except KeyError:
+            print('product: basket не найден')
+        else:
             for i in request.session['basket']:
                 if int(i) == current_product.sku:
                     in_basket = True
-
-    # print(current_product)
-    # print(product_images)
 
     context = {
         'title': 'e-Store - Карточка товара',

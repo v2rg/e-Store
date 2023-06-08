@@ -138,3 +138,11 @@ AUTH_USER_MODEL = 'users_app.User'
 
 # Login
 LOGIN_URL = '/users/login/'
+
+# Product categories
+CATEGORY_ID = {
+    '1': 'ProcessorList',
+    '2': 'VideoCardList',
+    '3': 'MotherboardList',
+    '4': 'MemoryList',
+}

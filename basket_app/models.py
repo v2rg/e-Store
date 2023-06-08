@@ -42,8 +42,8 @@ class Order(models.Model):
             f'{self.user_id.username} || '
             f'Создан: {self.created_datetime.strftime("%d.%m.%Y, %H:%M:%S")} | '
             f'Обновлен: {self.updated_datetime.strftime("%d.%m.%Y, %H:%M:%S")} || '
-            f'Статус: {self.status}'
-        )
+            f'Статус: {self.status}')
+
 
 # class OrderItem(models.Model):
 #     ...
