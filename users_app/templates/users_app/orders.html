@@ -1,0 +1,62 @@
+{% extends 'users_app/base.html' %}
+
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+
+{% block description %}
+    <div>
+        <b>Список заказов</b><br>
+        Статус paid после подтверждения оплаты, остальные статусы вручную
+    </div>
+{% endblock %}
+
+
+{% block content %}
+
+    <!--Заказы-->
+    <div class="row justify-content-center">
+        <div class="col-lg-8 text-center">
+            {% if not user_orders %}
+                <h3 class="text-center font-weight-light my-4">Заказов нет</h3>
+            {% else %}
+                <h3 class="text-center font-weight-light my-4">Заказы</h3>
+                <table class="table table-hover">
+                    <thead>
+                    <tr class="">
+                        <th scope="col">ID заказа</th>
+                        <th scope="col">Статус</th>
+                        <th scope="col">Дата</th>
+                        <th scope="col">Итого</th>
+                        <th scope="col"></th>
+                    </tr>
+                    </thead>
+
+                    <tbody>
+                    {% for user_order in user_orders %}
+                        <tr class="{% if user_order.status == 'created' %} table-danger
+                    {% elif user_order.status == 'delivered' %} table-light
+                    {% else %} table-success
+                    {% endif %}">
+                            <th scope="row">{{ user_order.id }}</th>
+                            <td>
+                                {% if user_order.status == 'created' %} создан
+                                {% elif user_order.status == 'paid' %} оплачен
+                                {% elif user_order.status == 'shipping' %} в пути
+                                {% elif user_order.status == 'delivered' %} доставлен
+                                {% endif %}
+                            </td>
+                            <td>{{ user_order.created_datetime|date:'d.m.Y H:i' }}</td>
+                            <td>{{ user_order.total_sum }} руб.</td>
+                            <td><a href="{% url 'users:order' user_order.id %}">Подробнее</a></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}
+
+        </div>
+    </div>
+{% endblock %}

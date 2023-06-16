@@ -25,6 +25,7 @@ def basket(request):
                 else value['quantity'])  # количество товара по одной позиции
             current_product['product_sum'] = (
                     current_product['price'] * current_product['basket_quantity'])  # сумма одной позиции
+
             current_basket.append(current_product)
             skus.append(current_product['sku'])
 

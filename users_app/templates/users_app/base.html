@@ -43,9 +43,27 @@
             </div>
         </div>
 
+        <!--Сообщения-->
+        <div class="row justify-content-center">
+            <div class="col-6">
+                {% if messages or register_form.errors %}
+                    <div class="alert {% if messages %} alert-success {% else %} alert-warning {% endif %} fade show"
+                         role="alert"
+                         style="text-align: center">
+                        {% if messages %}
+                            {% for message in messages %}
+                                {{ message }}
+                            {% endfor %}
+                        {% else %}
+                            {{ register_form.errors }}
+                        {% endif %}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
         <!--Context-->
         {% block content %} {% endblock %}
-
     </div>
 </main>
 

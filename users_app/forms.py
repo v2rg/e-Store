@@ -1,6 +1,11 @@
+from datetime import timedelta
+from uuid import uuid4
+
 from django import forms
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm, UserChangeForm
-from users_app.models import User, UserAddress
+from django.utils.timezone import now
+
+from users_app.models import User, UserAddress, EmailVerification
 
 
 class UserLoginForm(AuthenticationForm):
@@ -30,6 +35,15 @@ class UserRegistrationForm(UserCreationForm):
         model = User
         fields = ('first_name', 'last_name', 'username', 'email', 'password1', 'password2')
 
+    def save(self, commit=True):
+        user = super(UserRegistrationForm, self).save(commit=True)
+        user_uuid = uuid4()
+        expiration_date = now() + timedelta(hours=48)
+        record = EmailVerification.objects.create(user=user, uuid_code=user_uuid, expiration=expiration_date)
+        record.send_verification_email()
+
+        return user
+
 
 class UserProfileForm(UserChangeForm):
     first_name = forms.CharField(
@@ -58,8 +72,8 @@ class UserAddressForm(forms.ModelForm):
     city = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Город'}))
     street = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Улица'}))
     building = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Дом'}))
-    floor = forms.IntegerField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Этаж'}),
-                               required=False)
+    floor = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Этаж'}),
+                            required=False)
     apartment = forms.CharField(widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Квартира'}),
                                 required=False)
 

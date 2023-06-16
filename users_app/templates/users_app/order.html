@@ -1,0 +1,70 @@
+{% extends 'users_app/base.html' %}
+
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+
+{% block description %}
+    <div>
+        <b>Содержимое заказа</b><br>
+    </div>
+{% endblock %}
+
+
+{% block content %}
+
+    <!--Заказы-->
+    <div class="row justify-content-center">
+        <div class="col-lg-10 text-center">
+            <h3 class="text-center font-weight-light my-4">Заказ № {{ order_id }}
+                от {{ order_data.created_datetime|date:'d.m.Y' }}</h3>
+            <table class="table table-hover">
+                <thead>
+                <tr class="">
+                    <th scope="col">Артикул</th>
+                    <th scope="col">Название</th>
+                    <th scope="col">Количество</th>
+                    <th scope="col">Цена</th>
+                    <th scope="col">Стоимость</th>
+                </tr>
+                </thead>
+
+                <tbody>
+                {% for order_item in order_items %}
+                    <tr class="table-light">
+                        <td>
+                            <a href="{% url 'products:product' order_item.product_category_id order_item.product_sku %}">{{ order_item.product_sku }}</a>
+                        </td>
+                        <td>{{ order_item.product_name }}</td>
+                        <td>{{ order_item.quantity }}</td>
+                        <td>{{ order_item.price }}</td>
+                        <td>{{ order_item.sku_total_price }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+            <hr>
+            <div class="row">
+                <div class="col text-start">
+                    <h5>
+                        Адрес доставки: <br><br>
+                        Индекс: <b>{{ order_data.postcode }}</b><br>
+                        Город: <b>{{ order_data.city }}</b><br>
+                        Улица: <b>{{ order_data.street }}</b><br>
+                        Дом: <b>{{ order_data.building }}</b><br>
+                        Этаж: <b>{{ order_data.floor }}</b><br>
+                        Квартира: <b>{{ order_data.apartment }}</b><br><br>
+                        {% if order_data.comment %} Комментарий: <b>{{ order_data.comment }}</b> {% endif %}
+                    </h5>
+                </div>
+                <div class="col text-end">
+                    <h5>
+                        Стоимость заказа: <b>{{ total_price }}</b> руб.
+                    </h5>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

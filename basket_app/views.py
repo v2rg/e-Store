@@ -1,16 +1,16 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import F
 from django.shortcuts import render, HttpResponseRedirect
 from django.urls import reverse
 
 import products_app
 from users_app.models import User, UserAddress
-from products_app.models import ProcessorList, VideoCardList, MotherboardList, MemoryList
+from products_app.models import ProcessorList, VideoCardList, MotherboardList, MemoryList, Category
 from users_app.forms import UserProfileForm, UserAddressForm
-from basket_app.models import Order
+from basket_app.models import Order, OrderItem
 
 
 # Create your views here.
@@ -25,19 +25,23 @@ def basket(request):
 
 
 @login_required
-def basket_add(request, category_id=None, product_sku=None, quantity=None):  # добавление в корзину
+def basket_add(request, category_id=None, product_sku=None, product_name=None,
+               product_price=None):  # добавление в корзину
+
     if request.session.get('basket'):  # проверяем, есть ли basket в сессии
         if request.session['basket'].get(str(product_sku)):
             request.session['basket'][str(product_sku)]['quantity'] += 1
             print('+1')
         else:
-            request.session['basket'][str(product_sku)] = {'category_id': category_id, 'quantity': 1}
-            messages.success(request, f'Товар {product_sku} добавлен в корзину')
+            request.session['basket'][str(product_sku)] = {'category_id': category_id, 'quantity': 1,
+                                                           'product_price': float(product_price)}
+            messages.success(request, f'Товар {product_sku} добавлен в ')
             print('+sku')
     else:  # добавляется ключ basket со словарем, sku и количеством
         request.session['basket'] = {}
-        request.session['basket'][str(product_sku)] = {'category_id': category_id, 'quantity': 1}
-        messages.success(request, f'Товар {product_sku} добавлен в корзину')
+        request.session['basket'][str(product_sku)] = {'category_id': category_id, 'quantity': 1,
+                                                       'product_price': float(product_price)}
+        messages.success(request, f'Товар {product_sku} добавлен в ')
         print('+basket, +sku')
 
     request.session.modified = True
@@ -78,16 +82,16 @@ def basket_update(request, product_sku=None, slug=None):  # обновление
                     current_product = getattr(products_app.models, category).objects.get(sku=product_sku)
                     if slug == 'incr':
                         if current_product.quantity > session[str(product_sku)]['quantity']:
-                            print('incr')
                             session[str(product_sku)]['quantity'] += 1
+                            print('incr')
                             request.session.modified = True
                         elif current_product.quantity == session[str(product_sku)]['quantity']:
                             print('pass')
                             pass
                     elif slug == 'decr':
-                        print('decr')
                         if session[str(product_sku)]['quantity'] >= 2:
                             session[str(product_sku)]['quantity'] -= 1
+                            print('decr')
                             request.session.modified = True
 
     return HttpResponseRedirect(request.META['HTTP_REFERER'])
@@ -95,76 +99,94 @@ def basket_update(request, product_sku=None, slug=None):  # обновление
 
 @login_required
 def order_confirmation(request):  # подтверждение заказа
-    # try:
-    current_user = User.objects.get(id=request.user.id)
-    # except ObjectDoesNotExist:
-    #     print(f'Юзер с ID {request.user.id} не существует')
-    # except MultipleObjectsReturned:
-    #     print('Найдено более одного объекта')
-    # else:
-    current_user_address = UserAddress.objects.get(user_id=current_user.id)
 
-    if request.method == 'POST':
-        try:
-            session = request.session['basket']
-        except KeyError:
-            print(f'Корзина пользователя {request.user} не существует')
-        else:
-            basket_valid_items = (
-                [getattr(products_app.models, category).objects.get(sku=sku).quantity >= value['quantity']
-                 if value['category_id'] == int(category_id)
-                 else False
-                 for category_id, category in settings.CATEGORY_ID.items()
-                 for sku, value in session.items()])  # проверяем, что quantity товаров в корзине >= чем на складе
+    current_user_form = None
+    current_user_address_form = None
 
-            if basket_valid_items.count(True) == len(session):
-                print('Корзина валидна')
-
-                # if request.session['basket']:
-                for sku, value in request.session['basket'].items():
-                    for category_id, category in settings.CATEGORY_ID.items():
-                        if value['category_id'] == int(category_id):
-                            current_product = getattr(products_app.models, category).objects.get(sku=sku)
-                            if current_product.quantity >= value['quantity']:
-                                getattr(products_app.models, category).objects.filter(sku=sku).update(
-                                    quantity=F('quantity') - value['quantity'])  # уменьшаем количество товара
-                                # current_product.quantity -= value['quantity']
-                                # current_product.save()
-                                print(f'[{category_id}, {sku}] обновлено')
-                            else:
-                                messages.error(request, '')
-
-                # сохраняем заказ в таблице Order
-                Order.objects.create(
-                    user_id=request.user,
-                    first_name=request.POST['first_name'],
-                    last_name=request.POST['last_name'],
-
-                    postcode=request.POST['postcode'],
-                    city=request.POST['city'],
-                    street=request.POST['street'],
-                    building=request.POST['building'],
-                    floor=request.POST['floor'] if request.POST['floor'] else 0,
-                    apartment=request.POST['apartment'] if request.POST['apartment'] else 0,
-
-                    total_quantity=request.POST['total_quantity'],
-                    total_sum=request.POST['total_sum'],
-                    comment=request.POST['comment']
-                )
-
-                # OrderList.objects.create()
-
-                messages.success(request, f'Заказ № {Order.objects.last().id} создан')
-                print(f'Заказ № {Order.objects.last().id} создан')
-
-                return HttpResponseRedirect(reverse('users:profile'))
-
-            messages.error(request, f'Ошибка! В наличии меньше товара, чем в заказе')
-            print(f'Заказ № {Order.objects.last().id} ОШИБКА (недостаточное кол-во)')
-            return HttpResponseRedirect(reverse('basket:basket'))
+    try:
+        current_user = User.objects.get(id=request.user.id)
+    except ObjectDoesNotExist:
+        print(f'Юзер с ID {request.user.id} не существует')
     else:
-        current_user_form = UserProfileForm(instance=current_user)
-        current_user_address_form = UserAddressForm(instance=current_user_address)
+        current_user_address = UserAddress.objects.get(user_id=current_user.id)
+
+        if request.method == 'POST':
+            try:
+                session = request.session['basket']
+            except KeyError:
+                print(f'Корзина пользователя {request.user} не существует')
+            else:
+                basket_valid_items = (
+                    [getattr(products_app.models, category).objects.get(sku=sku).quantity >= value['quantity']
+                     if value['category_id'] == int(category_id)
+                     else False
+                     for category_id, category in settings.CATEGORY_ID.items()
+                     for sku, value in session.items()])  # проверяем, что quantity товаров в корзине >= чем на складе
+
+                if basket_valid_items.count(True) == len(session):
+                    print('Корзина валидна')
+
+                    for sku, value in request.session['basket'].items():
+                        for category_id, category in settings.CATEGORY_ID.items():
+                            if value['category_id'] == int(category_id):
+                                current_product = getattr(products_app.models, category).objects.get(sku=sku)
+                                if current_product.quantity >= value['quantity']:
+                                    getattr(products_app.models, category).objects.filter(sku=sku).update(
+                                        quantity=F('quantity') - value['quantity'])  # уменьшаем количество товара
+                                    # current_product.quantity -= value['quantity']
+                                    # current_product.save()
+                                    print(f'[{category_id}, {sku}] обновлено')
+                                else:
+                                    messages.error(request, '')
+
+                    # сохраняем заказ в таблице Order
+                    Order.objects.create(
+                        user_id=request.user,
+                        first_name=request.POST['first_name'],
+                        last_name=request.POST['last_name'],
+
+                        postcode=request.POST['postcode'],
+                        city=request.POST['city'],
+                        street=request.POST['street'],
+                        building=request.POST['building'],
+                        floor=request.POST['floor'] if request.POST['floor'] else '-',
+                        apartment=request.POST['apartment'] if request.POST['apartment'] else '-',
+
+                        total_quantity=request.POST['total_quantity'],
+                        total_sum=request.POST['total_sum'],
+                        comment=request.POST['comment']
+                    )
+
+                    # сохраняем содержимое заказа в таблицу OrderItem
+                    current_order = Order.objects.filter(user_id=request.user).order_by('created_datetime').last()
+                    for sku, value in session.items():
+                        OrderItem.objects.create(
+                            order_id=current_order,
+                            user_id=request.user,
+                            product_category=Category.objects.get(id=value['category_id']),
+                            product_sku=sku,
+                            quantity=value['quantity'],
+                            price=value['product_price']
+                        )
+
+                    order_items = OrderItem.objects.filter(order_id=current_order).count()
+                    if len(session) == order_items:
+                        del request.session['basket']  # удаляем корзину
+                        messages.success(request, f'Заказ № {Order.objects.last().id} создан')
+                        print(f'Заказ № {current_order} создан')
+                        return HttpResponseRedirect(reverse('users:orders'))
+                    else:
+                        Order.objects.get(id=current_order).delete()  # удаляем запись в таблице Order, при ошибке
+                        messages.error(request, 'Ошибка! Заказ не создан')
+                        print(f'Заказ № {current_order} ОШИБКА (заказ не создан, запись из order удалена)')
+                        return HttpResponseRedirect(reverse('basket:basket'))
+
+                messages.error(request, f'Ошибка! В наличии меньше товара, чем в заказе')
+                print(f'Заказ № {Order.objects.last().id} ОШИБКА (недостаточное кол-во)')
+                return HttpResponseRedirect(reverse('basket:basket'))
+        else:
+            current_user_form = UserProfileForm(instance=current_user)
+            current_user_address_form = UserAddressForm(instance=current_user_address)
 
     context = {
         'title': 'e-Store - Подтверждение заказа',

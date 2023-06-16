@@ -36,7 +36,20 @@
                 </div>
             </div>
         </div>
-
+        <!--Сообщения-->
+        {% if messages or form.non_field_errors %}
+            <div class="alert {% if messages %} alert-success {% else %} alert-warning {% endif %} fade show"
+                 role="alert"
+                 style="text-align: center">
+                {% if messages %}
+                    {% for message in messages %}
+                        {{ message }} <a href="{% url 'basket:basket' %}">корзину</a>
+                    {% endfor %}
+                {% else %}
+                    {{ form.non_field_errors }}
+                {% endif %}
+            </div>
+        {% endif %}
         <!--Context-->
         <div class="row">
             <!--Категории-->

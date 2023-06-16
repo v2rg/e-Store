@@ -1,5 +1,6 @@
 from random import random
 
+from django.contrib import messages
 from django.core.paginator import Paginator
 from django.shortcuts import render
 

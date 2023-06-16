@@ -8,9 +8,11 @@
 
 
 {% block description %}
-    Каталог
-    <br>
-    Выводит список элементов из таблиц (по категориям, брендам, моделям)
+    <div>
+        Каталог
+        <br>
+        Выводит список элементов из таблиц (по категориям, брендам, моделям)
+    </div>
 {% endblock %}
 
 
@@ -33,24 +35,8 @@
 
         </h3>
 
-        <!--Горизонтальная карточка товара-->
-        {% if messages or form.non_field_errors %}
-            <div class="alert {% if messages %} alert-success {% else %} alert-warning {% endif %} alert-dismissible fade show"
-                 role="alert"
-                 style="margin-top: 50px; text-align: center">
-                {% if messages %}
-                    {% for message in messages %}
-                        {{ message }}
-                    {% endfor %}
-                {% else %}
-                    {{ form.non_field_errors }}
-                {% endif %}
 
-                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-        {% endif %}
+        <!--Горизонтальная карточка товара-->
         {% for product in all_products %}
             <div class="row" style="padding-top: 20px;">
                 <div class="card mb-2"
@@ -84,7 +70,7 @@
                                                    class="btn btn-secondary d-block mx-auto">В корзине
                                                 </a>
                                             {% else %}
-                                                <a href="{% url 'basket:basket_add' product_sku=product.sku category_id=product.category.id %}"
+                                                <a href="{% url 'basket:basket_add' product_sku=product.sku category_id=product.category.id product_price=product.price %}"
                                                    class="btn btn-primary d-block mx-auto">Добавить в корзину
                                                 </a>
                                             {% endif %}

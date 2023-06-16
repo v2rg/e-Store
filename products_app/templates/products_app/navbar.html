@@ -62,7 +62,7 @@
                                     Корзина
                                 </a>
                             </li>
-                            <li><a class="dropdown-item" href="#">Заказы</a></li>
+                            <li><a class="dropdown-item" href="{% url 'users:orders' %}">Заказы</a></li>
                             {% if user.is_superuser %}
                                 <li>
                                     <hr class="dropdown-divider">

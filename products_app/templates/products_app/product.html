@@ -98,7 +98,7 @@
                             <a href="{% url 'basket:basket' %}" class="btn btn-secondary d-block mx-auto">В корзине
                             </a>
                         {% else %}
-                            <a href="{% url 'basket:basket_add' product_sku=current_product.sku category_id=current_product.category.id %}"
+                            <a href="{% url 'basket:basket_add' product_sku=current_product.sku category_id=current_product.category.id product_price=current_product.price %}"
                                class="btn btn-primary d-block mx-auto">Добавить в корзину
                             </a>
                         {% endif %}

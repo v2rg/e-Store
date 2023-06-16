@@ -34,31 +34,23 @@
                         </b>
                     </h3>
                 </div>
-                {#                {% if messages or form.non_field_errors %}#}
-                {#                    <div class="alert {% if messages %} alert-success {% else %} alert-warning {% endif %} alert-dismissible fade show"#}
-                {#                         role="alert"#}
-                {#                         style="margin-top: 50px; text-align: center">#}
-                {#                        {% if messages %}#}
-                {#                            {% for message in messages %}#}
-                {#                                {{ message }}#}
-                {#                            {% endfor %}#}
-                {#                        {% else %}#}
-                {#                            {{ form.non_field_errors }}#}
-                {#                        {% endif %}#}
-                {##}
-                {#                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">#}
-                {#                            <span aria-hidden="true">&times;</span>#}
-                {#                        </button>#}
-                {#                    </div>#}
-                {#                {% endif %}#}
-                {% if messages %}
-                    <ul class="messages">
-                        {% for message in messages %}
-                            <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-                        {% endfor %}
-                    </ul>
-                {% endif %}
+                {% if messages or form.non_field_errors %}
+                    <div class="alert {% if messages %} alert-success {% else %} alert-warning {% endif %} alert-dismissible fade show"
+                         role="alert"
+                         style="margin-top: 50px; text-align: center">
+                        {% if messages %}
+                            {% for message in messages %}
+                                {{ message }}
+                            {% endfor %}
+                        {% else %}
+                            {{ form.non_field_errors }}
+                        {% endif %}
 
+                        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                {% endif %}
 
                 {% for value in current_basket %}
                     <div class="row text-center border mb-3"
@@ -69,7 +61,9 @@
                         </div>
 
                         <div class="col-1" style="margin: auto;">
-                            {{ value.sku }}
+                            <a href="{% url 'products:product' value.category_id value.sku %}">
+                                {{ value.sku }}
+                            </a>
                         </div>
 
                         <div class="col-5" style="margin: auto;">
