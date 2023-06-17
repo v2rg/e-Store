@@ -18,16 +18,19 @@
     <!--Заказы-->
     <div class="row justify-content-center">
         <div class="col-lg-10 text-center">
-            <h3 class="text-center font-weight-light my-4">Заказ № {{ order_id }}
-                от {{ order_data.created_datetime|date:'d.m.Y' }}</h3>
+
+            <h3 class="my-5">Заказ № {{ order_id }}
+                от {{ order_data.created_datetime|date:'d.m.Y' }}
+            </h3>
+
             <table class="table table-hover">
                 <thead>
                 <tr class="">
                     <th scope="col">Артикул</th>
                     <th scope="col">Название</th>
                     <th scope="col">Количество</th>
+                    <th scope="col">Цена за ед.</th>
                     <th scope="col">Цена</th>
-                    <th scope="col">Стоимость</th>
                 </tr>
                 </thead>
 
@@ -45,25 +48,70 @@
                 {% endfor %}
                 </tbody>
             </table>
-            <hr>
-            <div class="row">
-                <div class="col text-start">
-                    <h5>
-                        Адрес доставки: <br><br>
-                        Индекс: <b>{{ order_data.postcode }}</b><br>
-                        Город: <b>{{ order_data.city }}</b><br>
-                        Улица: <b>{{ order_data.street }}</b><br>
-                        Дом: <b>{{ order_data.building }}</b><br>
-                        Этаж: <b>{{ order_data.floor }}</b><br>
-                        Квартира: <b>{{ order_data.apartment }}</b><br><br>
-                        {% if order_data.comment %} Комментарий: <b>{{ order_data.comment }}</b> {% endif %}
-                    </h5>
+
+            <div class="col text-end text-primary">
+                <h5>
+                    Итого: <b>{{ total_price }}</b> руб.
+                </h5>
+            </div>
+
+            <hr style="padding-bottom: 50px">
+
+            <h3 class="my-5">
+                Адрес доставки
+            </h3>
+
+            <div class="row justify-content-center">
+                <div class="col-4">
+
+                    <table class="table text-start">
+                        <tr>
+                            <td>Индекс:</td>
+                            <td><b>{{ order_data.postcode }}</b></td>
+                        </tr>
+                        <tr>
+                            <td>Город:</td>
+                            <td><b>{{ order_data.city }}</b></td>
+                        </tr>
+                        <tr>
+                            <td>Улица:</td>
+                            <td><b>{{ order_data.street }}</b></td>
+                        </tr>
+                        <tr>
+                            <td>Дом:</td>
+                            <td><b>{{ order_data.building }}</b></td>
+                        </tr>
+                        <tr>
+                            <td>Этаж:</td>
+                            <td><b>{{ order_data.floor }}</b></td>
+                        </tr>
+                        <tr>
+                            <td>Квартира:</td>
+                            <td><b>{{ order_data.apartment }}</b></td>
+                        </tr>
+
+                        {% if order_data.comment %}
+                            <tr>
+                                <td>Комментарий:</td>
+                                <td><b>{{ order_data.comment }}</b></td>
+                            </tr>
+                        {% endif %}
+                    </table>
                 </div>
-                <div class="col text-end">
-                    <h5>
-                        Стоимость заказа: <b>{{ total_price }}</b> руб.
-                    </h5>
+
+                <div class="col-4">
+                    <table class="table text-start">
+                        <tr>
+                            <td>Имя:</td>
+                            <td><b>{{ order_data.first_name }}</b></td>
+                        </tr>
+                        <tr>
+                            <td>Фамилия:</td>
+                            <td><b>{{ order_data.last_name }}</b></td>
+                        </tr>
+                    </table>
                 </div>
+
             </div>
         </div>
     </div>

@@ -94,11 +94,6 @@
                 </div>
 
                 <div class="row">
-                    <div class="col-6 mb-3">
-                        <label for="id_comment" class="form-label">Комментарий</label>
-                        <input type="text" class="form-control" id="id_comment" placeholder="Комментарий"
-                               name="comment">
-                    </div>
                     <div class="col-2 mb-3">
                         <label for="{{ current_user_address_form.building.id_for_label }}"
                                class="form-label">Дом</label>
@@ -112,6 +107,11 @@
                         <label for="{{ current_user_address_form.apartment.id_for_label }}"
                                class="form-label">Квартира</label>
                         {{ current_user_address_form.apartment }}
+                    </div>
+                    <div class="col-6 mb-3">
+                        <label for="id_comment" class="form-label">Комментарий</label>
+                        <input type="text" class="form-control" id="id_comment" placeholder="Комментарий"
+                               name="comment">
                     </div>
 
                     <!--total_quantity, total_sum-->
@@ -131,7 +131,7 @@
 
                 <div class="row">
                     <div class="d-grid gap-4" style="padding: 30px">
-                        <input class="btn btn-secondary d-grid" type="submit" value="Подтвердить заказ">
+                        <input class="btn btn-primary d-grid" type="submit" value="Подтвердить заказ">
                     </div>
                 </div>
 

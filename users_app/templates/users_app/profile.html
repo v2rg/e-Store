@@ -41,14 +41,14 @@
                         {% csrf_token %}
                         <div class="row" style="padding-top: 30px;">
                             <div class="col-6 mb-3" style="padding-left: 30px;">
-                                <label for="{{ profile_form.first_name.id_for_label }}"
-                                       class="form-label">Имя</label>
-                                {{ profile_form.first_name }}
-                            </div>
-                            <div class="col-6 mb-3" style="padding-right: 30px;">
                                 <label for="{{ profile_form.last_name.id_for_label }}"
                                        class="form-label">Фамилия</label>
                                 {{ profile_form.last_name }}
+                            </div>
+                            <div class="col-6 mb-3" style="padding-right: 30px;">
+                                <label for="{{ profile_form.first_name.id_for_label }}"
+                                       class="form-label">Имя</label>
+                                {{ profile_form.first_name }}
                             </div>
                         </div>
 

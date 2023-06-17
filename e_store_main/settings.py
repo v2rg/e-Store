@@ -34,6 +34,7 @@ INSTALLED_APPS = [
     'products_app',
     'users_app',
     'basket_app',
+    'comments_app',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -150,7 +151,7 @@ CATEGORY_ID = {
 # emails
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
-EMAIL_HOST_USER = ''
-EMAIL_HOST_PASSWORD = ''
+EMAIL_HOST_USER = ''  # удалять
+EMAIL_HOST_PASSWORD = ''  # удалять
 EMAIL_USE_SSL = True
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
