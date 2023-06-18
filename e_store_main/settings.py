@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-xytve7rt7tyy$ikq&0^k#8*@es(@u5hqfo=ecr9=h0d-=&(4l&'
+SECRET_KEY = 'django-insecure-xytve7rt7tyy$ikq&0^k#8*@es(@u5hqfo=ecr9=h0d-=&(4l&'  # TODO: del
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -34,7 +34,7 @@ INSTALLED_APPS = [
     'products_app',
     'users_app',
     'basket_app',
-    'comments_app',
+    'reviews_app',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -151,7 +151,7 @@ CATEGORY_ID = {
 # emails
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
-EMAIL_HOST_USER = ''  # удалять
-EMAIL_HOST_PASSWORD = ''  # удалять
+EMAIL_HOST_USER = ''  # TODO: del
+EMAIL_HOST_PASSWORD = ''  # TODO: del
 EMAIL_USE_SSL = True
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

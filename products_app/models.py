@@ -189,7 +189,7 @@ class ProductImage(models.Model):  # изображение товара
 
 
 class AbstractProduct(models.Model):  # АБСТРАКТНЫЙ класс товара
-    sku = models.PositiveIntegerField(unique=True, db_index=True, verbose_name='Артикул')
+    sku = models.PositiveIntegerField(unique=True, verbose_name='Артикул')
     category = models.ForeignKey(to=Category, on_delete=models.CASCADE, verbose_name='Категория')
     brand = models.ForeignKey(to=Brand, on_delete=models.CASCADE, verbose_name='Бренд')
     name = models.CharField(max_length=128, unique=True, verbose_name='Наименование товара')

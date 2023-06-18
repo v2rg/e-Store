@@ -47,7 +47,8 @@ def basket_add(request, category_id=None, product_sku=None, product_name=None,
     request.session.modified = True
     # request.session.save()
 
-    return HttpResponseRedirect(request.META['HTTP_REFERER'])
+    return (HttpResponseRedirect(request.META['HTTP_REFERER']) if request.META.get('HTTP_REFERER')
+            else HttpResponseRedirect(reverse('index')))
 
 
 @login_required
@@ -66,7 +67,7 @@ def basket_remove(request, product_sku=None):  # удаление из корз�
         else:
             print('basket не существует')
 
-    return HttpResponseRedirect(request.META['HTTP_REFERER'])
+    return HttpResponseRedirect(reverse('basket:basket'))
 
 
 @login_required
@@ -94,7 +95,7 @@ def basket_update(request, product_sku=None, slug=None):  # обновление
                             print('decr')
                             request.session.modified = True
 
-    return HttpResponseRedirect(request.META['HTTP_REFERER'])
+    return HttpResponseRedirect(reverse('basket:basket'))
 
 
 @login_required

@@ -12,7 +12,8 @@
 
 {% block content %}
     <div class="col-9">
-        <h3>Товары >
+        <h3>
+            Каталог >
             <a href="{% url 'products:catalog_category' current_product.category.id %}">{{ current_product.category.category_name }}</a>
             >
             {% if current_product.category_id == 1 %}
