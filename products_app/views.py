@@ -106,7 +106,7 @@ def product(request, category_id=None, sku=None):  # карточка товар
         current_product.save()
         product_images = ProductImage.objects.filter(sku=sku)
         review_is_exists = False if request.user.is_anonymous else reviews.filter(user=request.user).exists()
-        if not review_is_exists:
+        if not review_is_exists and not request.user.is_anonymous:
             try:
                 current_order_id = OrderItem.objects.get(user_id=request.user, product_sku=sku).order_id.id
             except ObjectDoesNotExist:

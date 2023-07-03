@@ -81,8 +81,12 @@ WSGI_APPLICATION = 'e_store_main.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'xxx',  # TODO: del
+        'USER': 'xxx',  # TODO: del
+        'PASSWORD': 'xxx',  # TODO: del
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
@@ -148,7 +152,7 @@ CATEGORY_ID = {
     '4': 'MemoryList',
 }
 
-# emails
+# Emails
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
 EMAIL_HOST_USER = ''  # TODO: del

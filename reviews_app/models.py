@@ -38,9 +38,9 @@ class ProductReview(models.Model):
         return range(self.rating)
 
 
-class AvgReview(models.Model):
-    product_sku = models.CharField(max_length=50, unique=True, verbose_name='Артикул')
-    avg_review = models.DecimalField(max_digits=2, decimal_places=1, verbose_name='Средний рейтинг')
-
-    def __str__(self):
-        return f'{self.product_sku} | {self.avg_review}'
+# class AvgReview(models.Model):
+#     product_sku = models.CharField(max_length=50, unique=True, verbose_name='Артикул')
+#     avg_review = models.DecimalField(max_digits=2, decimal_places=1, verbose_name='Средний рейтинг')
+#
+#     def __str__(self):
+#         return f'{self.product_sku} | {self.avg_review}'
