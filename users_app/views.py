@@ -22,7 +22,7 @@ def login(request):  # авторизация
                 auth.login(request, user)
                 return HttpResponseRedirect(reverse('index'))
             else:
-                messages.error(request, 'Аккаунт не подтвержден')
+                messages.add_message(request, messages.ERROR, 'Аккаунт не подтвержден')
     else:
         login_form = UserLoginForm()
 
@@ -39,7 +39,8 @@ def registration(request):  # регистрация
         register_form = UserRegistrationForm(data=request.POST)
         if register_form.is_valid():
             register_form.save()
-            messages.success(request, 'Требуется подтверждение аккаунта. Письмо отправлено на почту')
+            messages.add_message(request, messages.SUCCESS,
+                                 'Требуется подтверждение аккаунта. Письмо отправлено на почту')
             return HttpResponseRedirect(reverse('users:login'))
     else:
         register_form = UserRegistrationForm()
@@ -56,17 +57,17 @@ def verify_email(request, username=None, user_uuid=None):  # подтвержд�
     try:
         verifying_user = EmailVerification.objects.get(user__username=username, uuid_code=user_uuid)
     except ObjectDoesNotExist:
-        messages.error(request, 'Пользователь не найден')
+        messages.add_message(request, messages.ERROR, 'Пользователь не найден')
         return HttpResponseRedirect(reverse('users:login'))
     else:
         if verifying_user.expiration > now():
             User.objects.filter(username=verifying_user).update(is_verified_email=True)
             UserAddress.objects.create(user_id=verifying_user.user)  # создается запись в UserAddress
-            messages.success(request, 'Аккаунт успешно подтвержден')
+            messages.add_message(request, messages.SUCCESS, 'Аккаунт успешно подтвержден')
             return HttpResponseRedirect(reverse('users:login'))
         else:
             User.objects.get(username=verifying_user).delete()
-            messages.error(request, 'Пользователь не найден')
+            messages.add_message(request, messages.ERROR, 'Пользователь не найден')
             return HttpResponseRedirect(reverse('users:login'))
 
 
@@ -100,7 +101,7 @@ def profile(request):  # профиль пользователя
             if profile_address_form.is_valid():
                 profile_address_form.save()
 
-            messages.success(request, 'Профиль обновлен')
+            messages.add_message(request, messages.SUCCESS, 'Профиль обновлен')
 
             return HttpResponseRedirect(reverse('users:profile'))
 

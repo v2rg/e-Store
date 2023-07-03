@@ -36,20 +36,23 @@
                 </div>
             </div>
         </div>
-        <!--Сообщения-->
-        {% if messages or form.non_field_errors %}
-            <div class="alert {% if messages %} alert-success {% else %} alert-warning {% endif %} fade show"
-                 role="alert"
-                 style="text-align: center">
-                {% if messages %}
-                    {% for message in messages %}
+
+        <!--Сообщения
+        (DEBUG 10, INFO 20, SUCCESS 25, WARNING 30, ERROR 40)-->
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert {% if message.level == 25 or message.level == 50 %} alert-success {% elif message.level == 20 %} alert-info {% else %} alert-warning {% endif %}"
+                     role="alert"
+                     style="text-align: center">
+                    {% if message.level == 50 %}
                         {{ message }} <a href="{% url 'basket:basket' %}">корзину</a>
-                    {% endfor %}
-                {% else %}
-                    {{ form.non_field_errors }}
-                {% endif %}
-            </div>
+                    {% else %}
+                        {{ message }}
+                    {% endif %}
+                </div>
+            {% endfor %}
         {% endif %}
+
         <!--Context-->
         <div class="row">
             <!--Категории-->

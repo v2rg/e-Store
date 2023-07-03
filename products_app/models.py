@@ -184,6 +184,14 @@ class ProductImage(models.Model):  # изображение товара
     def __str__(self):
         return f'{self.sku} | {self.carousel_id} | {self.image}'
 
+    def img_exists(self):  # проверяем, что файл существует
+        try:
+            img_exists = self.image.size
+        except FileNotFoundError:
+            return None
+        else:
+            return self.image.url
+
 
 """Товары"""
 
@@ -201,8 +209,18 @@ class AbstractProduct(models.Model):  # АБСТРАКТНЫЙ класс тов
     quantity = models.PositiveSmallIntegerField(default=0, verbose_name='Количество')
     date_added = models.DateTimeField(auto_now_add=True, verbose_name='Дата добавления')
 
+    avg_rating = models.DecimalField(max_digits=2, decimal_places=1, null=True, verbose_name='Рейтинг товара')
+
     class Meta:
         abstract = True
+
+    def thumbnail_exists(self):  # проверяем, что файл существует
+        try:
+            thumbnail_exists = self.thumbnail.size
+        except FileNotFoundError:
+            return None
+        else:
+            return self.thumbnail.url
 
 
 class ProcessorList(AbstractProduct):  # процессоры

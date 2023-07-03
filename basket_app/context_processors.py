@@ -1,9 +1,11 @@
 import products_app
 from products_app.models import ProcessorList, VideoCardList, MotherboardList, MemoryList
+from users_app.models import UserAddress
 
 
 def basket(request):
     if request.session.get('basket'):
+        UserAddress.objects.get_or_create(user_id=request.user)
         session = request.session['basket']
         print(session)
         current_basket = []

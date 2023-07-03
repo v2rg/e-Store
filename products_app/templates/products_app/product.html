@@ -7,7 +7,13 @@
 {% endblock %}
 
 {% block description %}
-    йцу
+    <p>
+        <b>Карточка товара</b>
+        <br>- Выводятся изображения, данные о товаре (описание, характеристики, отзывы)
+        <br>- Отзыв может оставить любой авторизованный пользователь. Рейтинг только авторизованный пользователь,
+        купивший данный товар, со статусом заказа delivered
+    </p>
+
 {% endblock %}
 
 {% block content %}
@@ -40,45 +46,58 @@
                  style="border-style: solid; border-width: 1px; border-color: #0dcaf0; background-color: white;">
                 <!--Карусель-->
                 <div id="carouselExampleIndicators" class="carousel slide">
-                    <div class="carousel-indicators">
-                        <button type="button" data-bs-target="#carouselExampleIndicators"
-                                data-bs-slide-to="0"
-                                class="active"
-                                aria-current="true" aria-label="Slide 1"></button>
-                        {% for product_image in product_images %}
+                    {% if product_images %}
+                        <div class="carousel-indicators">
                             <button type="button" data-bs-target="#carouselExampleIndicators"
-                                    data-bs-slide-to="{{ product_image.carousel_id }}"
-                                    aria-label="Slide {{ product_image.carousel_id }}"></button>
-                        {% endfor %}
-                    </div>
-                    <div class="carousel-inner">
-                        <div class="carousel-item active">
-                            <img src="{{ current_product.thumbnail.url }}" class="d-block mx-auto"
-                                 alt="{{ current_product.id }}">
+                                    data-bs-slide-to="0"
+                                    class="active"
+                                    aria-current="true" aria-label="Slide 1"></button>
+                            {% for product_image in product_images %}
+                                <button type="button" data-bs-target="#carouselExampleIndicators"
+                                        data-bs-slide-to="{{ product_image.carousel_id }}"
+                                        aria-label="Slide {{ product_image.carousel_id }}"></button>
+                            {% endfor %}
                         </div>
-                        {% for product_image in product_images %}
-                            <div class="carousel-item">
-                                <img src="{{ product_image.image.url }}" class="d-block mx-auto"
-                                     alt="{{ product_image.carousel_id }}">
+
+                        <div class="carousel-inner">
+                            <div class="carousel-item active">
+                                <img src="{% if current_product.thumbnail_exists %} {{ current_product.thumbnail.url }} {% else %} {% static 'img/no-photos.png' %} {% endif %}"
+                                     class="d-block mx-auto"
+                                     alt="{{ current_product.id }}">
                             </div>
-                        {% endfor %}
-                    </div>
-                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
-                            data-bs-slide="prev">
-                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Previous</span>
-                    </button>
-                    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"
-                            data-bs-slide="next">
-                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                        <span class="visually-hidden">Next</span>
-                    </button>
+                            {% for product_image in product_images %}
+                                <div class="carousel-item">
+                                    <img src="{% if product_image.img_exists %} {{ product_image.image.url }} {% else %} {% static 'img/no-photos.png' %} {% endif %}"
+                                         class="d-block mx-auto"
+                                         alt="{{ product_image.carousel_id }}">
+                                </div>
+                            {% endfor %}
+                        </div>
+                        <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators"
+                                data-bs-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Previous</span>
+                        </button>
+                        <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators"
+                                data-bs-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="visually-hidden">Next</span>
+                        </button>
+                    {% else %}
+
+                    {% endif %}
+
                 </div>
             </div>
 
             <!--Блок с ценой-->
             <div class="col-4">
                 <div class="shadow p-3 mb-5 bg-body-tertiary rounded">
+                    {% if reviews.average_rating %}
+                        <h4 class="text-center text-primary">
+                            ★ {{ reviews.average_rating }}
+                        </h4>
+                    {% endif %}
                     <p class="text-center" style="font-size: large">
                         <b>
                             {{ current_product.name }}
@@ -126,13 +145,22 @@
                                 type="button" role="tab" aria-controls="nav-profile" aria-selected="false">
                             Характеристики
                         </button>
-                        <button class="nav-link" id="nav-contact-tab" data-bs-toggle="tab" data-bs-target="#nav-contact"
+                        <button class="nav-link position-relative" id="nav-contact-tab" data-bs-toggle="tab"
+                                data-bs-target="#nav-contact"
                                 type="button" role="tab" aria-controls="nav-contact" aria-selected="false">
                             Отзывы
+                            {% if reviews %}
+                                <span class="position-absolute top-0 start-100 translate-middle badge border border-light rounded-bottom-circle bg-secondary p-2">
+                                {{ reviews|length }}
+                                </span>
+                            {% endif %}
                         </button>
                     </div>
                 </nav>
+
                 <div class="tab-content" id="nav-tabContent">
+
+                    <!--Описание-->
                     <div class="tab-pane fade show active" id="nav-home" role="tabpanel" aria-labelledby="nav-home-tab"
                          tabindex="0">
                         <div style="padding-top: 15px;">
@@ -140,20 +168,100 @@
                             <hr>
                         </div>
                     </div>
+
+                    <!--Характеристики-->
                     <div class="tab-pane fade" id="nav-profile" role="tabpanel" aria-labelledby="nav-profile-tab"
                          tabindex="0">
                         {% include 'products_app/characteristics_table.html' %}
                     </div>
+
+                    <!--Отзывы-->
                     <div class="tab-pane fade" id="nav-contact" role="tabpanel" aria-labelledby="nav-contact-tab"
                          tabindex="0">
                         <div>
-                            <p>
-                                Отзывы
-                            </p>
+                            {% if user.is_authenticated %}
+                                {% if reviews_is_exists %}
+                                    <class class="row justify-content-center">
+                                        <div class="col" style="padding-top: 25px">
+                                            <div class="alert alert-secondary" role="alert" style="text-align: center">
+                                                Вы уже добавили отзыв
+                                            </div>
+                                        </div>
+                                    </class>
+                                {% else %}
+                                    <form action="{% url 'products:product' current_product.category_id current_product.sku %}"
+                                          method="post">
+                                        {% csrf_token %}
+                                        <div class="row" style="padding-top: 30px">
+                                            <div class="col-9">
+                                                <div class="mb-3">
+                                                    <label for="{{ review_form.review.id_for_label }}"
+                                                           class="form-label">
+                                                        <h6>Новый отзыв</h6>
+                                                    </label>
+                                                    {{ review_form.review }}
+                                                </div>
+                                            </div>
+                                            {% if order_status == 'delivered' %}
+                                                <div class="col-1">
+                                                    <div class="mb-3">
+                                                        <label for="{{ review_form.rating.id_for_label }}"
+                                                               class="form-label">
+                                                            <h6>Оценка</h6>
+                                                        </label>
+                                                        {{ review_form.rating }}
+                                                    </div>
+                                                </div>
+                                                <div class="col-2 text-center" style="padding-top: 40px">
+                                                    <input type="submit" value="Сохранить" class="btn btn-primary">
+                                                </div>
+                                            {% else %}
+                                                <div class="col-3 text-center" style="padding-top: 40px">
+                                                    <input type="submit" value="Сохранить" class="btn btn-primary">
+                                                </div>
+                                            {% endif %}
+                                        </div>
+                                    </form>
+                                {% endif %}
+                            {% endif %}
+
+                            {% if reviews %}
+                                {% for review in reviews %}
+                                    <div class="text-success">
+                                        <hr>
+                                    </div>
+                                    <div>
+                                        {% if review.user == request.user %}
+                                            <b style="color: red">{{ review.user }}</b> |
+                                        {% else %}
+                                            <b>{{ review.user }}</b> |
+                                        {% endif %}
+                                        {{ review.created_datetime|date:'d.m.Y' }}
+                                        {% if review.rating %}
+                                            |
+                                            <div class="rating-mini">
+                                                {% for star in review.iter_range %}
+                                                    {{ review.rating }}
+                                                    <span class="active"></span>
+                                                {% endfor %}
+                                            </div>
+                                        {% endif %}
+                                        <p>
+                                            {{ review.review|linebreaks }}
+                                        </p>
+                                    </div>
+                                {% endfor %}
+
+                            {% else %}
+                                <div class="text-success">
+                                    <hr>
+                                </div>
+                                <class class="row justify-content-center">
+                                    <div class="h5 text-center">Отзывов нет</div>
+                                </class>
+                            {% endif %}
+
                         </div>
-                    </div>
-                    <div class="tab-pane fade" id="nav-disabled" role="tabpanel" aria-labelledby="nav-disabled-tab"
-                         tabindex="0">...
                     </div>
                 </div>
 

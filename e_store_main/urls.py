@@ -23,7 +23,7 @@ from products_app import views
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.index, name='index'),
-    path('catalog/', include('products_app.urls')),
+    path('products/', include('products_app.urls')),
     path('users/', include('users_app.urls')),
     path('basket/', include('basket_app.urls')),
 
