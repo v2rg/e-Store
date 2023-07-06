@@ -21,7 +21,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-xytve7rt7tyy$ikq&0^k#8*@es(@u5hqfo=ecr9=h0d-=&(4l&'  # TODO: del
+SECRET_KEY = 'django-insecure-xytve5rt7tyy%ikq&0^z#8*@es(@u5hqfo=ecr9=h0d-=&(4l&'
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
@@ -82,9 +82,9 @@ WSGI_APPLICATION = 'e_store_main.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': 'xxx',  # TODO: del
-        'USER': 'xxx',  # TODO: del
-        'PASSWORD': 'xxx',  # TODO: del
+        'NAME': '',  # TODO: del
+        'USER': '',  # TODO: del
+        'PASSWORD': '',  # TODO: del
         'HOST': 'localhost',
         'PORT': '5432',
     }
@@ -129,7 +129,7 @@ STATICFILES_DIRS = [
     BASE_DIR / 'static'
 ]
 
-# media
+# Media
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
@@ -158,4 +158,19 @@ EMAIL_PORT = 465
 EMAIL_HOST_USER = ''  # TODO: del
 EMAIL_HOST_PASSWORD = ''  # TODO: del
 EMAIL_USE_SSL = True
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+# Redis
+CACHES = {
+    'default': {
+        'BACKEND': 'django_redis.cache.RedisCache',
+        'LOCATION': 'redis://localhost:6379/1',
+        'OPTIONS': {
+            'CLIENT_CLASS': 'django_redis.client.DefaultClient',
+        }
+    }
+}
+
+# Celery
+CELERY_BROKER_URL = 'redis://127.0.0.1:6379/'
+CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379'

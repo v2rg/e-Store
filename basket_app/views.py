@@ -17,7 +17,7 @@ from basket_app.models import Order, OrderItem
 BASKET = 50  # message level для basket
 
 
-@login_required
+# @login_required
 def basket(request):
     context = {
         'title': 'e-Store - Корзина',
@@ -26,7 +26,7 @@ def basket(request):
     return render(request, 'basket_app/basket.html', context)
 
 
-@login_required
+# @login_required
 def basket_add(request, category_id=None, product_sku=None, product_name=None,
                product_price=None):  # добавление в корзину
 
@@ -53,7 +53,7 @@ def basket_add(request, category_id=None, product_sku=None, product_name=None,
             else HttpResponseRedirect(reverse('index')))
 
 
-@login_required
+# @login_required
 def basket_remove(request, product_sku=None):  # удаление из корзины
     try:
         session = request.session.get('basket')
@@ -72,7 +72,7 @@ def basket_remove(request, product_sku=None):  # удаление из корз�
     return HttpResponseRedirect(reverse('basket:basket'))
 
 
-@login_required
+# @login_required
 def basket_update(request, product_sku=None, slug=None):  # обновление корзины
     try:
         session = request.session.get('basket')
@@ -122,7 +122,6 @@ def order_confirmation(request):  # подтверждение заказа
                 except KeyError:
                     print(f'Корзина пользователя {request.user} не существует')
                 else:
-                    print('qweqweqwewqe')
                     if session:
                         basket_valid_items = (
                             [getattr(products_app.models, category).objects.get(sku=sku).quantity >= value['quantity']

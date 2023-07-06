@@ -23,6 +23,7 @@ def login(request):  # авторизация
                 return HttpResponseRedirect(reverse('index'))
             else:
                 messages.add_message(request, messages.ERROR, 'Аккаунт не подтвержден')
+                return HttpResponseRedirect(reverse('users:login'))
     else:
         login_form = UserLoginForm()
 

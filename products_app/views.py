@@ -7,6 +7,7 @@ from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.views.decorators.cache import cache_page
 
 import products_app
 from basket_app.models import Order, OrderItem
@@ -16,6 +17,7 @@ from reviews_app.models import ProductReview
 from reviews_app.forms import ProductReviewForm
 
 
+@cache_page(30)
 def index(request):  # главная страница
     # 8 рандомных товаров
     random_products = [
