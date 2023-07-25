@@ -7,72 +7,144 @@ from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
-from django.views.decorators.cache import cache_page
+from django.core.cache import cache
+from django.views import View
+from django.views.generic import ListView, TemplateView, DetailView
+from django.views.generic.list import MultipleObjectMixin
 
 import products_app
 from basket_app.models import Order, OrderItem
+from common.view import TitleMixin
 # Create your views here.
 from products_app.models import Category, ProcessorList, VideoCardList, MotherboardList, MemoryList, ProductImage
 from reviews_app.models import ProductReview
 from reviews_app.forms import ProductReviewForm
 
 
-@cache_page(30)
-def index(request):  # главная страница
-    # 8 рандомных товаров
-    random_products = [
-        *ProcessorList.objects.filter(quantity__gt=0).order_by('?')[:2],
-        *VideoCardList.objects.filter(quantity__gt=0).order_by('?')[:2],
-        *MotherboardList.objects.filter(quantity__gt=0).order_by('?')[:2],
-        *MemoryList.objects.filter(quantity__gt=0).order_by('?')[:2]
-    ]
+class IndexView(TitleMixin, TemplateView):  # главная страница (CBV)
+    template_name = 'products_app/index.html'
+    title = 'e-Store - Главная'
 
-    context = {
-        'title': 'e-Store - Главная',
-        'random_products': sorted(random_products, key=lambda x: random()),  # рандом
-    }
-
-    return render(request, 'products_app/index.html', context)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        if not cache.get('random_products'):
+            random_products = [*ProcessorList.objects.filter(quantity__gt=0).order_by('?')[:2],
+                               *VideoCardList.objects.filter(quantity__gt=0).order_by('?')[:2],
+                               *MotherboardList.objects.filter(quantity__gt=0).order_by('?')[:2],
+                               *MemoryList.objects.filter(quantity__gt=0).order_by('?')[:2]]
+            cache.set('random_products', sorted(random_products, key=lambda x: random()), 30)
+        context['random_products'] = cache.get('random_products')
+        return context
 
 
-def catalog(request, category_id=1, brand_name=None, line_name=None):  # каталог
-    all_products = None
-    category = Category.objects.get(id=category_id)
+# def index(request):  # главная страница (заменен на CBV)
+#     # 8 рандомных товаров (в кэш на 30 секунд)
+#     if not cache.get('random_products'):
+#         random_products = [
+#             *ProcessorList.objects.filter(quantity__gt=0).order_by('?')[:2],
+#             *VideoCardList.objects.filter(quantity__gt=0).order_by('?')[:2],
+#             *MotherboardList.objects.filter(quantity__gt=0).order_by('?')[:2],
+#             *MemoryList.objects.filter(quantity__gt=0).order_by('?')[:2]
+#         ]
+#         cache.set('random_products', sorted(random_products, key=lambda x: random()), 30)
+#
+#     context = {
+#         'title': 'e-Store - Главная',
+#         'random_products': cache.get('random_products'),  # рандом
+#     }
+#
+#     return render(request, 'products_app/index.html', context)
 
-    if category_id:
-        all_products = getattr(products_app.models, settings.CATEGORY_ID[str(category_id)]).objects.all()
-    if brand_name:
-        if category_id == 1:
-            all_products = all_products.filter(brand__brand_name=brand_name)
-        elif category_id == 2:
-            all_products = all_products.filter(gpu__gpu_brand__brand_name=brand_name)
-        elif category_id == 3:
-            all_products = all_products.filter(socket__brand_name__brand_name=brand_name)
-        elif category_id == 4:
-            all_products = all_products.filter(type__type_name=brand_name)
-    if line_name:
-        if category_id == 1:
-            all_products = all_products.filter(line__line_name=line_name)
-        elif category_id == 2:
-            all_products = all_products.filter(gpu__gpu_name=line_name)
-        elif category_id == 3:
-            all_products = all_products.filter(socket__socket_name=line_name)
 
-    page_number = request.GET.get('page')
-    paginator = Paginator(all_products, per_page=5)
-    page_obj = paginator.get_page(page_number)
+class CatalogView(ListView):  # каталог (CBV)
+    template_name = 'products_app/catalog.html'
+    model = Category
+    paginate_by = 5
 
-    context = {
-        'title': 'e-Store - Каталог',
-        'all_products': page_obj,
-        'breadcrumb': {
-            'category_name': category.category_name,
-            'brand_name': brand_name,
-            'line_name': line_name,
-        },
-    }
+    def get_queryset(self):
+        queryset = super().get_queryset()
 
-    return render(request, 'products_app/catalog.html', context)
+        if not self.kwargs.get('category_id'):
+            self.kwargs['category_id'] = 1
+
+        if self.kwargs['category_id']:
+            queryset = getattr(products_app.models,
+                               settings.CATEGORY_ID[str(self.kwargs['category_id'])]).objects.all()
+
+        if self.kwargs.get('brand_name'):
+            if self.kwargs['category_id'] == 1:
+                queryset = queryset.filter(brand__brand_name=self.kwargs['brand_name'])
+            elif self.kwargs['category_id'] == 2:
+                queryset = queryset.filter(gpu__gpu_brand__brand_name=self.kwargs['brand_name'])
+            elif self.kwargs['category_id'] == 3:
+                queryset = queryset.filter(socket__brand_name__brand_name=self.kwargs['brand_name'])
+            elif self.kwargs['category_id'] == 4:
+                queryset = queryset.filter(type__type_name=self.kwargs['brand_name'])
+
+        if self.kwargs.get('line_name'):
+            if self.kwargs['category_id'] == 1:
+                queryset = queryset.filter(line__line_name=self.kwargs['line_name'])
+            elif self.kwargs['category_id'] == 2:
+                queryset = queryset.filter(gpu__gpu_name=self.kwargs['line_name'])
+            elif self.kwargs['category_id'] == 3:
+                queryset = queryset.filter(socket__socket_name=self.kwargs['line_name'])
+
+        return queryset
+
+    def get_context_data(self, *, object_list=None, **kwargs):
+        context = super().get_context_data()
+        # context['all_products'] = self.get_queryset()
+        context['breadcrumb'] = {
+            'category_name': Category.objects.get(id=self.kwargs.get('category_id')).category_name,
+            'brand_name': self.kwargs.get('brand_name'),
+            'line_name': self.kwargs.get('line_name'),
+        }
+
+        return context
+
+
+# def catalog(request, category_id=1, brand_name=None, line_name=None):  # каталог (заменен на CBV)
+#     all_products = None
+#     category = Category.objects.get(id=category_id)
+#
+#     if category_id:
+#         all_products = getattr(products_app.models, settings.CATEGORY_ID[str(category_id)]).objects.all()
+#     if brand_name:
+#         if category_id == 1:
+#             all_products = all_products.filter(brand__brand_name=brand_name)
+#         elif category_id == 2:
+#             all_products = all_products.filter(gpu__gpu_brand__brand_name=brand_name)
+#         elif category_id == 3:
+#             all_products = all_products.filter(socket__brand_name__brand_name=brand_name)
+#         elif category_id == 4:
+#             all_products = all_products.filter(type__type_name=brand_name)
+#     if line_name:
+#         if category_id == 1:
+#             all_products = all_products.filter(line__line_name=line_name)
+#         elif category_id == 2:
+#             all_products = all_products.filter(gpu__gpu_name=line_name)
+#         elif category_id == 3:
+#             all_products = all_products.filter(socket__socket_name=line_name)
+#
+#     page_number = request.GET.get('page')
+#     paginator = Paginator(all_products, per_page=5)
+#     page_obj = paginator.get_page(page_number)
+#
+#     context = {
+#         # 'title': 'e-Store - Каталог',
+#         'all_products': page_obj,
+#         'breadcrumb': {
+#             'category_name': category.category_name,
+#             'brand_name': brand_name,
+#             'line_name': line_name,
+#         },
+#     }
+#
+#     return render(request, 'products_app/catalog.html', context)
+
+
+class ProductView(DetailView):
+    ...
 
 
 def product(request, category_id=None, sku=None):  # карточка товара
@@ -116,7 +188,7 @@ def product(request, category_id=None, sku=None):  # карточка товар
             else:
                 order_status = Order.objects.get(id=current_order_id).status if current_order_id else None
 
-        print(current_product)
+        # print(current_product)
 
         try:  # проверяем, что артикул есть в корзине
             session = request.session['basket']
@@ -130,7 +202,7 @@ def product(request, category_id=None, sku=None):  # карточка товар
         return HttpResponseRedirect(reverse('index'))
 
     context = {
-        'title': 'e-Store - Карточка товара',
+        # 'title': 'e-Store - Карточка товара',
         'current_product': current_product,
         'product_images': product_images,
         'in_basket': in_basket,

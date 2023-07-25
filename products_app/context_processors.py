@@ -8,7 +8,8 @@ def vertical_group(request):
 
     # процессоры (возвращает QuerySet)
     cpus = CpuLine.objects.all().order_by('-line_name')
-    cpu_brands = Brand.objects.filter(category__category_name='Процессоры')
+    cpu_brands = Brand.objects.filter(category__category_name='Процессоры').exclude(
+        brand_name__exact='test_processor_brand')
 
     # видеокарты (возвращает dict)
     gpu_manufacturers = set(GpuModel.objects.values_list('gpu_brand__brand_name', flat=True))

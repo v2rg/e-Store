@@ -5,8 +5,10 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import F
 from django.shortcuts import render, HttpResponseRedirect
 from django.urls import reverse
+from django.views.generic import TemplateView
 
 import products_app
+from common.view import TitleMixin
 from users_app.models import User, UserAddress
 from products_app.models import ProcessorList, VideoCardList, MotherboardList, MemoryList, Category
 from users_app.forms import UserProfileForm, UserAddressForm
@@ -17,13 +19,18 @@ from basket_app.models import Order, OrderItem
 BASKET = 50  # message level для basket
 
 
-# @login_required
-def basket(request):
-    context = {
-        'title': 'e-Store - Корзина',
-    }
+class BasketView(TitleMixin, TemplateView):  # корзина (CBV)
+    template_name = 'basket_app/basket.html'
+    title = 'e-Store - Корзина'
 
-    return render(request, 'basket_app/basket.html', context)
+
+# @login_required
+# def basket(request):  # корзина
+#     context = {
+#         'title': 'e-Store - Корзина',
+#     }
+#
+#     return render(request, 'basket_app/basket.html', context)
 
 
 # @login_required
@@ -61,7 +68,7 @@ def basket_remove(request, product_sku=None):  # удаление из корз�
         print("request.session['basket'] не найден")
     else:
         if session:
-            if session[str(product_sku)]:
+            if session.get(str(product_sku)):
                 del session[str(product_sku)]
                 request.session.save()
             else:

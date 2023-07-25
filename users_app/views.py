@@ -1,57 +1,97 @@
 from django.conf import settings
 from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.views import LoginView
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, HttpResponseRedirect, HttpResponsePermanentRedirect
 from django.urls import reverse
 from django.utils.timezone import now
+from django.views.generic import CreateView, ListView
 
 import products_app
 from basket_app.models import Order, OrderItem
+from common.view import TitleMixin
 # Create your views here.
 from users_app.forms import UserLoginForm, UserRegistrationForm, UserProfileForm, UserAddressForm
 from users_app.models import User, UserAddress, EmailVerification
 
 
-def login(request):  # авторизация
-    if request.method == 'POST':
-        login_form = UserLoginForm(data=request.POST)
-        if login_form.is_valid():
-            user = auth.authenticate(username=request.POST['username'], password=request.POST['password'])
-            if user.is_verified_email:  # проверка подтвержденного имейла
-                auth.login(request, user)
-                return HttpResponseRedirect(reverse('index'))
-            else:
-                messages.add_message(request, messages.ERROR, 'Аккаунт не подтвержден')
-                return HttpResponseRedirect(reverse('users:login'))
-    else:
-        login_form = UserLoginForm()
+class UserLoginView(TitleMixin, LoginView):  # авторизация (CBV)
+    template_name = 'users_app/login.html'
+    authentication_form = UserLoginForm
+    title = 'e-Store - Авторизация'
 
-    context = {
-        'title': 'e-Store - Авторизация',
-        'login_form': login_form
-    }
-
-    return render(request, 'users_app/login.html', context)
-
-
-def registration(request):  # регистрация
-    if request.method == 'POST':
-        register_form = UserRegistrationForm(data=request.POST)
-        if register_form.is_valid():
-            register_form.save()
-            messages.add_message(request, messages.SUCCESS,
-                                 'Требуется подтверждение аккаунта. Письмо отправлено на почту')
+    def form_valid(self, form):
+        user = auth.authenticate(username=self.request.POST['username'], password=self.request.POST['password'])
+        if user.is_verified_email:  # проверка подтвержденного имейла
+            auth.login(self.request, user)
+            return HttpResponseRedirect(reverse('index'))
+        else:
+            messages.add_message(self.request, messages.ERROR, 'Аккаунт не подтвержден')
             return HttpResponseRedirect(reverse('users:login'))
-    else:
-        register_form = UserRegistrationForm()
 
-    context = {
-        'title': 'e-Store - Регистрация',
-        'register_form': register_form
-    }
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context['login_form'] = self.get_form()
+        return context
 
-    return render(request, 'users_app/registration.html', context)
+
+# def login(request):  # авторизация (заменен на CBV)
+#     if request.method == 'POST':
+#         login_form = UserLoginForm(data=request.POST)
+#         if login_form.is_valid():
+#             user = auth.authenticate(username=request.POST['username'], password=request.POST['password'])
+#             if user.is_verified_email:  # проверка подтвержденного имейла
+#                 auth.login(request, user)
+#                 return HttpResponseRedirect(reverse('index'))
+#             else:
+#                 messages.add_message(request, messages.ERROR, 'Аккаунт не подтвержден')
+#                 return HttpResponseRedirect(reverse('users:login'))
+#     else:
+#         login_form = UserLoginForm()
+#
+#     context = {
+#         'title': 'e-Store - Авторизация',
+#         'login_form': login_form
+#     }
+#
+#     return render(request, 'users_app/login.html', context)
+
+
+class UserRegistrationView(TitleMixin, CreateView):  # регистрация (CBV)
+    template_name = 'users_app/registration.html'
+    form_class = UserRegistrationForm
+    title = 'e-Store - Регистрация'
+
+    def form_valid(self, form):
+        form.save()
+        messages.add_message(self.request, messages.SUCCESS,
+                             'Требуется подтверждение аккаунта. Письмо отправлено на почту')
+        return HttpResponseRedirect(reverse('users:login'))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context['register_form'] = self.get_form()
+        return context
+
+
+# def registration(request):  # регистрация (заменен на CBV)
+#     if request.method == 'POST':
+#         register_form = UserRegistrationForm(data=request.POST)
+#         if register_form.is_valid():
+#             register_form.save()
+#             messages.add_message(request, messages.SUCCESS,
+#                                  'Требуется подтверждение аккаунта. Письмо отправлено на почту')
+#             return HttpResponseRedirect(reverse('users:login'))
+#     else:
+#         register_form = UserRegistrationForm()
+#
+#     context = {
+#         'title': 'e-Store - Регистрация',
+#         'register_form': register_form
+#     }
+#
+#     return render(request, 'users_app/registration.html', context)
 
 
 def verify_email(request, username=None, user_uuid=None):  # подтверждение почты
@@ -72,13 +112,13 @@ def verify_email(request, username=None, user_uuid=None):  # подтвержд�
             return HttpResponseRedirect(reverse('users:login'))
 
 
+# @login_required
+# def logout(request):  # логаут (заменен на CBV)
+#     auth.logout(request)
+#     return HttpResponsePermanentRedirect(reverse('users:login'))
+
+
 @login_required
-def logout(request):  # логаут
-    auth.logout(request)
-    return HttpResponsePermanentRedirect(reverse('users:login'))
-
-
-@login_required()
 def profile(request):  # профиль пользователя
 
     profile_form = None
@@ -120,21 +160,36 @@ def profile(request):  # профиль пользователя
     return render(request, 'users_app/profile.html', context)
 
 
-@login_required()
-def orders(request):  # выводит историю заказов
-    user_orders = Order.objects.filter(user_id=request.user).order_by('-id')
+class OrdersView(TitleMixin, ListView):  # история заказов (CBV)
+    model = Order
+    template_name = 'users_app/orders.html'
+    title = 'e-Store - Заказы'
 
-    context = {
-        'title': 'e-Store - Заказы',
-        'user_orders': user_orders,
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        return queryset.filter(user_id=self.request.user).order_by('-id')
 
-    }
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context['user_orders'] = self.get_queryset()
+        return context
 
-    return render(request, 'users_app/orders.html', context)
+
+# @login_required
+# def orders(request):  # история заказов (заменен на CBV)
+#     user_orders = Order.objects.filter(user_id=request.user).order_by('-id')
+#
+#     context = {
+#         'title': 'e-Store - Заказы',
+#         'user_orders': user_orders,
+#
+#     }
+#
+#     return render(request, 'users_app/orders.html', context)
 
 
-@login_required()
-def order(request, order_id=None):  # выводит содержимое заказа
+@login_required
+def order(request, order_id=None):  # содержимое заказа
     try:
         order_data = Order.objects.get(user_id=request.user, id=order_id)
     except ObjectDoesNotExist:

@@ -3,7 +3,7 @@
 
 
 {% block title %}
-    {{ title }}
+    e-Store - {{ breadcrumb.category_name }}
 {% endblock %}
 
 
@@ -24,11 +24,11 @@
                 {% if crumb %}
                     >
                     {% if key == 'category_name' %}
-                        <a href="{% url 'products:catalog_category' all_products.0.category.id %}">{{ crumb }}</a>
+                        <a href="{% url 'products:catalog_category' page_obj.0.category.id %}">{{ crumb }}</a>
                     {% elif key == 'brand_name' %}
-                        <a href="{% url 'products:catalog_category_brand' all_products.0.category.id breadcrumb.brand_name %}">{{ crumb }}</a>
+                        <a href="{% url 'products:catalog_category_brand' page_obj.0.category.id breadcrumb.brand_name %}">{{ crumb }}</a>
                     {% elif key == 'line_name' %}
-                        <a href="{% url 'products:catalog_category_brand_line' all_products.0.category.id breadcrumb.brand_name breadcrumb.line_name %}">{{ crumb }}</a>
+                        <a href="{% url 'products:catalog_category_brand_line' page_obj.0.category.id breadcrumb.brand_name breadcrumb.line_name %}">{{ crumb }}</a>
                     {% endif %}
                 {% endif %}
             {% endfor %}
@@ -36,7 +36,7 @@
 
 
         <!--Горизонтальная карточка товара-->
-        {% for product in all_products %}
+        {% for product in page_obj %}
             <div class="row" style="padding-top: 20px;">
                 <div class="card mb-2"
                      style="--bs-card-spacer-x: 50px">
@@ -96,28 +96,28 @@
         <div class="row" style="padding-top: 50px">
             <div class="col" style="padding-bottom: 100px">
 
-                {% if all_products.has_other_pages %}
+                {% if page_obj.has_other_pages %}
                     <nav aria-label="Page navigation example">
                         <ul class="pagination justify-content-center">
-                            <li class="{% if all_products.has_previous %} page-item {% else %} disabled {% endif %}">
+                            <li class="{% if page_obj.has_previous %} page-item {% else %} disabled {% endif %}">
                                 <a class="page-link" style=""
-                                   href="{% if all_products.has_previous %} ?page={{ all_products.previous_page_number }} {% else %} # {% endif %}"
+                                   href="{% if page_obj.has_previous %} ?page={{ page_obj.previous_page_number }} {% else %} # {% endif %}"
                                    tabindex="-1" aria-disabled="true">
                                     Предыдущая
                                 </a>
                             </li>
 
-                            {% for page in all_products.paginator.page_range %}
-                                <li class="page-item {% if page == all_products.number %} disabled {% endif %}">
+                            {% for page in page_obj.paginator.page_range %}
+                                <li class="page-item {% if page == page_obj.number %} disabled {% endif %}">
                                     <a class="page-link" href="?page={{ page }}">
                                         {{ page }}
                                     </a>
                                 </li>
                             {% endfor %}
 
-                            <li class=" {% if all_products.has_next %} page-item {% else %} disabled {% endif %}">
+                            <li class=" {% if page_obj.has_next %} page-item {% else %} disabled {% endif %}">
                                 <a class="page-link"
-                                   href="{% if all_products.has_next %} ?page={{ all_products.next_page_number }} {% else %} # {% endif %}">
+                                   href="{% if page_obj.has_next %} ?page={{ page_obj.next_page_number }} {% else %} # {% endif %}">
                                     Следующая
                                 </a>
                             </li>

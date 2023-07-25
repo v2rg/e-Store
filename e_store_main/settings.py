@@ -144,6 +144,9 @@ AUTH_USER_MODEL = 'users_app.User'
 # Login
 LOGIN_URL = '/users/login/'
 
+# Logout
+LOGOUT_REDIRECT_URL = '/users/login/'
+
 # Product categories
 CATEGORY_ID = {
     '1': 'ProcessorList',
