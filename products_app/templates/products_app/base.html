@@ -57,7 +57,6 @@
         <div class="row">
             <!--Категории-->
             <div class="col-3">
-
                 <h3>Категории</h3>
                 <div class="btn-group-vertical shadow p-2" role="group" aria-label="Vertical button group"
                      style="margin-top: 25px; border-style: groove; border-width: 1px; border-radius: 5px; border-color: darkgrey">
@@ -65,7 +64,11 @@
                         <div class="btn-group" role="group">
                             <a href="{% url 'products:catalog_category' category.id %}">
                                 <button type="button" class="btn btn-light" style="width: 12rem">
-                                    {{ category.category_name }}
+                                    {% if category.id == path_category %}
+                                        <b>{{ category.category_name }}</b>
+                                    {% else %}
+                                        {{ category.category_name }}
+                                    {% endif %}
                                 </button>
                             </a>
                             <button type="button" class="btn dropdown-toggle btn-light" data-bs-toggle="dropdown"

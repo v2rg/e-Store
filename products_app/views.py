@@ -4,15 +4,13 @@ from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.paginator import Paginator
-from django.http import HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.core.cache import cache
 from django.views import View
-from django.views.generic import ListView, TemplateView, DetailView
+from django.views.generic import ListView, TemplateView
 from django.views.generic.base import ContextMixin
-from django.views.generic.edit import FormMixin
-from django.views.generic.list import MultipleObjectMixin
 
 import products_app
 from basket_app.models import Order, OrderItem
@@ -96,6 +94,8 @@ class CatalogView(ListView):  # каталог (CBV)
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data()
         # context['all_products'] = self.get_queryset()
+        print(self.request.path)
+        context['path_category'] = int(self.request.path.split('/')[2]) if len(self.request.path.split()) > 3 else 1
         context['breadcrumb'] = {
             'category_name': Category.objects.get(id=self.kwargs.get('category_id')).category_name,
             'brand_name': self.kwargs.get('brand_name'),
@@ -216,6 +216,7 @@ class ProductView(ContextMixin, View):  # карточка товара (CBV)
         context['reviews'] = self.reviews
         context['reviews_is_exists'] = self.review_is_exists
         context['order_status'] = self.order_status
+        context['path_category'] = int(self.request.path.split('/')[3])
 
         return context
 

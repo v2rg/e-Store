@@ -25,7 +25,7 @@ class BasketView(TitleMixin, TemplateView):  # корзина (CBV)
 
 
 # @login_required
-# def basket(request):  # корзина
+# def basket(request):  # корзина (заменен на CBV)
 #     context = {
 #         'title': 'e-Store - Корзина',
 #     }
