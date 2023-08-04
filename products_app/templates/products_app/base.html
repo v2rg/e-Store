@@ -62,7 +62,7 @@
                      style="margin-top: 25px; border-style: groove; border-width: 1px; border-radius: 5px; border-color: darkgrey">
                     {% for category in categories %}
                         <div class="btn-group" role="group">
-                            <a href="{% url 'products:catalog_category' category.id %}">
+                            <a href="{% url 'products:catalog_category' category_id=category.id %}">
                                 <button type="button" class="btn btn-light" style="width: 12rem">
                                     {% if category.id == path_category %}
                                         <b>{{ category.category_name }}</b>
@@ -82,12 +82,12 @@
                                     {% if cpus %}
                                         {% for brand in cpu_brands %}
                                             <a class="dropdown-item submenu"
-                                               href="{% url 'products:catalog_category_brand' category.id brand.brand_name %}">{{ brand.brand_name }}</a>
+                                               href="{% url 'products:catalog_category_brand' category_id=category.id brand_name=brand.brand_name %}">{{ brand.brand_name }}</a>
                                             <div class="dropdown-menu">
                                                 {% for cpu in cpus %}
                                                     {% if cpu.cpu_brand == brand %}
                                                         <a class="dropdown-item"
-                                                           href="{% url 'products:catalog_category_brand_line' category.id brand.brand_name cpu.line_name %}">{{ cpu.line_name }}</a>
+                                                           href="{% url 'products:catalog_category_brand_line' category_id=category.id brand_name=brand.brand_name line_name=cpu.line_name %}">{{ cpu.line_name }}</a>
                                                     {% endif %}
                                                 {% endfor %}
                                             </div>
@@ -101,11 +101,11 @@
                                     {% if gpus %}
                                         {% for manuf, models in gpus.items %}
                                             <a class="dropdown-item submenu"
-                                               href="{% url 'products:catalog_category_brand' category.id manuf %}">{{ manuf }}</a>
+                                               href="{% url 'products:catalog_category_brand' category_id=category.id brand_name=manuf %}">{{ manuf }}</a>
                                             <div class="dropdown-menu">
                                                 {% for model in models %}
                                                     <a class="dropdown-item"
-                                                       href="{% url 'products:catalog_category_brand_line' category.id manuf model %}">{{ model }}</a>
+                                                       href="{% url 'products:catalog_category_brand_line' category_id=category.id brand_name=manuf line_name=model %}">{{ model }}</a>
                                                 {% endfor %}
                                             </div>
                                         {% endfor %}
@@ -118,10 +118,10 @@
                                     {% if cpus %}
                                         {% for manuf, mbs in mbs.items %}
                                             <a class="dropdown-item submenu"
-                                               href="{% url 'products:catalog_category_brand' category.id manuf %}">{{ manuf }}</a>
+                                               href="{% url 'products:catalog_category_brand' category_id=category.id brand_name=manuf %}">{{ manuf }}</a>
                                             <div class="dropdown-menu">
                                                 {% for mb in mbs %}
-                                                    <a href="{% url 'products:catalog_category_brand_line' category.id manuf mb %}"
+                                                    <a href="{% url 'products:catalog_category_brand_line' category_id=category.id brand_name=manuf line_name=mb %}"
                                                        class="dropdown-item">{{ mb }}</a>
                                                 {% endfor %}
                                             </div>
@@ -134,7 +134,7 @@
                                 <ul class="dropdown-menu">
                                     {% if cpus %}
                                         {% for ram in rams %}
-                                            <a href="{% url 'products:catalog_category_brand' category.id ram %}"
+                                            <a href="{% url 'products:catalog_category_brand' category_id=category.id brand_name=ram %}"
                                                class="dropdown-item">{{ ram }}</a>
                                         {% endfor %}
                                     {% endif %}

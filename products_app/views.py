@@ -3,10 +3,10 @@ from random import random
 from django.conf import settings
 from django.contrib import messages
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.paginator import Paginator
-from django.http import HttpResponseRedirect
-from django.shortcuts import render
-from django.urls import reverse
+# from django.core.paginator import Paginator
+from django.http import HttpResponseRedirect, HttpResponseNotFound, Http404
+from django.shortcuts import render, get_object_or_404
+from django.urls import reverse, NoReverseMatch
 from django.core.cache import cache
 from django.views import View
 from django.views.generic import ListView, TemplateView
@@ -60,6 +60,8 @@ class CatalogView(ListView):  # каталог (CBV)
     template_name = 'products_app/catalog.html'
     model = Category
     paginate_by = 5
+    sort_method = None
+    sort_by = None
 
     def get_queryset(self):
         queryset = super().get_queryset()
@@ -67,35 +69,49 @@ class CatalogView(ListView):  # каталог (CBV)
         if not self.kwargs.get('category_id'):  # дефолтная категория (processors)
             self.kwargs['category_id'] = 1
 
-        if self.kwargs['category_id']:
-            queryset = getattr(products_app.models,
-                               settings.CATEGORY_ID[str(self.kwargs['category_id'])]).objects.all()
+        try:
+            queryset = getattr(products_app.models, settings.CATEGORY_ID[str(self.kwargs['category_id'])]).objects.all()
 
-        if self.kwargs.get('brand_name'):
-            if self.kwargs['category_id'] == 1:
-                queryset = queryset.filter(brand__brand_name=self.kwargs['brand_name'])
-            elif self.kwargs['category_id'] == 2:
-                queryset = queryset.filter(gpu__gpu_brand__brand_name=self.kwargs['brand_name'])
-            elif self.kwargs['category_id'] == 3:
-                queryset = queryset.filter(socket__brand_name__brand_name=self.kwargs['brand_name'])
-            elif self.kwargs['category_id'] == 4:
-                queryset = queryset.filter(type__type_name=self.kwargs['brand_name'])
+            if self.kwargs.get('brand_name'):
+                if self.kwargs['category_id'] == 1:
+                    queryset = queryset.filter(brand__brand_name=self.kwargs['brand_name'])
+                elif self.kwargs['category_id'] == 2:
+                    queryset = queryset.filter(gpu__gpu_brand__brand_name=self.kwargs['brand_name'])
+                elif self.kwargs['category_id'] == 3:
+                    queryset = queryset.filter(socket__brand_name__brand_name=self.kwargs['brand_name'])
+                elif self.kwargs['category_id'] == 4:
+                    queryset = queryset.filter(type__type_name=self.kwargs['brand_name'])
 
-        if self.kwargs.get('line_name'):
-            if self.kwargs['category_id'] == 1:
-                queryset = queryset.filter(line__line_name=self.kwargs['line_name'])
-            elif self.kwargs['category_id'] == 2:
-                queryset = queryset.filter(gpu__gpu_name=self.kwargs['line_name'])
-            elif self.kwargs['category_id'] == 3:
-                queryset = queryset.filter(socket__socket_name=self.kwargs['line_name'])
+            if self.kwargs.get('line_name'):
+                if self.kwargs['category_id'] == 1:
+                    queryset = queryset.filter(line__line_name=self.kwargs['line_name'])
+                elif self.kwargs['category_id'] == 2:
+                    queryset = queryset.filter(gpu__gpu_name=self.kwargs['line_name'])
+                elif self.kwargs['category_id'] == 3:
+                    queryset = queryset.filter(socket__socket_name=self.kwargs['line_name'])
 
-        return queryset
+            if len(queryset) == 0:  # обработчик NoReverseMatch
+                raise Http404
+
+            try:
+                self.sort_method = self.request.session['catalog_sorting']['sorting_method']
+                self.sort_by = self.request.session['catalog_sorting']['sorting_by']
+            except KeyError:
+                pass
+            else:
+                queryset = (queryset.order_by(self.sort_by + self.sort_method) if self.sort_method in ('name', 'price')
+                            else queryset.order_by(self.sort_by + self.sort_method, 'name'))
+
+        except KeyError:
+            raise Http404
+        else:
+            return queryset
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data()
-        # context['all_products'] = self.get_queryset()
-        print(self.request.path)
-        context['path_category'] = int(self.request.path.split('/')[2]) if len(self.request.path.split()) > 3 else 1
+        context['path_category'] = self.kwargs['category_id']
+        context['sort_method'] = self.sort_method if self.sort_method else None
+        context['sort_by'] = self.sort_by if self.sort_by else None
         context['breadcrumb'] = {
             'category_name': Category.objects.get(id=self.kwargs.get('category_id')).category_name,
             'brand_name': self.kwargs.get('brand_name'),
@@ -145,6 +161,40 @@ class CatalogView(ListView):  # каталог (CBV)
 #     return render(request, 'products_app/catalog.html', context)
 
 
+def sorting_method(request, method=None):  # сортировка в каталоге
+    if method in settings.SORTING_METHODS:
+        try:
+            sort_method = request.session['catalog_sorting']['sorting_method']
+            sort_by = request.session['catalog_sorting']['sorting_by']
+        except KeyError:
+            request.session['catalog_sorting'] = {'sorting_method': method, 'sorting_by': ''}
+            request.session.modified = True
+        else:
+            if sort_method == method:  # asc/desc
+                if sort_by == '':
+                    request.session['catalog_sorting']['sorting_by'] = '-'
+                    request.session.modified = True
+                elif sort_by == '-':
+                    request.session['catalog_sorting']['sorting_by'] = ''
+                    request.session.modified = True
+            else:
+                request.session['catalog_sorting'] = {'sorting_method': method, 'sorting_by': ''}
+                request.session.modified = True
+        finally:
+            try:
+                ref = request.META['HTTP_REFERER']
+            except KeyError:
+                HttpResponseRedirect(reverse('products:catalog'))
+            else:
+                if 'page' in ref:  # возврат на 1 страницу
+                    ref = ref[:-2]
+                    ref += '=1'
+                    return HttpResponseRedirect(ref)
+                return HttpResponseRedirect(ref)
+    else:
+        pass
+
+
 class ProductView(ContextMixin, View):  # карточка товара (CBV)
     # template_name = 'products_app/product.html'
 
@@ -175,35 +225,44 @@ class ProductView(ContextMixin, View):  # карточка товара (CBV)
     def get(self, *args, **kwargs):
         if all([self.kwargs['category_id'], self.kwargs['sku']]):
 
-            self.review_form = ProductReviewForm()
+            try:  # объект или 404
+                self.current_product = get_object_or_404(
+                    getattr(products_app.models, settings.CATEGORY_ID[str(self.kwargs['category_id'])]),
+                    sku=self.kwargs['sku']
+                )
+            except KeyError:  # если невалидная категория, то 404
+                raise Http404
 
-            self.current_product = getattr(
-                products_app.models,
-                settings.CATEGORY_ID[str(self.kwargs['category_id'])]).objects.get(sku=self.kwargs['sku'])
-            self.reviews = ProductReview.objects.filter(product_sku=self.kwargs['sku']).order_by('-created_datetime')
-            self.current_product.avg_rating = self.reviews.average_rating()  # обновляем рейтинг товара
-            self.current_product.save()
-            self.product_images = ProductImage.objects.filter(sku=self.kwargs['sku'])
-            self.review_is_exists = False if self.request.user.is_anonymous else self.reviews.filter(
-                user=self.request.user).exists()
-            if not self.review_is_exists and not self.request.user.is_anonymous:
-                try:
-                    current_order_id = OrderItem.objects.get(user_id=self.request.user,
-                                                             product_sku=self.kwargs['sku']).order_id.id
-                except ObjectDoesNotExist:
-                    pass
-                else:
-                    self.order_status = Order.objects.get(id=current_order_id).status if current_order_id else None
-
-            try:  # проверяем, что артикул есть в корзине
-                session = self.request.session['basket']
-            except KeyError:
-                print('product: basket не найден')
             else:
-                for i in session:
-                    if int(i) == self.current_product.sku:
-                        self.in_basket = True
-            return render(self.request, 'products_app/product.html', self.get_context_data())
+                self.review_form = ProductReviewForm()
+                # self.current_product = getattr(
+                #     products_app.models,
+                #     settings.CATEGORY_ID[str(self.kwargs['category_id'])]).objects.get(sku=self.kwargs['sku'])
+                self.reviews = ProductReview.objects.filter(product_sku=self.kwargs['sku']).order_by(
+                    '-created_datetime')
+                self.current_product.avg_rating = self.reviews.average_rating()  # обновляем рейтинг товара
+                self.current_product.save()
+                self.product_images = ProductImage.objects.filter(sku=self.kwargs['sku'])
+                self.review_is_exists = False if self.request.user.is_anonymous else self.reviews.filter(
+                    user=self.request.user).exists()
+                if not self.review_is_exists and not self.request.user.is_anonymous:
+                    try:
+                        current_order_id = OrderItem.objects.get(user_id=self.request.user,
+                                                                 product_sku=self.kwargs['sku']).order_id.id
+                    except ObjectDoesNotExist:
+                        pass
+                    else:
+                        self.order_status = Order.objects.get(id=current_order_id).status if current_order_id else None
+
+                try:  # проверяем, что артикул есть в корзине
+                    session = self.request.session['basket']
+                except KeyError:
+                    print('product: basket не найден')
+                else:
+                    for i in session:
+                        if int(i) == self.current_product.sku:
+                            self.in_basket = True
+                return render(self.request, 'products_app/product.html', self.get_context_data())
         else:
             return HttpResponseRedirect(reverse('index'))
 

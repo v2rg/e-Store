@@ -155,7 +155,10 @@ CATEGORY_ID = {
     '4': 'MemoryList',
 }
 
-# Emails
+# Sorting methods
+SORTING_METHODS = ['name', 'price', 'avg_rating']
+
+# Email
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_PORT = 465
 EMAIL_HOST_USER = ''  # TODO: del
