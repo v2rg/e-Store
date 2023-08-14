@@ -1,4 +1,3 @@
-import products_app
 from products_app.models import ProcessorList, VideoCardList, MotherboardList, MemoryList
 from users_app.models import UserAddress
 
@@ -8,7 +7,6 @@ def basket(request):
         if not request.user.is_anonymous:
             UserAddress.objects.get_or_create(user_id=request.user)
         session = request.session['basket']
-        print(session)
         current_basket = []
         current_product = None
         skus = []
@@ -43,7 +41,7 @@ def basket(request):
         basket_is_active = None
 
     return {
-        'title': 'e-Store - Корзина',
+        # 'title': 'e-Store - Корзина',
         'current_basket': current_basket,
         'total_quantity': total_quantity,
         'total_sum': total_sum,

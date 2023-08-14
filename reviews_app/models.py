@@ -6,11 +6,10 @@ from users_app.models import User
 
 class ProductReviewQuerySet(models.QuerySet):
     def average_rating(self):  # подсчитываем средний рейтинг
-        print(self)
         if self and sum(1 for x in self if x.rating is not None) > 0:
             avg_rating = (round(
                 sum(x.rating for x in self if x.rating is not None) / sum(1 for x in self if x.rating is not None),
-                1) if len(self) > 0 else None)  # сумма рейтинга / на сумму отзывов (с рейтингом)
+                1) if len(self) > 0 else None)  # сумма рейтинга / на кол-во отзывов (с рейтингом)
         else:
             avg_rating = None
 

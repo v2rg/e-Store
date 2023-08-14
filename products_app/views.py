@@ -34,6 +34,7 @@ class IndexView(TitleMixin, TemplateView):  # главная страница (C
                                *MemoryList.objects.filter(quantity__gt=0).order_by('?')[:2]]
             cache.set('random_products', sorted(random_products, key=lambda x: random()), 30)
         context['random_products'] = cache.get('random_products')
+
         return context
 
 
@@ -184,7 +185,7 @@ def sorting_method(request, method=None):  # сортировка в катал�
             try:
                 ref = request.META['HTTP_REFERER']
             except KeyError:
-                HttpResponseRedirect(reverse('products:catalog'))
+                return HttpResponseRedirect(reverse('products:catalog'))
             else:
                 if 'page' in ref:  # возврат на 1 страницу
                     ref = ref[:-2]
@@ -208,6 +209,7 @@ class ProductView(ContextMixin, View):  # карточка товара (CBV)
 
     def post(self, *args, **kwargs):
         self.review_form = ProductReviewForm(data=self.request.POST)
+        print(self.review_form)
         if self.review_form.is_valid():
             instance = self.review_form.save(commit=False)
             instance.product_sku = self.kwargs['sku']
@@ -220,7 +222,7 @@ class ProductView(ContextMixin, View):  # карточка товара (CBV)
             messages.add_message(self.request, messages.INFO, 'Отзыв добавлен')
 
             return (HttpResponseRedirect(self.request.META['HTTP_REFERER']) if self.request.META.get(
-                'HTTP_REFERER') else HttpResponseRedirect(reverse('index')))
+                'HTTP_REFERER') else HttpResponseRedirect(reverse('products:catalog')))
 
     def get(self, *args, **kwargs):
         if all([self.kwargs['category_id'], self.kwargs['sku']]):
@@ -232,7 +234,6 @@ class ProductView(ContextMixin, View):  # карточка товара (CBV)
                 )
             except KeyError:  # если невалидная категория, то 404
                 raise Http404
-
             else:
                 self.review_form = ProductReviewForm()
                 # self.current_product = getattr(
@@ -257,7 +258,8 @@ class ProductView(ContextMixin, View):  # карточка товара (CBV)
                 try:  # проверяем, что артикул есть в корзине
                     session = self.request.session['basket']
                 except KeyError:
-                    print('product: basket не найден')
+                    # print('product: basket не найден')
+                    pass
                 else:
                     for i in session:
                         if int(i) == self.current_product.sku:
@@ -268,6 +270,7 @@ class ProductView(ContextMixin, View):  # карточка товара (CBV)
 
     def get_context_data(self, *, object_list=None, **kwargs):
         context = super().get_context_data()
+        context['title'] = 'Store - ' + self.current_product.name
         context['current_product'] = self.current_product
         context['product_images'] = self.product_images
         context['in_basket'] = self.in_basket

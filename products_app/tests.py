@@ -6,6 +6,7 @@ from django.urls import reverse
 
 
 class IndexTestCase(TestCase):
+    # в тестовые фикстуры добавлено по 5 товаров (в каждую категорию)
     fixtures = ['categories.json', 'brands.json', 'sockets.json',
                 'memory_types.json', 'test_cpu_lines.json', 'gpu_pci_versions.json',
                 'gpu_models.json', 'mb_form_factors.json', 'mb_chipsets.json',
@@ -13,8 +14,7 @@ class IndexTestCase(TestCase):
                 'test_list_motherboards.json', 'test_list_processors.json']
 
     def setUp(self) -> None:
-        self.path = reverse('index')
-        self.response = self.client.get(self.path)
+        self.response = self.client.get(reverse('index'))
 
     def test_index_template(self):  # шаблон и статус код
         self.assertTemplateUsed(self.response, 'products_app/index.html')
@@ -43,16 +43,15 @@ class CatalogTestCase(TestCase):
                 'test_list_motherboards.json', 'test_list_processors.json']
 
     def setUp(self) -> None:
-        self.path = reverse('products:catalog')
-        self.response = self.client.get(self.path)
+        self.response = self.client.get(reverse('products:catalog'))
 
-    def test_catalog_template(self):
+    def test_Catalog_template(self):
         self.assertTemplateUsed(self.response, 'products_app/catalog.html')
         self.assertEqual(self.response.status_code, 200)
 
     '''catalog_category'''
 
-    def test_catalog_queryset_processors(self):  # тест первой страницы (5 элементов) каталога (processor)
+    def test_Catalog_queryset_processors(self):  # тест первой страницы (5 элементов) каталога (processor)
         self.response = self.client.get(reverse('products:catalog_category', kwargs={'category_id': 1}))
 
         first_page_cpus = [str(x) for x in self.response.context_data['page_obj']]
@@ -62,7 +61,7 @@ class CatalogTestCase(TestCase):
 
         self.assertEqual(first_page_cpus, test_obj)
 
-    def test_catalog_queryset_videocards(self):  # тест первой страницы (5 элементов) каталога (videocard)
+    def test_Catalog_queryset_videocards(self):  # тест первой страницы (5 элементов) каталога (videocard)
         self.response = self.client.get(reverse('products:catalog_category', kwargs={'category_id': 2}))
 
         first_page_videocards = [str(x) for x in self.response.context_data['page_obj']]
@@ -72,7 +71,7 @@ class CatalogTestCase(TestCase):
 
         self.assertEqual(first_page_videocards, test_obj)
 
-    def test_catalog_queryset_motherboards(self):  # тест первой страницы (5 элементов) каталога (motherboard)
+    def test_Catalog_queryset_motherboards(self):  # тест первой страницы (5 элементов) каталога (motherboard)
         self.response = self.client.get(reverse('products:catalog_category', kwargs={'category_id': 3}))
 
         first_page_motherboards = [str(x) for x in self.response.context_data['page_obj']]
@@ -82,7 +81,7 @@ class CatalogTestCase(TestCase):
 
         self.assertEqual(first_page_motherboards, test_obj)
 
-    def test_catalog_queryset_rams(self):  # тест первой страницы (5 элементов) каталога (ram)
+    def test_Catalog_queryset_rams(self):  # тест первой страницы (5 элементов) каталога (ram)
         self.response = self.client.get(reverse('products:catalog_category', kwargs={'category_id': 4}))
 
         first_page_rams = [str(x) for x in self.response.context_data['page_obj']]
@@ -94,7 +93,7 @@ class CatalogTestCase(TestCase):
 
     '''catalog_category_brand'''
 
-    def test_catalog_brand_queryset(self):
+    def test_Catalog_brand_queryset(self):
         self.response = self.client.get(
             reverse('products:catalog_category_brand', kwargs={'category_id': 1, 'brand_name': 'Intel'})
         )
@@ -108,7 +107,7 @@ class CatalogTestCase(TestCase):
 
     '''catalog_category_brand_line'''
 
-    def test_catalog_brand_line_queryset(self):
+    def test_Catalog_brand_line_queryset(self):
         self.response = self.client.get(
             reverse('products:catalog_category_brand_line',
                     kwargs={'category_id': 1, 'brand_name': 'Intel', 'line_name': 'Test line'})
@@ -120,3 +119,62 @@ class CatalogTestCase(TestCase):
                     '88888881 | Intel | test_name_processor1']
 
         self.assertEqual(first_page_processors, test_obj)
+
+
+class SortingMethodTestCase(TestCase):
+    fixtures = ['categories.json', 'brands.json', 'sockets.json',
+                'memory_types.json', 'test_cpu_lines.json', 'gpu_pci_versions.json',
+                'gpu_models.json', 'mb_form_factors.json', 'mb_chipsets.json',
+                'products_images.json', 'test_list_rams.json', 'test_list_videocards.json',
+                'test_list_motherboards.json', 'test_list_processors.json']
+
+    def setUp(self) -> None:
+        self.session = self.client.session
+        self.session['catalog_sorting'] = {'sorting_method': 'avg_rating', 'sorting_by': ''}
+        self.session.save()
+
+    def test_sorting_method(self):  # сортировка processor по avg_rating
+
+        response = self.client.get(
+            reverse('products:catalog_category_brand', kwargs={'category_id': 1, 'brand_name': 'Intel'})
+        )
+
+        sorted_first_page = [str(x) for x in response.context_data['page_obj']]
+        test_obj = ['88888881 | Intel | test_name_processor1', '88888882 | Intel | test_name_processor2',
+                    '88888883 | Intel | test_name_processor3', '88888884 | Intel | test_name_processor4',
+                    '88888885 | Intel | test_name_processor5']
+
+        self.assertEqual(sorted_first_page, test_obj)
+        self.assertRedirects(self.client.get(reverse('products:sorting_method', kwargs={'method': 'price'})),
+                             '/products/')
+        self.assertIsNotNone(self.client.get(reverse('products:sorting_method', kwargs={'method': 'price'})))
+
+
+'''product'''
+
+
+class ProductTestCase(TestCase):
+    fixtures = ['categories.json', 'brands.json', 'sockets.json',
+                'memory_types.json', 'test_cpu_lines.json', 'gpu_pci_versions.json',
+                'gpu_models.json', 'mb_form_factors.json', 'mb_chipsets.json',
+                'products_images.json', 'test_list_rams.json', 'test_list_videocards.json',
+                'test_list_motherboards.json', 'test_list_processors.json', 'test_product_reviews.json']
+
+    def setUp(self) -> None:
+        self.response = self.client.get(reverse('products:product', kwargs={'category_id': 2, 'sku': 77777773}))
+
+    def test_Product_template(self):  # шаблон и статус код
+        self.assertTemplateUsed(self.response, 'products_app/product.html')
+        self.assertEqual(self.response.status_code, 200)
+
+    def test_Product_title(self):  # заголовок
+        self.assertEqual(self.response.context['title'], 'Store - test_name_videocard3')
+
+    def test_Product_current_product_name(self):  # название товара
+        self.assertEqual(str(self.response.context['current_product']), '77777773 | ASRock | test_name_videocard3')
+
+    def test_Product_current_product_reviews(self):  # отзывы
+        self.assertEqual(len(self.response.context['reviews']), 2)  # количество отзывов
+        current_product_reviews = ['<ProductReview: 77777773>', '<ProductReview: 77777773>']
+        self.assertQuerysetEqual(self.response.context['reviews'], current_product_reviews)  # queryset с отзывами
+        self.assertFalse(self.response.context['in_basket'])  # товар не в корзине
