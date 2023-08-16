@@ -17,6 +17,11 @@
     <!--Регистрация-->
     <div class="row justify-content-center mb-5">
         <div class="col-lg-7">
+            {% if register_form.errors %}
+                <div class="alert alert-warning" role="alert">
+                    {{ register_form.errors }}
+                </div>
+            {% endif %}
 
             <div class="card shadow-lg border-0 rounded-lg mt-5">
                 <div class="card-header">

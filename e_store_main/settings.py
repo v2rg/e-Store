@@ -164,7 +164,7 @@ EMAIL_PORT = 465
 EMAIL_HOST_USER = ''  # TODO: del
 EMAIL_HOST_PASSWORD = ''  # TODO: del
 EMAIL_USE_SSL = True
-EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Redis
 CACHES = {

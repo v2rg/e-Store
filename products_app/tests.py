@@ -24,7 +24,7 @@ class IndexTestCase(TestCase):
         self.assertEqual(self.response.context_data['title'], 'e-Store - Главная')
 
     def test_index_queryset(self):  # queryset на главной (по 2 из каждой категории)
-        self.assertEqual(len(self.response.context_data['random_products']), 8, 'len queryset < 8')
+        self.assertEqual(len(self.response.context_data['random_products']), 8, 'len queryset != 8')
         self.assertEqual(len([x for x in self.response.context_data['random_products'] if x.category_id == 1]), 2,
                          'len queryset Processor < 2')
         self.assertEqual(len([x for x in self.response.context_data['random_products'] if x.category_id == 2]), 2,
