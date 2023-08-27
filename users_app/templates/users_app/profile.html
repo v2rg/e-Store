@@ -17,6 +17,21 @@
     <div class="row justify-content-center">
         <div class="col-7">
 
+            <!--errors-->
+            {% if profile_form.errors or profile_form_address.errors %}
+                <div class="alert alert-warning" role="alert">
+                    {% if profile_form.errors %}
+                        {% for el, error in profile_form.errors.items %}
+                            {{ error }}
+                        {% endfor %}
+                    {% else %}
+                        {% for el, error in profile_form_address.errors.items %}
+                            {{ error }}
+                        {% endfor %}
+                    {% endif %}
+                </div>
+            {% endif %}
+
             <div class="card-header">
                 <h3 class="text-center font-weight-light my-4">Профиль</h3>
             </div>
@@ -55,15 +70,12 @@
                         <div class="row">
                             <div class="col-6 mb-3" style="padding-left: 30px;">
                                 <label for="{{ profile_form.username.id_for_label }}"
-                                       class="form-label">Имя
-                                    пользователя</label>
+                                       class="form-label">Имя пользователя</label>
                                 {{ profile_form.username }}
                             </div>
                             <div class="col-6 mb-3" style="padding-right: 30px;">
                                 <label for="{{ profile_form.email.id_for_label }}"
-                                       class="form-label disabled">Адрес
-                                    электронной
-                                    почты</label>
+                                       class="form-label disabled">Адрес электронной почты</label>
                                 {{ profile_form.email }}
                             </div>
                         </div>
@@ -84,7 +96,8 @@
 
                         <div class="row">
                             <div class="d-grid gap-2" style="padding: 30px">
-                                <input class="btn btn-secondary d-grid" type="submit" value="Изменить данные">
+                                <input class="btn btn-secondary d-grid" type="submit" value="Изменить данные"
+                                       name="user">
                             </div>
                         </div>
 
@@ -129,7 +142,8 @@
                                 {{ profile_form_address.floor }}
                             </div>
                             <div class="col-2 mb-3">
-                                <label for="{{ profile_form_address.apartment.id_for_label }}" class="form-label">Квартира</label>
+                                <label for="{{ profile_form_address.apartment.id_for_label }}"
+                                       class="form-label">Квартира</label>
                                 {{ profile_form_address.apartment }}
                             </div>
                         </div>
@@ -138,7 +152,8 @@
 
                         <div class="row">
                             <div class="d-grid gap-4" style="padding: 30px">
-                                <input class="btn btn-secondary d-grid" type="submit" value="Сохранить адрес">
+                                <input class="btn btn-secondary d-grid" type="submit" value="Сохранить адрес"
+                                       name="address">
                             </div>
                         </div>
 

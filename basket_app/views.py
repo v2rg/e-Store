@@ -39,8 +39,9 @@ def basket_add(request, category_id=None, product_sku=None, product_name=None,
 
     if request.session.get('basket'):  # проверяем, есть ли basket в сессии
         if request.session['basket'].get(str(product_sku)):
-            request.session['basket'][str(product_sku)]['quantity'] += 1
-            print('+1')
+            pass
+            # request.session['basket'][str(product_sku)]['quantity'] += 1
+            # print('+1')
         else:
             request.session['basket'][str(product_sku)] = {'category_id': category_id, 'quantity': 1,
                                                            'product_price': float(product_price)}
@@ -56,8 +57,7 @@ def basket_add(request, category_id=None, product_sku=None, product_name=None,
     request.session.modified = True
     # request.session.save()
 
-    return (HttpResponseRedirect(request.META['HTTP_REFERER']) if request.META.get('HTTP_REFERER')
-            else HttpResponseRedirect(reverse('index')))
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER')) or HttpResponseRedirect(reverse('index'))
 
 
 # @login_required

@@ -46,7 +46,7 @@
                         Сумма заказа:
                     </h5>
                     <h5>
-                        {{ total_sum }} руб.
+                        {{ total_sum|stringformat:'.2f' }} руб.
                     </h5>
                 </li>
 
@@ -123,7 +123,7 @@
                     <div class="col-6 mb-3">
                         <label for="id_total_sum" class="form-label"></label>
                         <input type="text" class="form-control" id="id_total_sum" name="total_sum"
-                               value="{{ total_sum }}" hidden>
+                               value="{{ total_sum|stringformat:'.2f' }}" hidden>
                     </div>
                 </div>
 

@@ -47,10 +47,11 @@ class UserProfileForm(UserChangeForm):
             attrs={'class': 'form-control', 'placeholder': 'Фамилия'}))
     username = forms.CharField(
         widget=forms.TextInput(
-            attrs={'class': 'form-control', 'placeholder': 'Имя пользователя', 'readonly': True}))
+            attrs={'class': 'form-control', 'placeholder': 'Имя пользователя', 'readonly': True}), required=False)
     email = forms.CharField(
         widget=forms.EmailInput(
-            attrs={'class': 'form-control', 'placeholder': 'Адрес электронной почты', 'readonly': True}))
+            attrs={'class': 'form-control', 'placeholder': 'Адрес электронной почты', 'readonly': True}),
+        required=False)
     avatar = forms.ImageField(
         widget=forms.FileInput(
             attrs={'class': 'form-control', 'placeholder': 'Аватар'}), required=False)

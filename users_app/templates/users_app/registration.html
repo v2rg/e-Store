@@ -17,9 +17,13 @@
     <!--Регистрация-->
     <div class="row justify-content-center mb-5">
         <div class="col-lg-7">
+
+            <!--errors-->
             {% if register_form.errors %}
                 <div class="alert alert-warning" role="alert">
-                    {{ register_form.errors }}
+                    {% for el, error in register_form.errors.items %}
+                        {{ error }}
+                    {% endfor %}
                 </div>
             {% endif %}
 

@@ -3,7 +3,7 @@ from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
 from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import render, HttpResponseRedirect, HttpResponsePermanentRedirect
+from django.shortcuts import render, HttpResponseRedirect
 from django.urls import reverse
 from django.utils.timezone import now
 from django.views.generic import CreateView, ListView
@@ -129,20 +129,24 @@ def profile(request):  # профиль пользователя
     except ObjectDoesNotExist:
         print(f'Юзер с ID {request.user.id} не существует')
     else:
-        # добавляет запись в таблицу UserAddress, когда пользователь впервые заходит в профиль, или получает адрес
+        # добавляет запись в таблицу UserAddress, когда пользователь впервые заходит в профиль. Или получает адрес
         current_user_address, _ = UserAddress.objects.get_or_create(user_id=request.user)
 
         if request.method == 'POST':
-            profile_form = UserProfileForm(instance=current_user, data=request.POST, files=request.FILES)
-            if profile_form.is_valid():
-                profile_form.save()
-
-            # if current_user_address:
-            profile_address_form = UserAddressForm(instance=current_user_address, data=request.POST)
-            if profile_address_form.is_valid():
-                profile_address_form.save()
-
-            messages.add_message(request, messages.SUCCESS, 'Профиль обновлен')
+            if request.POST.get('user'):
+                profile_form = UserProfileForm(instance=current_user, data=request.POST, files=request.FILES)
+                if profile_form.is_valid():
+                    profile_form.save()
+                    messages.add_message(request, messages.SUCCESS, 'Профиль обновлен')
+                else:
+                    print('Ошибка валидации UserProfileForm')
+            elif request.POST.get('address'):
+                profile_address_form = UserAddressForm(instance=current_user_address, data=request.POST)
+                if profile_address_form.is_valid():
+                    profile_address_form.save()
+                    messages.add_message(request, messages.SUCCESS, 'Адрес обновлен')
+                else:
+                    print('Ошибка валидации UserAddressForm')
 
             return HttpResponseRedirect(reverse('users:profile'))
 
@@ -193,7 +197,7 @@ def order(request, order_id=None):  # содержимое заказа
     try:
         order_data = Order.objects.get(user_id=request.user, id=order_id)
     except ObjectDoesNotExist:
-        return HttpResponseRedirect(reverse('index'))
+        return HttpResponseRedirect(reverse('users:orders'))
     else:
         order_items = OrderItem.objects.filter(user_id=request.user, order_id=order_id).values()
 
@@ -204,8 +208,6 @@ def order(request, order_id=None):  # содержимое заказа
             order_items[ind]['sku_total_price'] = order_item['quantity'] * order_item['price']
 
         total_price = sum([x['sku_total_price'] for x in order_items])
-
-        print(order_items)
 
     context = {
         'title': 'Содержимое заказа',

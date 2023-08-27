@@ -7,12 +7,12 @@ from products_app.models import Category
 # Create your models here.
 
 class Order(models.Model):
-    ORDER_STATUS = {
+    ORDER_STATUS = [
         ('created', 'Создан'),
         ('paid', 'Оплачен'),
         ('shipping', 'В пути'),
         ('delivered', 'Доставлен')
-    }
+    ]
 
     user_id = models.ForeignKey(to=User, on_delete=models.CASCADE, verbose_name='Пользователь')
     first_name = models.CharField(max_length=64, verbose_name='Имя')
@@ -21,9 +21,9 @@ class Order(models.Model):
     postcode = models.PositiveIntegerField(verbose_name='Индекс')
     city = models.CharField(max_length=64, verbose_name='Город')
     street = models.CharField(max_length=64, verbose_name='Улица')
-    building = models.CharField(max_length=10, verbose_name='Дом')
-    floor = models.CharField(max_length=10, blank=True, verbose_name='Этаж')
-    apartment = models.CharField(max_length=10, blank=True, verbose_name='Квартира')
+    building = models.CharField(max_length=64, verbose_name='Дом')
+    floor = models.CharField(max_length=64, blank=True, verbose_name='Этаж')
+    apartment = models.CharField(max_length=64, blank=True, verbose_name='Квартира')
 
     created_datetime = models.DateTimeField(auto_now_add=True, verbose_name='Создан')
     updated_datetime = models.DateTimeField(auto_now=True, verbose_name='Обновлен')
