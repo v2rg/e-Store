@@ -66,11 +66,7 @@
                 </a>
                 <a href="{% url 'products:sorting_method' method='avg_rating' %}">
                     {% if sort_method == 'avg_rating' %}
-                        {% if sort_by %}
-                            <b>Рейтинг ↑</b>
-                        {% else %}
-                            <b>Рейтинг ↓</b>
-                        {% endif %}
+                        <b>Рейтинг ↓</b>
                     {% else %}
                         Рейтинг
                     {% endif %}
@@ -102,7 +98,7 @@
                                         </a>
                                         {% if product.avg_rating %}
                                             <span class="position-absolute top-1 start-100 translate-middle badge border border-end rounded-bottom-circle bg-secondary p-2">
-                                            ★ {{ product.avg_rating }}
+                                            ★ {{ product.avg_rating|stringformat:'.1f' }}
                                         </span>
                                         {% endif %}
                                     </h5>
@@ -121,7 +117,7 @@
                                                        class="btn btn-secondary d-block mx-auto">В корзине
                                                     </a>
                                                 {% else %}
-                                                    <a href="{% url 'basket:basket_add' product_sku=product.sku category_id=product.category.id product_price=product.price %}"
+                                                    <a href="{% url 'basket:basket_add' product_sku=product.sku category_id=product.category.id %}"
                                                        class="btn btn-primary d-block mx-auto">Добавить в корзину
                                                     </a>
                                                 {% endif %}

@@ -26,7 +26,7 @@
                 <div class="card" style="width: 13rem; margin-right: 30px; margin-bottom: 30px;">
                     {% if product.avg_rating %}
                         <span class="position-absolute top-1 start-100 translate-middle badge border border-end rounded-bottom-circle bg-secondary p-2">
-                            ★ {{ product.avg_rating }}
+                            ★ {{ product.avg_rating|stringformat:'.1f' }}
                         </span>
                     {% endif %}
 
@@ -53,7 +53,7 @@
                                 В корзине
                             </a>
                         {% else %}
-                            <a href="{% url 'basket:basket_add' product_sku=product.sku category_id=product.category.id product_price=product.price %}"
+                            <a href="{% url 'basket:basket_add' product_sku=product.sku category_id=product.category.id %}"
                                class="btn btn-primary d-block mx-auto" style="margin-top: 20px; margin-bottom: 20px">
                                 Добавить в корзину
                             </a>

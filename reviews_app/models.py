@@ -8,7 +8,7 @@ class ProductReviewQuerySet(models.QuerySet):
     def average_rating(self):  # подсчитываем средний рейтинг
         if self and sum(1 for x in self if x.rating is not None) > 0:
             avg_rating = (round(
-                sum(x.rating for x in self if x.rating is not None) / sum(1 for x in self if x.rating is not None),
+                sum(x.rating for x in self if x.rating is not None) / sum(1 for x in self if x.rating is not 0),
                 1) if len(self) > 0 else None)  # сумма рейтинга / на кол-во отзывов (с рейтингом)
         else:
             avg_rating = None

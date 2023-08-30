@@ -2,23 +2,22 @@ from random import random
 
 from django.conf import settings
 from django.contrib import messages
-from django.core.exceptions import ObjectDoesNotExist
-# from django.core.paginator import Paginator
-from django.http import HttpResponseRedirect, HttpResponseNotFound, Http404
-from django.shortcuts import render, get_object_or_404
-from django.urls import reverse, NoReverseMatch
 from django.core.cache import cache
+# from django.core.paginator import Paginator
+from django.http import HttpResponseRedirect, Http404
+from django.shortcuts import render, get_object_or_404
+from django.urls import reverse
 from django.views import View
 from django.views.generic import ListView, TemplateView
 from django.views.generic.base import ContextMixin
 
 import products_app
-from basket_app.models import Order, OrderItem
+from basket_app.models import OrderItem
 from common.view import TitleMixin
 # Create your views here.
 from products_app.models import Category, ProcessorList, VideoCardList, MotherboardList, MemoryList, ProductImage
-from reviews_app.models import ProductReview
 from reviews_app.forms import ProductReviewForm
+from reviews_app.models import ProductReview
 
 
 class IndexView(TitleMixin, TemplateView):  # главная страница (CBV)
@@ -101,7 +100,7 @@ class CatalogView(ListView):  # каталог (CBV)
                 pass
             else:
                 queryset = (queryset.order_by(self.sort_by + self.sort_method) if self.sort_method in ('name', 'price')
-                            else queryset.order_by(self.sort_by + self.sort_method, 'name'))
+                            else queryset.order_by('-' + self.sort_method, 'name'))
 
         except KeyError:
             raise Http404
@@ -205,7 +204,7 @@ class ProductView(ContextMixin, View):  # карточка товара (CBV)
     review_form = None
     reviews = None
     review_is_exists = None
-    order_status = None
+    order_delivered = None
 
     def post(self, *args, **kwargs):
         self.review_form = ProductReviewForm(data=self.request.POST)
@@ -236,24 +235,21 @@ class ProductView(ContextMixin, View):  # карточка товара (CBV)
                 raise Http404
             else:
                 self.review_form = ProductReviewForm()
-                # self.current_product = getattr(
-                #     products_app.models,
-                #     settings.CATEGORY_ID[str(self.kwargs['category_id'])]).objects.get(sku=self.kwargs['sku'])
+
                 self.reviews = ProductReview.objects.filter(product_sku=self.kwargs['sku']).order_by(
                     '-created_datetime')
                 self.current_product.avg_rating = self.reviews.average_rating()  # обновляем рейтинг товара
                 self.current_product.save()
-                self.product_images = ProductImage.objects.filter(sku=self.kwargs['sku'])
-                self.review_is_exists = False if self.request.user.is_anonymous else self.reviews.filter(
-                    user=self.request.user).exists()
-                if not self.review_is_exists and not self.request.user.is_anonymous:
-                    try:
-                        current_order_id = OrderItem.objects.get(user_id=self.request.user,
-                                                                 product_sku=self.kwargs['sku']).order_id.id
-                    except ObjectDoesNotExist:
-                        pass
-                    else:
-                        self.order_status = Order.objects.get(id=current_order_id).status if current_order_id else None
+
+                if not self.request.user.is_anonymous:  # ищем заказ, c текущим товаром, со статусом 'delivered'
+                    self.review_is_exists = self.reviews.filter(user=self.request.user).exists()
+                    if not self.review_is_exists:
+                        delivered_orders = OrderItem.objects.filter(user_id=self.request.user,
+                                                                    product_sku=self.kwargs['sku'],
+                                                                    order_id__status='delivered').last()
+                        self.order_delivered = True if delivered_orders else False
+
+                self.product_images = ProductImage.objects.filter(sku=self.kwargs['sku'])  # ищем изображения товара
 
                 try:  # проверяем, что артикул есть в корзине
                     session = self.request.session['basket']
@@ -276,8 +272,8 @@ class ProductView(ContextMixin, View):  # карточка товара (CBV)
         context['in_basket'] = self.in_basket
         context['review_form'] = self.review_form
         context['reviews'] = self.reviews
-        context['reviews_is_exists'] = self.review_is_exists
-        context['order_status'] = self.order_status
+        context['review_is_exists'] = self.review_is_exists
+        context['order_delivered'] = self.order_delivered
         context['path_category'] = int(self.request.path.split('/')[3])
 
         return context

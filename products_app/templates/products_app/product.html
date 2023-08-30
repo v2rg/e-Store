@@ -95,7 +95,7 @@
                 <div class="shadow p-3 mb-5 bg-body-tertiary rounded">
                     {% if reviews.average_rating %}
                         <h4 class="text-center text-primary">
-                            ★ {{ reviews.average_rating }}
+                            ★ {{ reviews.average_rating|stringformat:'.1f' }}
                         </h4>
                     {% endif %}
                     <p class="text-center" style="font-size: large">
@@ -118,7 +118,7 @@
                             <a href="{% url 'basket:basket' %}" class="btn btn-secondary d-block mx-auto">В корзине
                             </a>
                         {% else %}
-                            <a href="{% url 'basket:basket_add' product_sku=current_product.sku category_id=current_product.category.id product_price=current_product.price %}"
+                            <a href="{% url 'basket:basket_add' product_sku=current_product.sku category_id=current_product.category.id %}"
                                class="btn btn-primary d-block mx-auto">Добавить в корзину
                             </a>
                         {% endif %}
@@ -132,7 +132,7 @@
 
         <div class="row">
 
-            <!--Описание / xарактеристики товара / отзывы-->
+            <!--Описание / характеристики товара / отзывы-->
             <div class="col" style="padding-top: 50px; min-height: 500px;">
                 <nav>
                     <div class="nav nav-tabs" id="nav-tab" role="tablist">
@@ -180,7 +180,7 @@
                          tabindex="0">
                         <div>
                             {% if user.is_authenticated %}
-                                {% if reviews_is_exists %}
+                                {% if review_is_exists %}
                                     <class class="row justify-content-center">
                                         <div class="col" style="padding-top: 25px">
                                             <div class="alert alert-secondary" role="alert" style="text-align: center">
@@ -202,7 +202,7 @@
                                                     {{ review_form.review }}
                                                 </div>
                                             </div>
-                                            {% if order_status == 'delivered' %}
+                                            {% if order_delivered %}
                                                 <div class="col-1">
                                                     <div class="mb-3">
                                                         <label for="{{ review_form.rating.id_for_label }}"

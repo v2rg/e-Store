@@ -22,8 +22,10 @@ def basket(request):
                 current_product = MemoryList.objects.values().get(sku=int(sku))
 
             current_product['basket_quantity'] = (
-                current_product['quantity'] if value['quantity'] > current_product['quantity']
+                current_product['quantity']
+                if value['quantity'] > current_product['quantity']
                 else value['quantity'])  # количество товара по одной позиции
+
             current_product['product_sum'] = (
                     current_product['price'] * current_product['basket_quantity'])  # сумма одной позиции
 

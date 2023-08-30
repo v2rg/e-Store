@@ -140,9 +140,9 @@ class SortingMethodTestCase(TestCase):
         )
 
         sorted_first_page = [str(x) for x in response.context_data['page_obj']]
-        test_obj = ['88888881 | Intel | test_name_processor1', '88888882 | Intel | test_name_processor2',
-                    '88888883 | Intel | test_name_processor3', '88888884 | Intel | test_name_processor4',
-                    '88888885 | Intel | test_name_processor5']
+        test_obj = ['88888885 | Intel | test_name_processor5', '88888884 | Intel | test_name_processor4',
+                    '88888883 | Intel | test_name_processor3', '88888882 | Intel | test_name_processor2',
+                    '88888881 | Intel | test_name_processor1']
 
         self.assertEqual(sorted_first_page, test_obj)
         self.assertRedirects(self.client.get(reverse('products:sorting_method', kwargs={'method': 'price'})),
