@@ -210,8 +210,7 @@ class AbstractProduct(models.Model):  # АБСТРАКТНЫЙ класс тов
     date_added = models.DateTimeField(auto_now_add=True, verbose_name='Дата добавления')
     active = models.BooleanField(default=True, verbose_name='Активно')
 
-    avg_rating = models.DecimalField(max_digits=2, decimal_places=1, default=0, null=True,
-                                     verbose_name='Рейтинг товара')
+    avg_rating = models.DecimalField(max_digits=2, decimal_places=1, default=0, verbose_name='Рейтинг товара')
 
     class Meta:
         abstract = True

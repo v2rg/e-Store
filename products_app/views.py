@@ -27,10 +27,13 @@ class IndexView(TitleMixin, TemplateView):  # главная страница (C
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         if not cache.get('random_products'):
-            random_products = [*ProcessorList.objects.filter(quantity__gt=0).order_by('?')[:2],
-                               *VideoCardList.objects.filter(quantity__gt=0).order_by('?')[:2],
-                               *MotherboardList.objects.filter(quantity__gt=0).order_by('?')[:2],
-                               *MemoryList.objects.filter(quantity__gt=0).order_by('?')[:2]]
+            random_products = [
+                *ProcessorList.objects.select_related('line', 'socket', 'memory_type').filter(quantity__gt=0).order_by(
+                    '?')[:2],
+                *VideoCardList.objects.select_related('gpu', 'pci_version').filter(quantity__gt=0).order_by('?')[:2],
+                *MotherboardList.objects.select_related('socket', 'form_factor', 'chipset', 'memory_type',
+                                                        'pci_version').filter(quantity__gt=0).order_by('?')[:2],
+                *MemoryList.objects.select_related('type').filter(quantity__gt=0).order_by('?')[:2]]
             cache.set('random_products', sorted(random_products, key=lambda x: random()), 30)
         context['random_products'] = cache.get('random_products')
 
@@ -64,14 +67,16 @@ class CatalogView(ListView):  # каталог (CBV)
     sort_by = None
 
     def get_queryset(self):
-        queryset = super().get_queryset()
+        # queryset = super().get_queryset()
 
         if not self.kwargs.get('category_id'):  # дефолтная категория (processors)
             self.kwargs['category_id'] = 1
 
         try:
             queryset = getattr(products_app.models, settings.CATEGORY_ID[str(self.kwargs['category_id'])]).objects.all()
-
+        except KeyError:
+            pass
+        else:
             if self.kwargs.get('brand_name'):
                 if self.kwargs['category_id'] == 1:
                     queryset = queryset.filter(brand__brand_name=self.kwargs['brand_name'])
@@ -93,7 +98,7 @@ class CatalogView(ListView):  # каталог (CBV)
             if len(queryset) == 0:  # обработчик NoReverseMatch
                 raise Http404
 
-            try:
+            try:  # сортировка
                 self.sort_method = self.request.session['catalog_sorting']['sorting_method']
                 self.sort_by = self.request.session['catalog_sorting']['sorting_by']
             except KeyError:
@@ -102,9 +107,6 @@ class CatalogView(ListView):  # каталог (CBV)
                 queryset = (queryset.order_by(self.sort_by + self.sort_method) if self.sort_method in ('name', 'price')
                             else queryset.order_by('-' + self.sort_method, 'name'))
 
-        except KeyError:
-            raise Http404
-        else:
             return queryset
 
     def get_context_data(self, *, object_list=None, **kwargs):
@@ -206,9 +208,8 @@ class ProductView(ContextMixin, View):  # карточка товара (CBV)
     review_is_exists = None
     order_delivered = None
 
-    def post(self, *args, **kwargs):
+    def post(self, *args, **kwargs):  # добавление отзыва
         self.review_form = ProductReviewForm(data=self.request.POST)
-        print(self.review_form)
         if self.review_form.is_valid():
             instance = self.review_form.save(commit=False)
             instance.product_sku = self.kwargs['sku']
@@ -216,7 +217,7 @@ class ProductView(ContextMixin, View):  # карточка товара (CBV)
             if instance.rating:
                 pass
             else:
-                instance.rating = None  # если товар не доставлен
+                instance.rating = 0  # если товар не доставлен
             instance.save()
             messages.add_message(self.request, messages.INFO, 'Отзыв добавлен')
 
@@ -236,17 +237,18 @@ class ProductView(ContextMixin, View):  # карточка товара (CBV)
             else:
                 self.review_form = ProductReviewForm()
 
-                self.reviews = ProductReview.objects.filter(product_sku=self.kwargs['sku']).order_by(
-                    '-created_datetime')
+                self.reviews = ProductReview.objects.select_related('user').filter(
+                    product_sku=self.kwargs['sku']).order_by('-created_datetime')
                 self.current_product.avg_rating = self.reviews.average_rating()  # обновляем рейтинг товара
                 self.current_product.save()
 
                 if not self.request.user.is_anonymous:  # ищем заказ, c текущим товаром, со статусом 'delivered'
                     self.review_is_exists = self.reviews.filter(user=self.request.user).exists()
                     if not self.review_is_exists:
-                        delivered_orders = OrderItem.objects.filter(user_id=self.request.user,
-                                                                    product_sku=self.kwargs['sku'],
-                                                                    order_id__status='delivered').last()
+                        delivered_orders = OrderItem.objects.select_related(
+                            'order_id', 'user_id', 'product_category').filter(
+                            user_id=self.request.user, product_sku=self.kwargs['sku'],
+                            order_id__status='delivered').last()
                         self.order_delivered = True if delivered_orders else False
 
                 self.product_images = ProductImage.objects.filter(sku=self.kwargs['sku'])  # ищем изображения товара

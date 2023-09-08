@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'users_app',
     'basket_app',
     'reviews_app',
+    'debug_toolbar',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -52,6 +53,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'e_store_main.urls'
@@ -75,6 +77,11 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'e_store_main.wsgi.application'
+
+INTERNAL_IPS = [
+    '127.0.0.1',
+    'localhost',
+]
 
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases

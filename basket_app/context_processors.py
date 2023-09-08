@@ -34,7 +34,8 @@ def basket(request):
 
         total_quantity = sum([x['basket_quantity'] for x in current_basket])  # общее количество товара в корзине
         total_sum = sum([x['product_sum'] for x in current_basket])  # общая сумма по корзине
-        basket_is_active = False if any(x['quantity'] < 1 for x in current_basket) else True
+        basket_is_active = (False if any(x['quantity'] < 1 for x in current_basket)
+                            else True)  # корзина не активна, если есть хотя бы один товар с остатком менее 1
     else:
         current_basket = None
         total_quantity = None

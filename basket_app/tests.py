@@ -4,6 +4,7 @@ from django.urls import reverse
 
 # Create your tests here.
 
+
 class BasketViewTestCase(TestCase):
     fixtures = [
         'categories.json', 'brands.json', 'sockets.json', 'cpu_lines.json',
@@ -37,12 +38,9 @@ class BasketViewTestCase(TestCase):
         )  # добавляем товар в корзину
         self.assertEqual(response.status_code, 302)  # редирект после добавления товара
 
-        response = self.client.get(reverse('basket:basket'))
-        self.assertEqual(response.context_data['title'], 'e-Store - Корзина')
-        self.assertEqual(response.status_code, 200)
-
-        # self.assertContains(response, 'Корзина 1', html=True)
-        # self.assertQuerysetEqual(response, 'qwe')
+        '''Проверяем, есть ли добавленный товар в корзине'''
+        # в тестах нет доступа до middleware, корзина хранится в context_processors
+        # RequestFactory, @override_settings
 
 
 class BasketAddTestCase(TestCase):

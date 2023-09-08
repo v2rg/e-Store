@@ -75,7 +75,7 @@ def basket_remove(request, product_sku=None):  # удаление из корз�
     else:
         if session.get(str(product_sku)):
             del session[str(product_sku)]
-            request.session.save()
+            request.session.modified = True
         else:
             print(f'Элемент {product_sku} не существует')
 
@@ -167,17 +167,21 @@ def order_confirmation(request):  # подтверждение заказа
                                                 messages.add_message(request, messages.ERROR, '')
 
                                 # сохраняем заказ в таблице Order
+                                print(current_user_form.cleaned_data)
+                                print(current_user_address_form.cleaned_data)
                                 Order.objects.create(
                                     user_id=request.user,
-                                    first_name=request.POST['first_name'],
-                                    last_name=request.POST['last_name'],
+                                    first_name=current_user_form.cleaned_data['first_name'],
+                                    last_name=current_user_form.cleaned_data['last_name'],
 
-                                    postcode=request.POST['postcode'],
-                                    city=request.POST['city'],
-                                    street=request.POST['street'],
-                                    building=request.POST['building'],
-                                    floor=request.POST['floor'] if request.POST['floor'] else '-',
-                                    apartment=request.POST['apartment'] if request.POST['apartment'] else '-',
+                                    postcode=current_user_address_form.cleaned_data['postcode'],
+                                    city=current_user_address_form.cleaned_data['city'],
+                                    street=current_user_address_form.cleaned_data['street'],
+                                    building=current_user_address_form.cleaned_data['building'],
+                                    floor=current_user_address_form.cleaned_data['floor'] if request.POST[
+                                        'floor'] else '-',
+                                    apartment=current_user_address_form.cleaned_data['apartment'] if request.POST[
+                                        'apartment'] else '-',
 
                                     total_quantity=request.POST['total_quantity'],
                                     total_sum=request.POST['total_sum'],
