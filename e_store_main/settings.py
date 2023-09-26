@@ -36,6 +36,8 @@ INSTALLED_APPS = [
     'basket_app',
     'reviews_app',
     'debug_toolbar',
+    'rest_framework',
+    'rest_api',
 
     'django.contrib.admin',
     'django.contrib.auth',
@@ -187,3 +189,9 @@ CACHES = {
 # Celery
 CELERY_BROKER_URL = 'redis://127.0.0.1:6379/'
 CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379'
+
+# RESTFramework
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'PAGE_SIZE': 10
+}

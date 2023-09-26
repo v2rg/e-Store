@@ -28,11 +28,13 @@ class IndexView(TitleMixin, TemplateView):  # главная страница (C
         context = super().get_context_data()
         if not cache.get('random_products'):
             random_products = [
-                *ProcessorList.objects.select_related('line', 'socket', 'memory_type').filter(quantity__gt=0).order_by(
-                    '?')[:2],
-                *VideoCardList.objects.select_related('gpu', 'pci_version').filter(quantity__gt=0).order_by('?')[:2],
-                *MotherboardList.objects.select_related('socket', 'form_factor', 'chipset', 'memory_type',
-                                                        'pci_version').filter(quantity__gt=0).order_by('?')[:2],
+                *ProcessorList.objects.select_related(
+                    'line', 'socket', 'memory_type').filter(quantity__gt=0).order_by('?')[:2],
+                *VideoCardList.objects.select_related(
+                    'gpu', 'pci_version').filter(quantity__gt=0).order_by('?')[:2],
+                *MotherboardList.objects.select_related(
+                    'socket', 'form_factor', 'chipset',
+                    'memory_type', 'pci_version').filter(quantity__gt=0).order_by('?')[:2],
                 *MemoryList.objects.select_related('type').filter(quantity__gt=0).order_by('?')[:2]]
             cache.set('random_products', sorted(random_products, key=lambda x: random()), 30)
         context['random_products'] = cache.get('random_products')

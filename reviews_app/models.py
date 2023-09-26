@@ -6,9 +6,9 @@ from users_app.models import User
 
 class ProductReviewQuerySet(models.QuerySet):
     def average_rating(self):  # подсчитываем средний рейтинг
-        if self and sum(1 for x in self if x.rating is not 0) > 0:
+        if self and sum(1 for x in self if x.rating != 0) > 0:
             avg_rating = (
-                round(sum(x.rating for x in self if x.rating is not 0) / sum(1 for x in self if x.rating is not 0),
+                round(sum(x.rating for x in self if x.rating != 0) / sum(1 for x in self if x.rating != 0),
                       1) if len(self) > 0 else None)  # сумма рейтинга / на кол-во отзывов (с рейтингом)
         else:
             return 0
@@ -28,6 +28,13 @@ class ProductReview(models.Model):
     class Meta:
         verbose_name = 'отзыв'
         verbose_name_plural = 'Отзывы'
+
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):  # проверка на дубликат отзыва
+        if not ProductReview.objects.filter(product_sku=self.product_sku, user=self.user).exists():
+            return super().save()
+        else:
+            print(f'Запись уже есть в таблице ProductReview', {'sku': self.product_sku, 'user': self.user.username})
 
     def __str__(self):
         # return f'{self.product_sku} | {self.user} | {self.review[:50]}'
