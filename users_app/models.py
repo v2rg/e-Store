@@ -45,7 +45,7 @@ class EmailVerification(models.Model):
 
 class UserAddress(models.Model):  # адрес пользователя
     user_id = models.OneToOneField(to=User, on_delete=models.CASCADE, verbose_name='Пользователь')
-    postcode = models.CharField(max_length=10, null=True, blank=True, verbose_name='Почтовый индекс')
+    postcode = models.PositiveIntegerField(null=True, blank=True, help_text='Только цифры', verbose_name='Почтовый индекс')
     city = models.CharField(max_length=64, null=True, blank=True, verbose_name='Город')
     street = models.CharField(max_length=64, null=True, blank=True, verbose_name='Улица')
     building = models.CharField(max_length=64, null=True, blank=True, verbose_name='Дом')

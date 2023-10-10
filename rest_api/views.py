@@ -1,15 +1,23 @@
 # Create your views here.
+
 from django.http import Http404
 from rest_framework.decorators import api_view
-from rest_framework.generics import ListAPIView, get_object_or_404
+from rest_framework.generics import ListAPIView, get_object_or_404, CreateAPIView, RetrieveUpdateAPIView, \
+    RetrieveAPIView
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
+from basket_app.models import Order, OrderItem
 from products_app.models import ProcessorList, VideoCardList, MotherboardList, MemoryList
 from products_app.serializers import (ProcessorSerializer, VideocardSerializer, MotherboardSerializer,
                                       MemorySerializer, IndexRandomSerializer, ProductSerializer)
 from reviews_app.models import ProductReview
-from users_app.models import User
+from users_app.models import User, UserAddress
+from users_app.serializers import UserRegistrationSerializer, UserProfileSerializer, UserAddressSerializer, \
+    UserOrdersSerializer, UserOrderSerializer
+
+"""API products_app"""
 
 
 class TestAPIView(APIView):
@@ -129,3 +137,58 @@ class MotherboardListAPIView(ListAPIView):  # API список материно�
 class MemoryListAPIView(ListAPIView):  # API список озу
     queryset = MemoryList.objects.select_related('category', 'brand', 'type')
     serializer_class = MemorySerializer
+
+
+"""API user_app"""
+
+
+class UserRegistrationAPI(CreateAPIView):  # API регистрация пользователя
+    queryset = User
+    serializer_class = UserRegistrationSerializer
+
+
+class UserProfileAPI(RetrieveUpdateAPIView):  # API профиль пользователя/редактирование профиля (для авторизованных)
+    serializer_class = UserProfileSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        queryset = User.objects.get(id=self.request.user.id)
+        if not queryset:
+            raise Http404
+
+        return queryset
+
+
+class UserAddressAPI(RetrieveUpdateAPIView):  # API профиль пользователя/редактирование профиля (для авторизованных)
+    serializer_class = UserAddressSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        obj = UserAddress.objects.get(user_id=self.request.user.id)
+        if not obj:
+            raise Http404
+
+        return obj
+
+
+class UserOrdersAPI(ListAPIView):  # API список заказов пользователя
+    serializer_class = UserOrdersSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = Order.objects.filter(user_id=self.request.user.id)
+
+        return queryset
+
+
+class UserOrderAPI(ListAPIView):  # API содержимое заказа
+    serializer_class = UserOrderSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        queryset = OrderItem.objects.filter(user_id=self.request.user.id, order_id=self.kwargs['order_id']).order_by(
+            'product_category')
+        if not queryset:
+            raise Http404
+
+        return queryset

@@ -18,7 +18,7 @@ class Order(models.Model):
     first_name = models.CharField(max_length=64, verbose_name='Имя')
     last_name = models.CharField(max_length=64, verbose_name='Фамилия')
 
-    postcode = models.PositiveIntegerField(verbose_name='Индекс')
+    postcode = models.PositiveIntegerField(help_text='Индекс может содержать только цифры', verbose_name='Индекс')
     city = models.CharField(max_length=64, verbose_name='Город')
     street = models.CharField(max_length=64, verbose_name='Улица')
     building = models.CharField(max_length=64, verbose_name='Дом')

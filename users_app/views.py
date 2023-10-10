@@ -2,7 +2,7 @@ from django.conf import settings
 from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, ValidationError
 from django.shortcuts import render, HttpResponseRedirect
 from django.urls import reverse
 from django.utils.timezone import now
@@ -146,6 +146,7 @@ def profile(request):  # профиль пользователя
                     profile_address_form.save()
                     messages.add_message(request, messages.SUCCESS, 'Адрес обновлен')
                 else:
+                    messages.add_message(request, messages.ERROR, 'Индекс должен содержать только цифры')
                     print('Ошибка валидации UserAddressForm')
 
             return HttpResponseRedirect(reverse('users:profile'))
