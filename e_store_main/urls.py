@@ -27,6 +27,7 @@ urlpatterns = [
     path('users/', include('users_app.urls')),
     path('basket/', include('basket_app.urls')),
     path('api/', include('rest_api.urls')),
+    path('api/auth/', include('rest_framework.urls')),
 
 ]
 

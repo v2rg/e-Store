@@ -1,8 +1,9 @@
 from django.core.cache import cache
 from rest_framework import serializers
 
-from products_app.models import ProcessorList, VideoCardList, MotherboardList, MemoryList, Category, Brand, Socket, \
-    CpuLine, MemoryType, GpuModel, GpuPciVersion, MbFormFactor, MbChipset
+from products_app.models import (ProcessorList, VideoCardList, MotherboardList, MemoryList, Category, Brand, Socket,
+                                 CpuLine, MemoryType, GpuModel, GpuPciVersion, MbFormFactor, MbChipset)
+from reviews_app.models import ProductReview
 
 COMMON_FIELDS = ['sku', 'category', 'brand',
                  'name', 'description', 'price',
@@ -86,6 +87,20 @@ class ProductSerializer(serializers.BaseSerializer):  # API вывод това�
             )
 
         return data
+
+
+class ProductReviewSerializer(serializers.ModelSerializer):  # API отзывы по артикулу
+    user = serializers.SlugRelatedField(slug_field='username', read_only=True)
+
+    class Meta:
+        model = ProductReview
+        fields = ['product_sku', 'user', 'rating', 'created_datetime', 'review']
+
+
+class ProductUserReviewSerializer(serializers.ModelSerializer):  # API отзыв пользователя по артикулу
+    class Meta:
+        model = ProductReview
+        fields = ['product_sku', 'created_datetime', 'review']
 
 
 class ProcessorSerializer(serializers.ModelSerializer):  # API список всех процессоров

@@ -18,7 +18,7 @@ class ProductReviewQuerySet(models.QuerySet):
 
 class ProductReview(models.Model):
     product_sku = models.PositiveIntegerField(db_index=True, verbose_name='Артикул')
-    user = models.ForeignKey(to=User, null=True, on_delete=models.SET_NULL, verbose_name='Пользователь')
+    user = models.ForeignKey(to=User, null=True, on_delete=models.CASCADE, verbose_name='Пользователь')
     review = models.CharField(max_length=2000, verbose_name='Отзыв о товаре')
     rating = models.PositiveSmallIntegerField(default=0, verbose_name='Оценка товара')
     created_datetime = models.DateTimeField(auto_now_add=True, verbose_name='Дата написания отзыва')

@@ -1,47 +1,32 @@
 # Create your views here.
-
 from django.http import Http404
+from rest_framework import mixins
 from rest_framework.decorators import api_view
-from rest_framework.generics import ListAPIView, get_object_or_404, CreateAPIView, RetrieveUpdateAPIView, \
-    RetrieveAPIView
+from rest_framework.generics import (ListAPIView, get_object_or_404, CreateAPIView, RetrieveUpdateAPIView)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework.viewsets import GenericViewSet
 
 from basket_app.models import Order, OrderItem
 from products_app.models import ProcessorList, VideoCardList, MotherboardList, MemoryList
 from products_app.serializers import (ProcessorSerializer, VideocardSerializer, MotherboardSerializer,
-                                      MemorySerializer, IndexRandomSerializer, ProductSerializer)
+                                      MemorySerializer, IndexRandomSerializer, ProductSerializer,
+                                      ProductReviewSerializer, ProductUserReviewSerializer)
 from reviews_app.models import ProductReview
 from users_app.models import User, UserAddress
-from users_app.serializers import UserRegistrationSerializer, UserProfileSerializer, UserAddressSerializer, \
-    UserOrdersSerializer, UserOrderSerializer
+from users_app.serializers import (UserRegistrationSerializer, UserProfileSerializer, UserAddressSerializer,
+                                   UserOrdersSerializer, UserOrderSerializer)
 
 """API products_app"""
 
 
 class TestAPIView(APIView):
     def get(self, request):
-        return Response({'test_get': 'test'})
+        return Response({'test': 'GET'})
 
-    def post(self, request):  # добавить отзыв к товару (user: test)
-        if (ProcessorList.objects.filter(sku=request.data['product_sku']) or
-                VideoCardList.objects.filter(sku=request.data['product_sku']) or
-                MotherboardList.objects.filter(sku=request.data['product_sku']) or
-                MemoryList.objects.filter(sku=request.data['product_sku'])):
-
-            test_user = User.objects.get(username='test')
-            current_review = ProductReview.objects.create(
-                product_sku=request.data['product_sku'],
-                user=test_user,
-                review=request.data['review']
-            )
-            response = ProductReview.objects.filter(product_sku=request.data['product_sku'], user=test_user).values(
-                'product_sku', 'review')
-
-            return Response(response)
-        else:
-            return Response(f"Товара с sku {request.data['product_sku']} нет")
+    def post(self, request):
+        return Response({'test': 'POST'})
 
 
 @api_view(['GET'])
@@ -68,8 +53,6 @@ def index_random_api(request):  # API 8 рандомных товаров на �
             'name', 'short_description', 'price').order_by('?')[:2]
 
         random_products = random_processors.union(random_videocards).union(random_motherboards).union(random_memories)
-
-        print(random_products)
 
         serializer = IndexRandomSerializer(random_products, many=True)
 
@@ -102,7 +85,7 @@ class IndexRandomAPIList(APIView):  # API 8 рандомных товаров н
 
 
 @api_view(['GET'])
-def product_api(request, sku):  # API товар по артикулу
+def product_api(request, sku):  # API информация о товаре, по артикулу
     if request.method == 'GET':
         obj_list = [x.objects.filter(sku=sku).values() for x in
                     (ProcessorList, VideoCardList, MotherboardList, MemoryList) if x.objects.filter(sku=sku).exists()]
@@ -116,6 +99,64 @@ def product_api(request, sku):  # API товар по артикулу
             return Response(serializer.data)
         else:
             raise Http404
+
+
+class ProductReviewsAPIView(ListAPIView):  # API все отзывы по артикулу
+
+    def get(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        if not queryset:
+            return Response({'error': 'Отзывов нет'})
+        else:
+            serializer = ProductReviewSerializer(queryset, many=True)
+            return Response(serializer.data)
+
+    def get_queryset(self):
+        if any([x.objects.filter(sku=self.kwargs['sku']).exists() for x in
+                (ProcessorList, VideoCardList, MotherboardList, MemoryList)]):
+            queryset = ProductReview.objects.filter(product_sku=self.kwargs['sku'])
+            return queryset
+        else:
+            raise Http404
+
+
+class ProductUserReviewViewSet(mixins.RetrieveModelMixin, mixins.CreateModelMixin,
+                               GenericViewSet):  # отзыв текущего юзера о товаре, по артикулу
+    queryset = ProductReview.objects.all()
+    serializer_class = ProductUserReviewSerializer
+    permission_classes = [IsAuthenticated]
+
+    def retrieve(self, request, *args, **kwargs):  # получаем отзыв о товаре
+        try:
+            obj = self.queryset.get(user_id=self.request.user.id, product_sku=kwargs[self.lookup_field])
+        except (ProductReview.DoesNotExist, ValueError):
+            raise Http404
+        else:
+            # serializer = ProductReviewSerializer(obj, many=False)
+            serializer = self.get_serializer(obj)
+            return Response(serializer.data)
+
+    def create(self, request, *args, **kwargs):  # добавляем новый отзыв о товаре
+        if any([x.objects.filter(sku=request.data['product_sku']).exists() for x in
+                (ProcessorList, VideoCardList, MotherboardList, MemoryList)]) and request.user.is_authenticated:
+            if ProductReview.objects.filter(product_sku=request.data['product_sku'], user=request.user):
+                return Response({'error': 'Отзыв уже был добавлен'})
+            else:
+                review = ProductReview.objects.create(
+                    product_sku=request.data['product_sku'],
+                    user=request.user,
+                    review=request.data['review']
+                )
+                serializer = self.get_serializer(review)
+
+                return Response(serializer.data)
+        else:
+            return Response({'error': f'товар с sku {request.data["product_sku"]} не найден'})
+
+
+class ProductReviewAddAPIView(CreateAPIView):  # API добавить отзыв о товаре
+    queryset = ProductReview.objects.all()
+    serializer_class = ProductReviewSerializer
 
 
 class ProcessorListAPIView(ListAPIView):  # API список процессоров
@@ -152,11 +193,11 @@ class UserProfileAPI(RetrieveUpdateAPIView):  # API профиль пользо�
     permission_classes = [IsAuthenticated]
 
     def get_object(self):
-        queryset = User.objects.get(id=self.request.user.id)
-        if not queryset:
+        obj = User.objects.get(id=self.request.user.id)
+        if not obj:
             raise Http404
 
-        return queryset
+        return obj
 
 
 class UserAddressAPI(RetrieveUpdateAPIView):  # API профиль пользователя/редактирование профиля (для авторизованных)
@@ -171,7 +212,7 @@ class UserAddressAPI(RetrieveUpdateAPIView):  # API профиль пользо�
         return obj
 
 
-class UserOrdersAPI(ListAPIView):  # API список заказов пользователя
+class UserOrdersAPI(ListAPIView):  # API список заказов пользователя (для авторизованных)
     serializer_class = UserOrdersSerializer
     permission_classes = [IsAuthenticated]
 
@@ -181,7 +222,7 @@ class UserOrdersAPI(ListAPIView):  # API список заказов польз�
         return queryset
 
 
-class UserOrderAPI(ListAPIView):  # API содержимое заказа
+class UserOrderAPI(ListAPIView):  # API содержимое заказа (для авторизованных)
     serializer_class = UserOrderSerializer
     permission_classes = [IsAuthenticated]
 

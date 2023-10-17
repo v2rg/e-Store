@@ -153,6 +153,9 @@ AUTH_USER_MODEL = 'users_app.User'
 # Login
 LOGIN_URL = '/users/login/'
 
+# Login redirect
+LOGIN_REDIRECT_URL = '/'
+
 # Logout
 LOGOUT_REDIRECT_URL = '/users/login/'
 
