@@ -34,3 +34,7 @@ urlpatterns = [
 if settings.DEBUG:
     urlpatterns.append(path("__debug__/", include("debug_toolbar.urls")))
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
+#  кастом admin
+admin.site.site_header = 'Администрирование e-Store'
+admin.site.index_title = 'e-Store админка'

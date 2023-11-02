@@ -156,12 +156,20 @@ def order_confirmation(request):  # подтверждение заказа
                                         if value['category_id'] == int(category_id):
                                             current_product = getattr(products_app.models, category).objects.get(
                                                 sku=sku)
+
+                                            # уменьшаем количество товара и меняем статус, если остаток < 1
                                             if current_product.quantity >= value['quantity']:
-                                                getattr(products_app.models, category).objects.filter(sku=sku).update(
-                                                    quantity=F('quantity') - value[
-                                                        'quantity'])  # уменьшаем количество товара
-                                                # current_product.quantity -= value['quantity']
-                                                # current_product.save()
+                                                current = getattr(products_app.models, category).objects.get(sku=sku)
+                                                current.quantity = current.quantity - value['quantity']
+                                                # current.active = False if current.quantity - value[
+                                                #     'quantity'] == 0 else current.active
+                                                current.save(update_fields=['quantity'])
+
+                                                # getattr(products_app.models, category).objects.filter(sku=sku).update(
+                                                #     quantity=F('quantity') - value['quantity'],
+                                                #     active=False if (F('quantity') - value['quantity']) < 1 else True
+                                                # )  # уменьшаем количество товара
+
                                                 print(f'[{category_id}, {sku}] обновлено')
                                             else:
                                                 messages.add_message(request, messages.ERROR, '')

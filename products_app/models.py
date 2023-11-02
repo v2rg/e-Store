@@ -223,6 +223,13 @@ class AbstractProduct(models.Model):  # АБСТРАКТНЫЙ класс тов
         else:
             return self.thumbnail.url
 
+    def save(self, force_insert=False, force_update=False, using=None,
+             update_fields=None):
+        if self.quantity < 1:  # если остаток товара < 1, меняем active на False
+            self.active = False
+
+        return super(AbstractProduct, self).save()
+
 
 class ProcessorList(AbstractProduct):  # процессоры
     line = models.ForeignKey(to=CpuLine, on_delete=models.CASCADE, verbose_name='Линейка процессора')
