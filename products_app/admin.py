@@ -99,7 +99,7 @@ class VideoCardListAdmin(AbstractCatalogModelAdmin):  # список видео�
 
 
 @admin.register(MotherboardList)
-class MotherboardListAdmin(AbstractCatalogModelAdmin):  # список мат. плат
+class MotherboardListAdmin(AbstractCatalogModelAdmin):  # список мат.плат
     fieldsets = (
         ('Основные', {
             'fields': COMMON_FIELDS
@@ -122,14 +122,85 @@ class MemoryListAdmin(AbstractCatalogModelAdmin):  # список ОЗУ
     )
 
 
-admin.site.register(Category)
-admin.site.register(Brand)
-admin.site.register(Socket)
-admin.site.register(MemoryType)
-admin.site.register(GpuPciVersion)
-admin.site.register(GpuModel)
-admin.site.register(CpuLine)
-admin.site.register(MbChipset)
-admin.site.register(MbFormFactor)
+@admin.register(ProductImage)
+class ProductImageAdmin(admin.ModelAdmin):  # изображения товаров
+    search_fields = ['sku']
+    list_display = ['sku', 'category', 'carousel_id', 'image']
+    readonly_fields = ['thumbnail_preview']
+    ordering = ['sku', 'carousel_id']
 
-admin.site.register(ProductImage)
+    fields = ['sku', 'category', 'carousel_id', 'image', 'thumbnail_preview']
+
+    @admin.display(description='Изображение')
+    def thumbnail_preview(self, obj):  # превью товара
+        return mark_safe(f"<img src='{obj.image.url}' style='max-height: 200px;'>")
+
+
+@admin.register(Brand)
+class BrandAdmin(admin.ModelAdmin):  # список брендов
+    search_fields = ['brand_name']
+    list_filter = ['category__category_name']
+    list_display = ['id', 'brand_name', 'category_display', 'description']
+    list_display_links = ['brand_name']
+
+    def get_queryset(self, request):  # снижаем кол-во запросов для ManyToManyField
+        queryset = super().get_queryset(request)
+        return queryset.prefetch_related('category')
+
+    @admin.display(description='Категория')
+    def category_display(self, obj):  # категории бренда
+        return ' | '.join([x.category_name for x in obj.category.all()])
+
+
+@admin.register(Category)
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ['id', 'category_name', 'category_name_eng', 'description']
+    ordering = ['id']
+
+
+@admin.register(Socket)
+class SocketAdmin(admin.ModelAdmin):
+    list_display = ['id', 'brand_name', 'socket_name', 'description']
+    ordering = ['brand_name']
+
+
+@admin.register(MemoryType)
+class MemoryTypeAdmin(admin.ModelAdmin):
+    list_display = ['id', 'type_name', 'description']
+    list_display_links = ['type_name']
+    ordering = ['type_name']
+
+
+@admin.register(GpuPciVersion)
+class GpuPciVersionAdmin(admin.ModelAdmin):
+    list_display = ['id', 'version_name', 'description']
+    list_display_links = ['version_name']
+    ordering = ['version_name']
+
+
+@admin.register(GpuModel)
+class GpuModelAdmin(admin.ModelAdmin):
+    list_display = ['id', 'gpu_name', 'gpu_brand', 'description']
+    list_display_links = ['gpu_name']
+    ordering = ['gpu_name']
+
+
+@admin.register(CpuLine)
+class CpuLineAdmin(admin.ModelAdmin):
+    list_display = ['id', 'line_name', 'cpu_brand', 'description']
+    list_display_links = ['line_name']
+    ordering = ['line_name']
+
+
+@admin.register(MbChipset)
+class MbChipsetAdmin(admin.ModelAdmin):
+    list_display = ['id', 'chipset_name', 'description']
+    list_display_links = ['chipset_name']
+    ordering = ['chipset_name']
+
+
+@admin.register(MbFormFactor)
+class MbFormFactorAdmin(admin.ModelAdmin):
+    list_display = ['id', 'formfactor_name', 'description']
+    list_display_links = ['formfactor_name']
+    ordering = ['formfactor_name']

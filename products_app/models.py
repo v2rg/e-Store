@@ -23,7 +23,7 @@ class Category(AbstractDescription):  # категории товара
 
     class Meta:
         verbose_name = 'категория'
-        verbose_name_plural = 'Категории'
+        verbose_name_plural = 'Категории товаров'
 
     def __str__(self):
         return f'{self.id} | {self.category_name}'
@@ -56,7 +56,7 @@ class Socket(AbstractDescription):  # сокеты
     class Meta:
         ordering = ['socket_name']
         verbose_name = 'сокет'
-        verbose_name_plural = 'CPU Сокеты'
+        verbose_name_plural = '(CPU) Сокеты'
 
     def __str__(self):
         return self.socket_name
@@ -73,7 +73,7 @@ class MemoryType(AbstractDescription):  # тип оперативной памя
     class Meta:
         ordering = ['type_name']
         verbose_name = 'тип памяти'
-        verbose_name_plural = 'RAM Тип памяти'
+        verbose_name_plural = '(RAM) Тип памяти'
 
     def __str__(self):
         return self.type_name
@@ -90,7 +90,7 @@ class GpuPciVersion(AbstractDescription):  # версия PCI
     class Meta:
         ordering = ['version_name']
         verbose_name = 'версия PCI'
-        verbose_name_plural = 'GPU Версии PCI'
+        verbose_name_plural = '(GPU) Версии PCI'
 
     def __str__(self):
         return self.version_name
@@ -107,7 +107,7 @@ class GpuModel(AbstractDescription):  # модель GPU
     class Meta:
         ordering = ['gpu_name']
         verbose_name = 'модель GPU'
-        verbose_name_plural = 'GPU Модели GPU'
+        verbose_name_plural = '(GPU) Модели GPU'
 
     def __str__(self):
         return self.gpu_name
@@ -125,7 +125,7 @@ class CpuLine(AbstractDescription):  # линейка процессоров
     class Meta:
         ordering = ['line_name']
         verbose_name = 'линейка CPU'
-        verbose_name_plural = 'CPU Линейки CPU'
+        verbose_name_plural = '(CPU) Линейки CPU'
 
     def __str__(self):
         return self.line_name
@@ -140,7 +140,7 @@ class MbFormFactor(AbstractDescription):  # форм-фактор материн
 
     class Meta:
         verbose_name = 'форм-фактор мат. платы'
-        verbose_name_plural = 'MB Форм-фактор мат.платы'
+        verbose_name_plural = '(MB) Форм-фактор мат.платы'
 
     def __str__(self):
         return self.formfactor_name
@@ -157,7 +157,7 @@ class MbChipset(AbstractDescription):  # чипсет материнской п�
     class Meta:
         ordering = ['chipset_name']
         verbose_name = 'чипсет мат. платы'
-        verbose_name_plural = 'MB Чипсеты мат. плат'
+        verbose_name_plural = '(MB) Чипсеты мат. плат'
 
     def __str__(self):
         return self.chipset_name
@@ -243,7 +243,7 @@ class ProcessorList(AbstractProduct):  # процессоры
     class Meta:
         ordering = ['-sku']
         verbose_name = 'процессор'
-        verbose_name_plural = 'CAT Процессоры'
+        verbose_name_plural = '(CATALOG) Процессоры'
 
     def __str__(self):
         return f'{self.sku} | {self.brand} | {self.name}'
@@ -260,7 +260,7 @@ class MotherboardList(AbstractProduct):  # материнские платы
     class Meta:
         ordering = ['-sku']
         verbose_name = 'материнская плата'
-        verbose_name_plural = 'CAT Материнские платы'
+        verbose_name_plural = '(CATALOG) Материнские платы'
 
     def __str__(self):
         return f'{self.sku} | {self.brand} | {self.name}'
@@ -277,7 +277,7 @@ class VideoCardList(AbstractProduct):  # видеокарты
     class Meta:
         ordering = ['-sku']
         verbose_name = 'видеокарта'
-        verbose_name_plural = 'CAT Видеокарты'
+        verbose_name_plural = '(CATALOG) Видеокарты'
 
     def __str__(self):
         return f'{self.sku} | {self.brand} | {self.name}'
@@ -291,7 +291,7 @@ class MemoryList(AbstractProduct):  # оперативная память
     class Meta:
         ordering = ['-sku']
         verbose_name = 'оперативная память'
-        verbose_name_plural = 'CAT Оперативная память'
+        verbose_name_plural = '(CATALOG) Оперативная память'
 
     def __str__(self):
         return f'{self.sku} | {self.brand} | {self.name}'
