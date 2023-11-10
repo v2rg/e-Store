@@ -39,12 +39,13 @@ class Order(models.Model):
         verbose_name_plural = 'Заказы'
 
     def __str__(self):
-        return (
-            f'{self.id} || '
-            f'{self.user_id.username} || '
-            f'Создан: {self.created_datetime.strftime("%d.%m.%Y, %H:%M:%S")} | '
-            f'Обновлен: {self.updated_datetime.strftime("%d.%m.%Y, %H:%M:%S")} || '
-            f'Статус: {self.status}')
+        # return (
+        #     f'{self.id} || '
+        #     f'{self.user_id.username} || '
+        #     f'Создан: {self.created_datetime.strftime("%d.%m.%Y, %H:%M:%S")} | '
+        #     f'Обновлен: {self.updated_datetime.strftime("%d.%m.%Y, %H:%M:%S")} || '
+        #     f'Статус: {self.status}')
+        return f'{self.id}'
 
 
 class OrderItem(models.Model):

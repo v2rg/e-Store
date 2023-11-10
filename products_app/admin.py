@@ -1,4 +1,4 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from django.db.models import Sum
 from django.utils.safestring import mark_safe
 
@@ -67,11 +67,13 @@ class AbstractCatalogModelAdmin(admin.ModelAdmin):  # действия для в
 
     @admin.action(description='Изменить статус на Активно')
     def make_active(self, request, queryset):  # изменение статуса на Активно
-        queryset.update(active=True)
+        count = queryset.update(active=True)
+        self.message_user(request, f'Статус {count} записей изменен на Активно', messages.WARNING)
 
     @admin.action(description='Изменить статус на НЕактивно')
     def make_not_active(self, request, queryset):  # изменение статуса на НЕактивно
-        queryset.update(active=False)
+        count = queryset.update(active=False)
+        self.message_user(request, f'Статус {count} записей изменен на Неактивно', messages.WARNING)
 
 
 @admin.register(ProcessorList)

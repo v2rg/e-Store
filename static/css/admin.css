@@ -1,0 +1,8 @@
+/*#changelist-filter li.selected a {*/
+/*    background-color: #ff9800;*/
+/*}*/
+
+#changelist-filter #changelist-filter-clear a {
+    padding-top: 10px;
+    background-color: #5be238;
+}
