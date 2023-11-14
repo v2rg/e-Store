@@ -1,0 +1,153 @@
+{% extends 'products_app/base.html' %}
+{% load static %}
+
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+
+{% block description %}
+    <div>
+        Каталог
+        <br>
+        Выводит список элементов из таблиц (по категориям, брендам, моделям)
+    </div>
+{% endblock %}
+
+
+{% block content %}
+    <div class="col-9">
+
+        <div class="row">
+
+            <!--Результат поиска-->
+            <div class="col-8">
+                {% if object_list %}
+                    <h3>
+                        Результат поиска: {{ object_list|length }}
+                    </h3>
+                {% else %}
+                    <h3>
+                        Результат поиска:
+                    </h3>
+                {% endif %}
+            </div>
+
+
+            <!--Горизонтальная карточка товара-->
+            <div class="row">
+                {% if object_list %}
+                    {% for product in object_list %}
+                        <div class="row" style="padding-top: 20px;">
+                            <div class="card mb-2"
+                                 style="--bs-card-spacer-x: 50px">
+                                <div class="row align-items-center">
+                                    <div class="col-3">
+                                        <a href="{% url 'products:product' product.category product.sku %}">
+                                            <img src="{% if product.thumbnail %} /media/{{ product.thumbnail }} {% else %} {% static 'img/no-photos.png' %} {% endif %}"
+                                                 class="img-fluid rounded mx-auto d-block"
+                                                 style="max-width: 90%; padding-top: 5px; padding-bottom: 5px"
+                                                 alt="{{ product.name }}">
+                                        </a>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <div class="card-body">
+                                            <h6>
+                                                {% if product.category == 1 %}
+                                                    Процессор
+                                                {% elif product.category == 2 %}
+                                                    Видеокарта
+                                                {% elif product.category == 3 %}
+                                                    Материнская плата
+                                                {% elif product.category == 4 %}
+                                                    Оперативная память
+                                                {% endif %}
+                                            </h6>
+                                            <h5 class="col card-title">
+                                                <a href="{% url 'products:product' product.category product.sku %}"
+                                                   style="text-decoration: none; ">{{ product.name }}
+                                                </a>
+                                                {% if product.avg_rating %}
+                                                    <span class="position-absolute top-1 start-100 translate-middle badge border border-end rounded-bottom-circle bg-secondary p-2">
+                                                                ★ {{ product.avg_rating|stringformat:'.1f' }}
+                                                            </span>
+                                                {% endif %}
+                                            </h5>
+                                            <p class="card-text">{{ product.short_description }}</p>
+                                            <p class="card-text"><small class="text-body-secondary"></small>
+                                            </p>
+                                            <hr>
+                                            <div class="row text-center">
+                                                <div class="col-7 fs-3">
+                                                    Цена: {{ product.price }}
+                                                </div>
+                                                <div class="col-5">
+                                                    {% if product.quantity > 0 %}
+                                                        {% if product.sku in skus %}
+                                                            <a href="{% url 'basket:basket' %}"
+                                                               class="btn btn-secondary d-block mx-auto">В корзине
+                                                            </a>
+                                                        {% else %}
+                                                            <a href="{% url 'basket:basket_add' product_sku=product.sku category_id=product.category %}"
+                                                               class="btn btn-primary d-block mx-auto">Добавить в
+                                                                корзину
+                                                            </a>
+                                                        {% endif %}
+                                                    {% else %}
+                                                        <button class="btn btn-dark" disabled>Нет в наличии</button>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <div class="text-center">
+                        <h4>Ничего не найдено</h4>
+                    </div>
+                {% endif %}
+            </div>
+
+
+            <!--Пагинация-->
+            <div class="row" style="padding-top: 50px">
+                <div class="col" style="padding-bottom: 100px">
+
+                    {% if page_obj.has_other_pages %}
+                        <nav aria-label="Page navigation example">
+                            <ul class="pagination justify-content-center">
+                                <li class="{% if page_obj.has_previous %} page-item {% else %} disabled {% endif %}">
+                                    <a class="page-link" style=""
+                                       href="{% if page_obj.has_previous %} ?page={{ page_obj.previous_page_number }} {% else %} # {% endif %}"
+                                       tabindex="-1" aria-disabled="true">
+                                        Предыдущая
+                                    </a>
+                                </li>
+
+                                {% for page in page_obj.paginator.page_range %}
+                                    <li class="page-item {% if page == page_obj.number %} disabled {% endif %}">
+                                        <a class="page-link" href="?page={{ page }}">
+                                            {{ page }}
+                                        </a>
+                                    </li>
+                                {% endfor %}
+
+                                <li class=" {% if page_obj.has_next %} page-item {% else %} disabled {% endif %}">
+                                    <a class="page-link"
+                                       href="{% if page_obj.has_next %} ?page={{ page_obj.next_page_number }} {% else %} # {% endif %}">
+                                        Следующая
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+                    {% endif %}
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

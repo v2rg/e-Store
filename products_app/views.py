@@ -3,6 +3,7 @@ from random import random
 from django.conf import settings
 from django.contrib import messages
 from django.core.cache import cache
+from django.db.models import Q
 # from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404
@@ -63,7 +64,7 @@ class IndexView(TitleMixin, TemplateView):  # главная страница (C
 
 class CatalogView(ListView):  # каталог (CBV)
     template_name = 'products_app/catalog.html'
-    model = Category
+    # model = Category
     paginate_by = 5
     sort_method = None
     sort_by = None
@@ -282,6 +283,7 @@ class ProductView(ContextMixin, View):  # карточка товара (CBV)
 
         return context
 
+
 # def product(request, category_id=None, sku=None):  # карточка товара (заменен на CBV)
 #
 #     if request.method == 'POST':
@@ -347,3 +349,56 @@ class ProductView(ContextMixin, View):  # карточка товара (CBV)
 #     }
 #
 #     return render(request, 'products_app/product.html', context)
+
+
+class SearchView(TitleMixin, ListView):  # поиск
+    template_name = 'products_app/search.html'
+    title = 'e-Store - Поиск'
+    QUERYSET_VALUES = ['sku', 'category', 'brand', 'name', 'short_description', 'thumbnail', 'price', 'avg_rating']
+
+    # paginate_by = 5
+
+    def get_queryset(self):  # поиск по названию и артикулу
+        if len(self.request.GET.get('q')) > 1:
+            try:
+                sku = int(self.request.GET.get('q'))
+            except ValueError:
+                queryset = (
+                    ProcessorList.objects.filter(
+                        name__icontains=self.request.GET.get('q')).values(*self.QUERYSET_VALUES).
+                    union(VideoCardList.objects.filter(
+                        name__icontains=self.request.GET.get('q')).values(*self.QUERYSET_VALUES)).
+                    union(MotherboardList.objects.filter(
+                        name__icontains=self.request.GET.get('q')).values(*self.QUERYSET_VALUES)).
+                    union(MemoryList.objects.filter(
+                        name__icontains=self.request.GET.get('q')).values(*self.QUERYSET_VALUES))
+                )
+                return queryset.order_by('category', '-avg_rating', 'name')
+
+            else:
+                queryset = (
+                    ProcessorList.objects.filter(
+                        name__icontains=self.request.GET.get('q')).values(*self.QUERYSET_VALUES).
+                    union(ProcessorList.objects.filter(
+                        sku__icontains=sku).values(*self.QUERYSET_VALUES)
+                          ).
+                    union(VideoCardList.objects.filter(
+                        name__icontains=self.request.GET.get('q')).values(*self.QUERYSET_VALUES)).
+                    union(VideoCardList.objects.filter(
+                        sku__icontains=sku).values(*self.QUERYSET_VALUES)
+                          ).
+                    union(MotherboardList.objects.filter(
+                        name__icontains=self.request.GET.get('q')).values(*self.QUERYSET_VALUES)).
+                    union(MotherboardList.objects.filter(
+                        sku__icontains=sku).values(*self.QUERYSET_VALUES)
+                          ).
+                    union(MemoryList.objects.filter(
+                        name__icontains=self.request.GET.get('q')).values(*self.QUERYSET_VALUES)).
+                    union(MemoryList.objects.filter(
+                        sku__icontains=sku).values(*self.QUERYSET_VALUES)
+                          )
+                )
+                return queryset.order_by('category', '-avg_rating', 'name')
+
+        else:
+            return None

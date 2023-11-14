@@ -14,6 +14,8 @@ urlpatterns = [
 
     path('<str:method>', views.sorting_method, name='sorting_method'),
 
+    path('search/', views.SearchView.as_view(), name='search'),
+
     # path('product/<int:category_id>/<int:sku>/', views.product, name='product'),
     path('product/<int:category_id>/<int:sku>/', views.ProductView.as_view(), name='product'),
 

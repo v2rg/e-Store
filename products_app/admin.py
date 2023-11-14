@@ -1,5 +1,4 @@
 from django.contrib import admin, messages
-from django.db.models import Sum
 from django.utils.safestring import mark_safe
 
 # Register your models here.

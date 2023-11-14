@@ -92,6 +92,9 @@
                             </div>
                             <div class="col-md-9">
                                 <div class="card-body">
+                                    <h6>
+                                        {{ product.category.category_name }}
+                                    </h6>
                                     <h5 class="col- card-title">
                                         <a href="{% url 'products:product' product.category.id product.sku %}"
                                            style="text-decoration: none; ">{{ product.name }}
