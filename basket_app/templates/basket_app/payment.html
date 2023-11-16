@@ -1,0 +1,38 @@
+{% extends 'users_app/base.html' %}
+
+
+{% block title %}
+    {{ title }}
+{% endblock %}
+
+
+{% block description %}
+    <b>Оплата заказа</b> <br>
+{% endblock %}
+
+
+{% block content %}
+
+    <!--Оплата заказа-->
+    <div class="row justify-content-center">
+        <div class="col-lg-8 text-center">
+            {% if not current_order %}
+                <h3 class="text-center font-weight-light my-4">Ошибка</h3>
+            {% else %}
+                <h3 class="text-center font-weight-light my-4">Оплата заказа № {{ current_order.id }}</h3>
+                <div>
+                    <p>
+                        Сумма к оплате: <b>{{ current_order.total_sum }} р.</b>
+                    </p>
+                    <p>
+                        <a class="btn btn-outline-success" type="button"
+                           href="{% url 'basket:payment_confirmation' current_order.id %}">Оплатить</a>
+                        <a class="btn btn-outline-danger" type="button" href="{% url 'users:orders' %}">Отказаться от
+                            оплаты</a>
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+{% endblock %}

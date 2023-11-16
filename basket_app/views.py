@@ -2,7 +2,6 @@ from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models import F
 from django.shortcuts import render, HttpResponseRedirect
 from django.urls import reverse
 from django.views.generic import TemplateView
@@ -247,3 +246,36 @@ def order_confirmation(request):  # подтверждение заказа
     }
 
     return render(request, 'basket_app/confirmation.html', context)
+
+
+@login_required
+def payment(request, order_id=None):  # оплата заказа
+    if request.method == 'GET':
+        try:
+            current_order = Order.objects.get(id=order_id, user_id=request.user)
+        except ObjectDoesNotExist:
+            return HttpResponseRedirect(reverse('index'))
+        else:
+            # current_order_items = OrderItem.objects.filter(order_id=order_id, user_id=request.user)
+            context = {
+                'current_order': current_order,
+                # 'current_order_items': current_order_items,
+            }
+            return render(request, 'basket_app/payment.html', context)
+
+
+@login_required
+def payment_confirmation(request, order_id=None):  # подтверждение оплаты
+    if request.method == 'GET':
+        try:
+            current_order = Order.objects.get(id=order_id, user_id=request.user)
+        except ObjectDoesNotExist:
+            return HttpResponseRedirect(reverse('index'))
+        else:
+            if current_order.status == 'created':
+                current_order.status = 'paid'
+                current_order.save()
+                messages.info(request, f'Заказ №{order_id} успешно оплачен')
+                return HttpResponseRedirect(reverse('users:orders'))
+            else:
+                return HttpResponseRedirect(reverse('users:orders'))

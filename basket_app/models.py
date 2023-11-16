@@ -6,7 +6,7 @@ from products_app.models import Category
 
 # Create your models here.
 
-class Order(models.Model):
+class Order(models.Model):  # заказ
     ORDER_STATUS = [
         ('created', 'Создан'),
         ('paid', 'Оплачен'),
@@ -47,8 +47,15 @@ class Order(models.Model):
         #     f'Статус: {self.status}')
         return f'{self.id}'
 
+    def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
+        if self.status != 'created':
+            self.paid = True
+        else:
+            self.paid = False
+        super().save()
 
-class OrderItem(models.Model):
+
+class OrderItem(models.Model):  # содержимое заказа
     order_id = models.ForeignKey(to=Order, on_delete=models.CASCADE, verbose_name='Номер заказа')
     user_id = models.ForeignKey(to=User, on_delete=models.CASCADE, verbose_name='Пользователь')
     product_category = models.ForeignKey(to=Category, on_delete=models.CASCADE, verbose_name='Категория товара')

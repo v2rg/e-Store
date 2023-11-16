@@ -7,10 +7,10 @@
 
 
 {% block description %}
-    <div>
-        <b>Список заказов</b><br>
-        Статус paid после подтверждения оплаты, остальные статусы вручную
-    </div>
+    <b>Список заказов</b><br>
+    - Статус 'created' после подтверждения заказа <br>
+    - Статус 'paid' после подтверждения оплаты <br>
+    - Остальные статусы через админку
 {% endblock %}
 
 
@@ -22,8 +22,44 @@
             {% if not user_orders %}
                 <h3 class="text-center font-weight-light my-4">Заказов нет</h3>
             {% else %}
-                <h3 class="text-center font-weight-light my-4">Заказы</h3>
-                <table class="table table-hover">
+                <h3 class="text-center font-weight-light my-4">Заказы</h3><br>
+                {% if not_paid %}
+                    <h5 class="text-center font-weight-light my-4">Ожидают оплаты</h5>
+                    <table class="table table-hover">
+                        <thead>
+                        <tr class="">
+                            <th scope="col">ID заказа</th>
+                            <th scope="col">Статус</th>
+                            <th scope="col">Дата</th>
+                            <th scope="col">Итого</th>
+                            <th scope="col"></th>
+                            <th scope="col"></th>
+                        </tr>
+                        </thead>
+
+                        <tbody>
+                        {% for user_order in user_orders %}
+                            {% if user_order.status == 'created' %}
+                                <tr class="table-danger">
+                                    <td><b>{{ user_order.id }}</b></td>
+                                    <td>Не оплачен</td>
+                                    <td>{{ user_order.created_datetime }}</td>
+                                    <td>{{ user_order.total_sum }}</td>
+                                    <td><a href="{% url 'users:order' user_order.id %}">Подробнее</a></td>
+                                    <td class="table-light"><a href="{% url 'basket:payment' user_order.id %}"><b>Оплатить</b></a>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                {% endif %}
+
+                {% if not_paid %}
+                    <br>
+                    <h5 class="text-center font-weight-light my-4">Оплачены</h5>
+                {% endif %}
+                <table class=" table table-hover">
                     <thead>
                     <tr class="">
                         <th scope="col">ID заказа</th>
@@ -36,22 +72,24 @@
 
                     <tbody>
                     {% for user_order in user_orders %}
-                        <tr class="{% if user_order.status == 'created' %} table-danger
-                    {% elif user_order.status == 'delivered' %} table-light
-                    {% else %} table-success
-                    {% endif %}">
-                            <th scope="row">{{ user_order.id }}</th>
-                            <td>
-                                {% if user_order.status == 'created' %} создан
-                                {% elif user_order.status == 'paid' %} оплачен
-                                {% elif user_order.status == 'shipping' %} в пути
-                                {% elif user_order.status == 'delivered' %} доставлен
+                        {% if user_order.status != 'created' %}
+                            <tr class="{% if user_order.status == 'delivered' %} table-light {% else %} table-success {% endif %}">
+                                <td><b>{{ user_order.id }}</b></td>
+                                <td>
+                                    {% if user_order.status == 'paid' %} Оплачен
+                                    {% elif user_order.status == 'shipping' %} В пути
+                                    {% elif user_order.status == 'delivered' %} Доставлен
+                                    {% endif %}
+                                </td>
+                                <td>{{ user_order.created_datetime|date:'d.m.Y H:i' }}</td>
+                                <td>{{ user_order.total_sum }} руб.</td>
+
+                                <td><a href="{% url 'users:order' user_order.id %}">Подробнее</a></td>
+                                {% if user_order.status == 'created' %}
+                                    <td><a href="{% url 'basket:payment' user_order.id %}"><b>Оплатить</b></a></td>
                                 {% endif %}
-                            </td>
-                            <td>{{ user_order.created_datetime|date:'d.m.Y H:i' }}</td>
-                            <td>{{ user_order.total_sum }} руб.</td>
-                            <td><a href="{% url 'users:order' user_order.id %}">Подробнее</a></td>
-                        </tr>
+                            </tr>
+                        {% endif %}
                     {% endfor %}
                     </tbody>
                 </table>

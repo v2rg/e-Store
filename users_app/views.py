@@ -3,6 +3,7 @@ from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
 from django.core.exceptions import ObjectDoesNotExist, ValidationError
+from django.db.models import Q
 from django.shortcuts import render, HttpResponseRedirect
 from django.urls import reverse
 from django.utils.timezone import now
@@ -177,6 +178,7 @@ class OrdersView(TitleMixin, ListView):  # история заказов (CBV)
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
         context['user_orders'] = self.get_queryset()
+        context['not_paid'] = self.get_queryset().filter(status='created')
         return context
 
 
