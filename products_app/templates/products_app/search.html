@@ -23,11 +23,11 @@
             <div class="col-8">
                 {% if object_list %}
                     <h3>
-                        Результат поиска: {{ object_list|length }}
+                        Результат поиска по запросу: {{ query_string }} ({{ object_list|length }})
                     </h3>
                 {% else %}
                     <h3>
-                        Результат поиска:
+                        Результат поиска по запросу: {{ query_string }}
                     </h3>
                 {% endif %}
             </div>

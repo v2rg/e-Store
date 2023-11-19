@@ -3,7 +3,6 @@ from random import random
 from django.conf import settings
 from django.contrib import messages
 from django.core.cache import cache
-from django.db.models import Q
 # from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404
@@ -64,13 +63,24 @@ class IndexView(TitleMixin, TemplateView):  # главная страница (C
 
 class CatalogView(ListView):  # каталог (CBV)
     template_name = 'products_app/catalog.html'
-    # model = Category
     paginate_by = 5
     sort_method = None
     sort_by = None
 
+    def filtering(self, queryset):  # фильтрация
+        if self.request.session.get('filtering'):
+            if self.request.session['filtering']['high_rating']:
+                queryset = queryset.filter(avg_rating__gte=4)
+            if self.request.session['filtering']['price_from']:
+                queryset = queryset.filter(price__gte=self.request.session['filtering']['price_from'])
+            if self.request.session['filtering']['price_to']:
+                queryset = queryset.filter(price__lte=self.request.session['filtering']['price_to'])
+
+        return queryset
+
     def get_queryset(self):
         # queryset = super().get_queryset()
+        print(self.request.GET)
 
         if not self.kwargs.get('category_id'):  # дефолтная категория (processors)
             self.kwargs['category_id'] = 1
@@ -80,7 +90,25 @@ class CatalogView(ListView):  # каталог (CBV)
         except KeyError:
             pass
         else:
-            if self.kwargs.get('brand_name'):
+            # фильтрация
+            if self.request.GET.get('high_rating') or self.request.GET.get('price_from') or self.request.GET.get(
+                    'price_to'):
+                self.request.session['filtering'] = {
+                    'high_rating': self.request.GET.get('high_rating'),
+                    'price_from': self.request.GET.get('price_from'),
+                    'price_to': self.request.GET.get('price_to')}
+                queryset = self.filtering(queryset)
+            elif self.request.GET.get('page'):
+                queryset = self.filtering(queryset)
+            else:
+                try:
+                    del self.request.session['filtering']
+                except KeyError:
+                    pass
+
+            ''''''
+
+            if self.kwargs.get('brand_name'):  # фильтрация по бренду
                 if self.kwargs['category_id'] == 1:
                     queryset = queryset.filter(brand__brand_name=self.kwargs['brand_name'])
                 elif self.kwargs['category_id'] == 2:
@@ -90,7 +118,7 @@ class CatalogView(ListView):  # каталог (CBV)
                 elif self.kwargs['category_id'] == 4:
                     queryset = queryset.filter(type__type_name=self.kwargs['brand_name'])
 
-            if self.kwargs.get('line_name'):
+            if self.kwargs.get('line_name'):  # фильтрация по линейке
                 if self.kwargs['category_id'] == 1:
                     queryset = queryset.filter(line__line_name=self.kwargs['line_name'])
                 elif self.kwargs['category_id'] == 2:
@@ -98,8 +126,8 @@ class CatalogView(ListView):  # каталог (CBV)
                 elif self.kwargs['category_id'] == 3:
                     queryset = queryset.filter(socket__socket_name=self.kwargs['line_name'])
 
-            if len(queryset) == 0:  # обработчик NoReverseMatch
-                raise Http404
+            # if len(queryset) == 0:  # обработчик NoReverseMatch
+            #     raise Http404
 
             try:  # сортировка
                 self.sort_method = self.request.session['catalog_sorting']['sorting_method']
@@ -113,10 +141,66 @@ class CatalogView(ListView):  # каталог (CBV)
             return queryset
 
     def get_context_data(self, *, object_list=None, **kwargs):
+        queryset = self.get_queryset()
         context = super().get_context_data()
         context['path_category'] = self.kwargs['category_id']
         context['sort_method'] = self.sort_method if self.sort_method else None
         context['sort_by'] = self.sort_by if self.sort_by else None
+        ''''''
+        context['filtration'] = {
+            'high_rating': (
+                True
+                if self.request.session.get('filtering') and self.request.session['filtering'].get('high_rating')
+                else False
+            ),
+            'low_price': (
+                self.request.session['filtering']['price_from']
+                if self.request.session.get('filtering') and self.request.session['filtering'].get('price_from')
+                else False
+            ),
+            'low_price_placeholder': (
+                int(queryset.order_by('price')[0].price)
+                if queryset
+                else self.request.GET.get('price_from')
+            ),
+            'high_price': (
+                self.request.session['filtering']['price_to']
+                if self.request.session.get('filtering') and self.request.session['filtering'].get('price_to')
+                else False
+            ),
+            'high_price_placeholder': (
+                int(queryset.order_by('-price')[0].price) + 1
+                if queryset
+                else self.request.GET.get('price_to')
+            )
+        }
+
+        # context['high_rating'] = (
+        #     True
+        #     if self.request.session.get('filtering') and self.request.session['filtering'].get('high_rating')
+        #     else False
+        # )
+        # context['low_price_placeholder'] = (
+        #     int(queryset.order_by('price')[0].price)
+        #     if queryset
+        #     else self.request.GET.get('price_from')
+        # )
+        # context['low_price'] = (
+        #     self.request.session['filtering']['price_from']
+        #     if self.request.session.get('filtering') and self.request.session['filtering'].get('price_from')
+        #     else False
+        # )
+        # context['high_price_placeholder'] = (
+        #     int(queryset.order_by('-price')[0].price) + 1
+        #     if queryset
+        #     else self.request.GET.get('price_to')
+        # )
+        # context['high_price'] = (
+        #     self.request.session['filtering']['price_to']
+        #     if self.request.session.get('filtering') and self.request.session['filtering'].get('price_to')
+        #     else False
+        # )
+
         context['breadcrumb'] = {
             'category_name': Category.objects.get(id=self.kwargs.get('category_id')).category_name,
             'brand_name': self.kwargs.get('brand_name'),
@@ -402,3 +486,9 @@ class SearchView(TitleMixin, ListView):  # поиск
 
         else:
             return None
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        context['query_string'] = self.request.GET.get('q')
+
+        return context

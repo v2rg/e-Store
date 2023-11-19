@@ -2,8 +2,7 @@ from django.conf import settings
 from django.contrib import auth, messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.views import LoginView
-from django.core.exceptions import ObjectDoesNotExist, ValidationError
-from django.db.models import Q
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, HttpResponseRedirect
 from django.urls import reverse
 from django.utils.timezone import now
