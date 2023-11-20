@@ -1,5 +1,6 @@
 {% extends 'users_app/base.html' %}
 {% load static %}
+{% load humanize %}
 
 
 {% block title %}
@@ -30,13 +31,12 @@
                                 {{ value.name }}
                             </h6>
                             <small class="text-muted text-center">
-                                {{ value.price }} руб. |
+                                {{ value.price|intword }} ₽ |
                                 {{ value.basket_quantity }} шт.
                             </small>
                         </div>
                         <span class="text-muted text-center">
-                            {{ value.product_sum }}
-                            <br>руб.
+                            {{ value.product_sum|intword }} ₽
                         </span>
                     </li>
                 {% endfor %}
@@ -48,7 +48,7 @@
                         Сумма заказа:
                     </h5>
                     <h5>
-                        {{ total_sum|stringformat:'.2f' }} руб.
+                        {{ total_sum|intword }} ₽
                     </h5>
                 </li>
 

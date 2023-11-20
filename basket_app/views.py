@@ -49,7 +49,7 @@ def basket_add(request, category_id=None, product_sku=None, product_name=None): 
                 request.session['basket'][str(product_sku)] = {'category_id': category_id, 'quantity': 1,
                                                                'product_price': float(current_product.price)}
                 messages.add_message(request, BASKET, f'Товар {product_sku} добавлен в ')
-                print('+sku')
+                # print('+sku')
                 request.session.modified = True  # session не был изменен, поэтому сохраняем вручную
 
         else:  # в session добавляется ключ basket со словарем (category_id, quantity, product_price)
@@ -57,7 +57,7 @@ def basket_add(request, category_id=None, product_sku=None, product_name=None): 
             request.session['basket'][str(product_sku)] = {'category_id': category_id, 'quantity': 1,
                                                            'product_price': float(current_product.price)}
             messages.add_message(request, BASKET, f'Товар {product_sku} добавлен в ')
-            print('+basket, +sku')
+            # print('+basket, +sku')
 
             # request.session.modified = True
             # request.session.save()
@@ -95,10 +95,10 @@ def basket_update(request, product_sku=None, slug=None):  # обновление
                     if slug == 'incr':
                         if current_product.quantity > session[str(product_sku)]['quantity']:
                             session[str(product_sku)]['quantity'] += 1
-                            print('incr')
+                            # print('incr')
                             request.session.modified = True
                         elif current_product.quantity == session[str(product_sku)]['quantity']:
-                            print('pass')
+                            # print('pass')
                             pass
                         else:
                             session[str(product_sku)]['quantity'] = current_product.quantity
@@ -106,7 +106,7 @@ def basket_update(request, product_sku=None, slug=None):  # обновление
                     elif slug == 'decr':
                         if session[str(product_sku)]['quantity'] >= 2:
                             session[str(product_sku)]['quantity'] -= 1
-                            print('decr')
+                            # print('decr')
                             request.session.modified = True
 
     return HttpResponseRedirect(reverse('basket:basket'))
@@ -174,8 +174,8 @@ def order_confirmation(request):  # подтверждение заказа
                                                 messages.add_message(request, messages.ERROR, '')
 
                                 # сохраняем заказ в таблице Order
-                                print(current_user_form.cleaned_data)
-                                print(current_user_address_form.cleaned_data)
+                                # print(current_user_form.cleaned_data)
+                                # print(current_user_address_form.cleaned_data)
                                 Order.objects.create(
                                     user_id=request.user,
                                     first_name=current_user_form.cleaned_data['first_name'],

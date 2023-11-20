@@ -1,4 +1,5 @@
 {% extends 'users_app/base.html' %}
+{% load humanize %}
 
 
 {% block title %}
@@ -41,8 +42,8 @@
                         </td>
                         <td>{{ order_item.product_name }}</td>
                         <td>{{ order_item.quantity }}</td>
-                        <td>{{ order_item.price }}</td>
-                        <td>{{ order_item.sku_total_price }}</td>
+                        <td>{{ order_item.price|intword }} ₽</td>
+                        <td>{{ order_item.sku_total_price|intword }} ₽</td>
                     </tr>
                 {% endfor %}
                 </tbody>
@@ -50,7 +51,7 @@
 
             <div class="col text-end text-primary">
                 <h5>
-                    Итого: <b>{{ total_price }}</b> руб.
+                    Итого: <b>{{ total_price|intword }}</b> ₽
                 </h5>
             </div>
 

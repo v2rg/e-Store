@@ -1,5 +1,6 @@
 {% extends 'products_app/base.html' %}
 {% load static %}
+{% load humanize %}
 
 
 {% block title %}
@@ -78,7 +79,7 @@
                                             <hr>
                                             <div class="row text-center">
                                                 <div class="col-7 fs-3">
-                                                    Цена: {{ product.price }}
+                                                    Цена: {{ product.price|intword }} ₽
                                                 </div>
                                                 <div class="col-5">
                                                     {% if product.quantity > 0 %}

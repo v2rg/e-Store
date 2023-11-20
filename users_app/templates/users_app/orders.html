@@ -1,4 +1,5 @@
 {% extends 'users_app/base.html' %}
+{% load humanize %}
 
 
 {% block title %}
@@ -44,7 +45,7 @@
                                     <td><b>{{ user_order.id }}</b></td>
                                     <td>Не оплачен</td>
                                     <td>{{ user_order.created_datetime }}</td>
-                                    <td>{{ user_order.total_sum }}</td>
+                                    <td>{{ user_order.total_sum|intword }} ₽</td>
                                     <td><a href="{% url 'users:order' user_order.id %}">Подробнее</a></td>
                                     <td class="table-light"><a href="{% url 'basket:payment' user_order.id %}"><b>Оплатить</b></a>
                                     </td>
@@ -82,7 +83,7 @@
                                     {% endif %}
                                 </td>
                                 <td>{{ user_order.created_datetime|date:'d.m.Y H:i' }}</td>
-                                <td>{{ user_order.total_sum }} руб.</td>
+                                <td>{{ user_order.total_sum|intword }} ₽</td>
 
                                 <td><a href="{% url 'users:order' user_order.id %}">Подробнее</a></td>
                                 {% if user_order.status == 'created' %}

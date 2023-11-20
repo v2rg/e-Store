@@ -1,5 +1,6 @@
 {% extends 'products_app/base.html' %}
 {% load static %}
+{% load humanize %}
 
 
 {% block title %}
@@ -41,7 +42,7 @@
                     </div>
 
                     <h5 class="card-title text-center">
-                        {{ product.price }}
+                        Цена: {{ product.price|intword }} ₽
                     </h5>
 
                     {% if product.quantity > 0 %}

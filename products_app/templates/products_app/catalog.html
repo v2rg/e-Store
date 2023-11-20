@@ -1,5 +1,6 @@
 {% extends 'products_app/base.html' %}
 {% load static %}
+{% load humanize %}
 
 
 {% block title %}
@@ -35,15 +36,17 @@
                 <li class="list-group-item">
 
                     <label for="price_from">Цена от:</label>
-                    <input type="text" class="form-control" placeholder="{{ filtration.low_price_placeholder }}"
+                    <input type="text" class="form-control" placeholder="{{ filtration.low_price_placeholder|intcomma }}"
                            id="price_from"
                            name="price_from"
+                           pattern="^\d+$"
                            value="{% if filtration.low_price %}{{ filtration.low_price }}{% endif %}">
 
                     <label for="high_price">до:</label>
-                    <input type="text" class="form-control" placeholder="{{ filtration.high_price_placeholder }}"
+                    <input type="text" class="form-control" placeholder="{{ filtration.high_price_placeholder|intcomma }}"
                            id="high_price"
                            name="price_to"
+                           pattern="^\d+$"
                            value="{% if filtration.high_price %}{{ filtration.high_price }}{% endif %}">
                     <br>
                 </li>
@@ -157,7 +160,7 @@
                                         <hr>
                                         <div class="row text-center">
                                             <div class="col-7 fs-3">
-                                                Цена: {{ product.price }}
+                                                Цена: {{ product.price|intword }} ₽
                                             </div>
                                             <div class="col-5">
                                                 {% if product.quantity > 0 %}

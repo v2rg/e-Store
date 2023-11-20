@@ -1,4 +1,5 @@
 {% extends 'users_app/base.html' %}
+{% load humanize %}
 
 
 {% block title %}
@@ -22,7 +23,7 @@
                 <h3 class="text-center font-weight-light my-4">Оплата заказа № {{ current_order.id }}</h3>
                 <div>
                     <p>
-                        Сумма к оплате: <b>{{ current_order.total_sum }} р.</b>
+                        Сумма к оплате: <b>{{ current_order.total_sum|intword }} ₽</b>
                     </p>
                     <p>
                         <a class="btn btn-outline-success" type="button"

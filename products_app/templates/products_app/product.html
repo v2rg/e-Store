@@ -1,5 +1,6 @@
 {% extends 'products_app/base.html' %}
 {% load static %}
+{% load humanize %}
 
 
 {% block title %}
@@ -108,7 +109,7 @@
                     </p>
                     <hr>
                     <p class="fs-5 text-center">Цена</p>
-                    <p class="fs-4 fw-semibold text-center">{{ current_product.price }} руб.</p>
+                    <p class="fs-4 fw-semibold text-center">{{ current_product.price|intword }} ₽</p>
 
                     {% if current_product.quantity > 0 %}
                         {% if in_basket %}

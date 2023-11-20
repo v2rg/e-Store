@@ -35,6 +35,7 @@ INSTALLED_APPS = [
     'users_app',
     'basket_app',
     'reviews_app',
+    'django.contrib.humanize',
     'debug_toolbar',
     'rest_framework',
     'rest_api',

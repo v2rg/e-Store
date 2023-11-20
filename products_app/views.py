@@ -80,7 +80,7 @@ class CatalogView(ListView):  # каталог (CBV)
 
     def get_queryset(self):
         # queryset = super().get_queryset()
-        print(self.request.GET)
+        # print(self.request.GET)
 
         if not self.kwargs.get('category_id'):  # дефолтная категория (processors)
             self.kwargs['category_id'] = 1

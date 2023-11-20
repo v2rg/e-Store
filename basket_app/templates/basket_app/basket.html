@@ -1,5 +1,6 @@
 {% extends 'users_app/base.html' %}
 {% load static %}
+{% load humanize %}
 
 
 {% block title %}
@@ -74,7 +75,7 @@
                         </div>
 
                         <div class="col-1" style="margin: auto">
-                            {{ value.price }}
+                            {{ value.price|intword }} ₽
                         </div>
 
                         <div class="col-1" style="margin: auto;">
@@ -100,7 +101,7 @@
                         </div>
 
                         <div class="col-2" style="margin: auto;">
-                            {{ value.product_sum }} руб.
+                            {{ value.product_sum|intword }} ₽
                             <br>
                             <a href="{% url 'basket:basket_remove' value.sku %}" class="link-info">Удалить</a>
                         </div>
@@ -118,7 +119,7 @@
                     </div>
                     <div class="col-2">
                         <h5>
-                            {{ total_sum }} руб.
+                            {{ total_sum|intword }} ₽
                         </h5>
                     </div>
                 </div>
