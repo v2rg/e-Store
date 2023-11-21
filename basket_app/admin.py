@@ -32,7 +32,8 @@ class OrderAdmin(admin.ModelAdmin):
     readonly_fields = ['created_datetime', 'updated_datetime', 'user_id', 'comment', 'total_quantity', 'total_sum']
     fieldsets = (
         ('Данные заказа', {
-            'fields': [('status', 'paid'), 'created_datetime', 'updated_datetime', 'total_quantity', 'total_sum', 'comment']
+            'fields': [('status', 'paid'), 'created_datetime', 'updated_datetime', 'total_quantity', 'total_sum',
+                       'comment']
         }),
         ('Пользователь', {
             'fields': ['user_id', 'first_name', 'last_name']

@@ -94,9 +94,16 @@ class CatalogView(ListView):  # каталог (CBV)
             if self.request.GET.get('high_rating') or self.request.GET.get('price_from') or self.request.GET.get(
                     'price_to'):
                 self.request.session['filtering'] = {
-                    'high_rating': self.request.GET.get('high_rating'),
-                    'price_from': self.request.GET.get('price_from'),
-                    'price_to': self.request.GET.get('price_to')}
+                    'high_rating': (
+                        self.request.GET['high_rating']
+                        if self.request.GET.get('high_rating') == 'on' else ''),
+                    'price_from': (
+                        self.request.GET['price_from']
+                        if self.request.GET.get('price_from').isdigit() else ''),
+                    'price_to': (
+                        self.request.GET['price_to']
+                        if self.request.GET.get('price_to').isdigit() else '')
+                }
                 queryset = self.filtering(queryset)
             elif self.request.GET.get('page'):
                 queryset = self.filtering(queryset)

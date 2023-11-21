@@ -172,7 +172,7 @@ class OrdersViewTestCase(TestCase):  # история заказов
                    status='shipping',
                    paid=True,
                    total_quantity='5',
-                   total_sum='51234568',
+                   total_sum='512345',
                    comment='test_comment2'),
              ]
         )  # добавляем 2 записи в таблицу Order
@@ -190,7 +190,10 @@ class OrdersViewTestCase(TestCase):  # история заказов
         orders_queryset = Order.objects.filter(user_id=self.test_user.pk)
 
         self.assertEqual(orders_queryset.count(), 2)  # количество элементов queryset
-        self.assertContains(self.response, '51234568,00 руб.', html=True)  # поле total_sum из тестовой записи
+        self.assertContains(self.response, '12345 ₽', html=True)  # поле total_sum из тестовой записи
+        self.assertContains(self.response, '512345 ₽', html=True)  # поле total_sum из тестовой записи
+        self.assertContains(self.response, 'Оплатить', html=True)
+        self.assertContains(self.response, 'Оплачены', html=True)
 
     def test_Orders_no_queryset(self):  # у пользователя НЕТ истории заказов
         Order.objects.filter(user_id=self.test_user.pk).delete()
