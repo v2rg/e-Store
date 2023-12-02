@@ -7,11 +7,22 @@ from django.urls import reverse
 
 class IndexTestCase(TestCase):
     # в тестовые фикстуры добавлено по 5 товаров (в каждую категорию)
-    fixtures = ['categories.json', 'brands.json', 'sockets.json',
-                'memory_types.json', 'test_cpu_lines.json', 'gpu_pci_versions.json',
-                'gpu_models.json', 'mb_form_factors.json', 'mb_chipsets.json',
-                'products_images.json', 'test_list_rams.json', 'test_list_videocards.json',
-                'test_list_motherboards.json', 'test_list_processors.json']
+    fixtures = [
+        'category.json',
+        'brand.json',
+        'socket.json',
+        'memorytype.json',
+        'gpupciversion.json',
+        'gpumodel.json',
+        'mbformfactor.json',
+        'mbchipset.json',
+        'productimage.json',
+        'test_cpu_lines.json',
+        'test_list_rams.json',
+        'test_list_videocards.json',
+        'test_list_motherboards.json',
+        'test_list_processors.json'
+    ]
 
     def setUp(self) -> None:
         self.response = self.client.get(reverse('index'))
@@ -36,11 +47,22 @@ class IndexTestCase(TestCase):
 
 
 class CatalogTestCase(TestCase):
-    fixtures = ['categories.json', 'brands.json', 'sockets.json',
-                'memory_types.json', 'test_cpu_lines.json', 'gpu_pci_versions.json',
-                'gpu_models.json', 'mb_form_factors.json', 'mb_chipsets.json',
-                'products_images.json', 'test_list_rams.json', 'test_list_videocards.json',
-                'test_list_motherboards.json', 'test_list_processors.json']
+    fixtures = [
+        'category.json',
+        'brand.json',
+        'socket.json',
+        'memorytype.json',
+        'gpupciversion.json',
+        'gpumodel.json',
+        'mbformfactor.json',
+        'mbchipset.json',
+        'productimage.json',
+        'test_cpu_lines.json',
+        'test_list_rams.json',
+        'test_list_videocards.json',
+        'test_list_motherboards.json',
+        'test_list_processors.json'
+    ]
 
     def setUp(self) -> None:
         self.response = self.client.get(reverse('products:catalog'))
@@ -122,11 +144,22 @@ class CatalogTestCase(TestCase):
 
 
 class SortingMethodTestCase(TestCase):
-    fixtures = ['categories.json', 'brands.json', 'sockets.json',
-                'memory_types.json', 'test_cpu_lines.json', 'gpu_pci_versions.json',
-                'gpu_models.json', 'mb_form_factors.json', 'mb_chipsets.json',
-                'products_images.json', 'test_list_rams.json', 'test_list_videocards.json',
-                'test_list_motherboards.json', 'test_list_processors.json']
+    fixtures = [
+        'category.json',
+        'brand.json',
+        'socket.json',
+        'memorytype.json',
+        'gpupciversion.json',
+        'gpumodel.json',
+        'mbformfactor.json',
+        'mbchipset.json',
+        'productimage.json',
+        'test_cpu_lines.json',
+        'test_list_rams.json',
+        'test_list_videocards.json',
+        'test_list_motherboards.json',
+        'test_list_processors.json'
+    ]
 
     def setUp(self) -> None:
         self.session = self.client.session
@@ -154,11 +187,23 @@ class SortingMethodTestCase(TestCase):
 
 
 class ProductTestCase(TestCase):
-    fixtures = ['categories.json', 'brands.json', 'sockets.json',
-                'memory_types.json', 'test_cpu_lines.json', 'gpu_pci_versions.json',
-                'gpu_models.json', 'mb_form_factors.json', 'mb_chipsets.json',
-                'products_images.json', 'test_list_rams.json', 'test_list_videocards.json',
-                'test_list_motherboards.json', 'test_list_processors.json', 'test_product_reviews.json']
+    fixtures = [
+        'category.json',
+        'brand.json',
+        'socket.json',
+        'memorytype.json',
+        'gpupciversion.json',
+        'gpumodel.json',
+        'mbformfactor.json',
+        'mbchipset.json',
+        'productimage.json',
+        'test_cpu_lines.json',
+        'test_list_rams.json',
+        'test_list_videocards.json',
+        'test_list_motherboards.json',
+        'test_list_processors.json',
+        'test_product_reviews.json'
+    ]
 
     def setUp(self) -> None:
         self.response = self.client.get(reverse('products:product', kwargs={'category_id': 2, 'sku': 77777773}))

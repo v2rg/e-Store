@@ -1,7 +1,9 @@
+from django.conf import settings
+from django.core.mail import send_mail
 from django.db import models
 
-from users_app.models import User
 from products_app.models import Category
+from users_app.models import User
 
 
 # Create your models here.
@@ -46,6 +48,17 @@ class Order(models.Model):  # заказ
         #     f'Обновлен: {self.updated_datetime.strftime("%d.%m.%Y, %H:%M:%S")} || '
         #     f'Статус: {self.status}')
         return f'{self.id}'
+
+    def send_confirmation_email(self):
+        send_mail(
+            subject='Подтверждение заказа e-Store',
+            message=f'<b>Заказ №{self.id} создан</b>'
+                    # f'\nСтатус: {self.status}\n'
+                    f'\n\nОбщая стоимость: {self.total_sum}\n'
+                    f'https://localhost:8000/users/orders/',
+            from_email=settings.EMAIL_HOST_USER,
+            recipient_list=[self.user_id.email]
+        )
 
     def save(self, force_insert=False, force_update=False, using=None, update_fields=None):
         if self.status != 'created':

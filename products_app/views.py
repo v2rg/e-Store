@@ -3,12 +3,14 @@ from random import random
 from django.conf import settings
 from django.contrib import messages
 from django.core.cache import cache
+from django.db.models import Q
 # from django.core.paginator import Paginator
 from django.http import HttpResponseRedirect, Http404
 from django.shortcuts import render, get_object_or_404
 from django.urls import reverse
 from django.views import View
 from django.views.generic import ListView, TemplateView
+from django.contrib.postgres.search import SearchVector, SearchRank, SearchQuery
 from django.views.generic.base import ContextMixin
 
 import products_app
@@ -445,52 +447,33 @@ class ProductView(ContextMixin, View):  # карточка товара (CBV)
 class SearchView(TitleMixin, ListView):  # поиск
     template_name = 'products_app/search.html'
     title = 'e-Store - Поиск'
-    QUERYSET_VALUES = ['sku', 'category', 'brand', 'name', 'short_description', 'thumbnail', 'price', 'avg_rating']
+    QUERYSET_VALUES = ['sku', 'category', 'brand', 'name', 'short_description',
+                       'thumbnail', 'price', 'quantity', 'avg_rating']
 
     # paginate_by = 5
 
     def get_queryset(self):  # поиск по названию и артикулу
         if len(self.request.GET.get('q')) > 1:
-            try:
-                sku = int(self.request.GET.get('q'))
-            except ValueError:
+            q = self.request.GET.get('q')  # запрос
+            if len(q.split()) > 1:  # если в запросе несколько слов
+                search_vector = 'name'
                 queryset = (
-                    ProcessorList.objects.filter(
-                        name__icontains=self.request.GET.get('q')).values(*self.QUERYSET_VALUES).
-                    union(VideoCardList.objects.filter(
-                        name__icontains=self.request.GET.get('q')).values(*self.QUERYSET_VALUES)).
-                    union(MotherboardList.objects.filter(
-                        name__icontains=self.request.GET.get('q')).values(*self.QUERYSET_VALUES)).
-                    union(MemoryList.objects.filter(
-                        name__icontains=self.request.GET.get('q')).values(*self.QUERYSET_VALUES))
-                )
+                    ProcessorList.objects.annotate(search=SearchVector(search_vector)).filter(search=q).
+                    union(VideoCardList.objects.annotate(search=SearchVector(search_vector)).filter(search=q)).
+                    union(MotherboardList.objects.annotate(search=SearchVector(search_vector)).filter(search=q)).
+                    union(MemoryList.objects.annotate(search=SearchVector(search_vector)).filter(search=q))
+                ).values(*self.QUERYSET_VALUES)
+                # print('vector')
                 return queryset.order_by('category', '-avg_rating', 'name')
-
-            else:
+            else:  # если в запросе одно слово
                 queryset = (
-                    ProcessorList.objects.filter(
-                        name__icontains=self.request.GET.get('q')).values(*self.QUERYSET_VALUES).
-                    union(ProcessorList.objects.filter(
-                        sku__icontains=sku).values(*self.QUERYSET_VALUES)
-                          ).
-                    union(VideoCardList.objects.filter(
-                        name__icontains=self.request.GET.get('q')).values(*self.QUERYSET_VALUES)).
-                    union(VideoCardList.objects.filter(
-                        sku__icontains=sku).values(*self.QUERYSET_VALUES)
-                          ).
-                    union(MotherboardList.objects.filter(
-                        name__icontains=self.request.GET.get('q')).values(*self.QUERYSET_VALUES)).
-                    union(MotherboardList.objects.filter(
-                        sku__icontains=sku).values(*self.QUERYSET_VALUES)
-                          ).
-                    union(MemoryList.objects.filter(
-                        name__icontains=self.request.GET.get('q')).values(*self.QUERYSET_VALUES)).
-                    union(MemoryList.objects.filter(
-                        sku__icontains=sku).values(*self.QUERYSET_VALUES)
-                          )
-                )
+                    ProcessorList.objects.filter(Q(sku__icontains=q) | Q(name__icontains=q)).
+                    union(VideoCardList.objects.filter(Q(sku__icontains=q) | Q(name__icontains=q))).
+                    union(MotherboardList.objects.filter(Q(sku__icontains=q) | Q(name__icontains=q))).
+                    union(MemoryList.objects.filter(Q(sku__icontains=q) | Q(name__icontains=q)))
+                ).values(*self.QUERYSET_VALUES)
+                # print('Q')
                 return queryset.order_by('category', '-avg_rating', 'name')
-
         else:
             return None
 

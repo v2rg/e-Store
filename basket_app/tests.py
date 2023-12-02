@@ -7,10 +7,19 @@ from django.urls import reverse
 
 class BasketViewTestCase(TestCase):
     fixtures = [
-        'categories.json', 'brands.json', 'sockets.json', 'cpu_lines.json',
-        'gpu_models.json', 'gpu_pci_versions.json', 'mb_form_factors.json',
-        'mb_chipsets.json', 'memory_types.json', 'list_processors.json',
-        'list_videocards.json', 'list_motherboards.json', 'list_rams.json',
+        'category.json',
+        'brand.json',
+        'socket.json',
+        'cpuline.json',
+        'gpumodel.json',
+        'gpupciversion.json',
+        'mbformfactor.json',
+        'mbchipset.json',
+        'memorytype.json',
+        'ProcessorList.json',
+        'VideoCardList.json',
+        'MotherboardList.json',
+        'MemoryList.json',
         'test_users.json'
     ]
 
@@ -41,19 +50,3 @@ class BasketViewTestCase(TestCase):
         '''Проверяем, есть ли добавленный товар в корзине'''
         # в тестах нет доступа до middleware, корзина хранится в context_processors
         # RequestFactory, @override_settings
-
-
-class BasketAddTestCase(TestCase):
-    ...
-
-
-class BasketRemoveTestCase(TestCase):
-    ...
-
-
-class BasketUpdateTestCase(TestCase):
-    ...
-
-
-class OrderConfirmationTestCase(TestCase):
-    ...

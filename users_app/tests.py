@@ -12,11 +12,21 @@ from users_app.models import User
 
 class UserLoginViewTestCase(TestCase):  # авторизация пользователя
     fixtures = ['test_users.json']
-    fixtures += ['categories.json', 'brands.json', 'sockets.json',
-                 'memory_types.json', 'test_cpu_lines.json', 'gpu_pci_versions.json',
-                 'gpu_models.json', 'mb_form_factors.json', 'mb_chipsets.json',
-                 'products_images.json', 'test_list_rams.json', 'test_list_videocards.json',
-                 'test_list_motherboards.json']  # фикстуры для редиректа
+    fixtures += [
+        'category.json',
+        'brand.json',
+        'socket.json',
+        'memorytype.json',
+        'gpupciversion.json',
+        'gpumodel.json',
+        'mbformfactor.json',
+        'mbchipset.json',
+        'productimage.json',
+        'test_cpu_lines.json',
+        'test_list_rams.json',
+        'test_list_videocards.json',
+        'test_list_motherboards.json'
+    ]  # фикстуры для редиректа
 
     def setUp(self) -> None:
         self.path = reverse('users:login')
@@ -209,10 +219,19 @@ class OrderTestCase(TestCase):
     test_order_id = None
     test_user = None
     fixtures = [
-        'categories.json', 'brands.json', 'sockets.json', 'cpu_lines.json',
-        'gpu_models.json', 'gpu_pci_versions.json', 'mb_form_factors.json',
-        'mb_chipsets.json', 'memory_types.json', 'list_processors.json',
-        'list_videocards.json', 'list_motherboards.json', 'list_rams.json',
+        'category.json',
+        'brand.json',
+        'socket.json',
+        'cpuline.json',
+        'gpumodel.json',
+        'gpupciversion.json',
+        'mbformfactor.json',
+        'mbchipset.json',
+        'memorytype.json',
+        'ProcessorList.json',
+        'VideoCardList.json',
+        'MotherboardList.json',
+        'MemoryList.json',
         'test_users.json'
     ]
 

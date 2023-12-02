@@ -176,7 +176,7 @@ def order_confirmation(request):  # подтверждение заказа
                                 # сохраняем заказ в таблице Order
                                 # print(current_user_form.cleaned_data)
                                 # print(current_user_address_form.cleaned_data)
-                                Order.objects.create(
+                                order = Order.objects.create(
                                     user_id=request.user,
                                     first_name=current_user_form.cleaned_data['first_name'],
                                     last_name=current_user_form.cleaned_data['last_name'],
@@ -211,6 +211,7 @@ def order_confirmation(request):  # подтверждение заказа
                                 order_items = OrderItem.objects.filter(order_id=current_order).count()
                                 if len(session) == order_items:
                                     del request.session['basket']  # удаляем корзину
+                                    order.send_confirmation_email()
                                     messages.add_message(request, messages.SUCCESS,
                                                          f'Заказ № {Order.objects.last().id} создан')
                                     print(f'Заказ № {current_order} создан')
@@ -222,8 +223,8 @@ def order_confirmation(request):  # подтверждение заказа
                                     print(f'Заказ № {current_order} ОШИБКА (заказ не создан, запись из order удалена)')
                                     return HttpResponseRedirect(reverse('basket:basket'))
 
-                            messages.add_message(request, messages.ERROR,
-                                                 f'Ошибка! В наличии меньше товара, чем в заказе')
+                            messages.add_message(
+                                request, messages.ERROR, f'Ошибка! В наличии меньше товара, чем в заказе')
                             print(f'Заказ № {Order.objects.last().id} ОШИБКА (недостаточное кол-во)')
                             return HttpResponseRedirect(reverse('basket:basket'))
                         else:

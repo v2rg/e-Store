@@ -21,14 +21,15 @@
         <div class="row">
 
             <!--Результат поиска-->
-            <div class="col-8">
+            <div class="col text-center">
                 {% if object_list %}
                     <h3>
-                        Результат поиска по запросу: {{ query_string }} ({{ object_list|length }})
+                        Результат поиска: <span style="color: #2bbb9d">{{ object_list|length }}</span> |
+                        По запросу: <span style="color: #2bbb9d;">{{ query_string }}</span>
                     </h3>
                 {% else %}
                     <h3>
-                        Результат поиска по запросу: {{ query_string }}
+                        Результат поиска по запросу: <span style="color: #2bbb9d;">{{ query_string }}</span>
                     </h3>
                 {% endif %}
             </div>
@@ -62,15 +63,16 @@
                                                 {% elif product.category == 4 %}
                                                     Оперативная память
                                                 {% endif %}
+                                                {{ product.sku }}
                                             </h6>
                                             <h5 class="col card-title">
                                                 <a href="{% url 'products:product' product.category product.sku %}"
-                                                   style="text-decoration: none; ">{{ product.name }}
+                                                   style="text-decoration: none;">{{ product.name }}
                                                 </a>
                                                 {% if product.avg_rating %}
                                                     <span class="position-absolute top-1 start-100 translate-middle badge border border-end rounded-bottom-circle bg-secondary p-2">
-                                                                ★ {{ product.avg_rating|stringformat:'.1f' }}
-                                                            </span>
+                                                        ★ {{ product.avg_rating|stringformat:'.1f' }}
+                                                    </span>
                                                 {% endif %}
                                             </h5>
                                             <p class="card-text">{{ product.short_description }}</p>
@@ -105,7 +107,8 @@
                         </div>
                     {% endfor %}
                 {% else %}
-                    <div class="text-center">
+                    <div class="col text-center">
+                        <br><br>
                         <h4>Ничего не найдено</h4>
                     </div>
                 {% endif %}
