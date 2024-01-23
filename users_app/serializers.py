@@ -44,6 +44,8 @@ class UserRegistrationSerializer(serializers.ModelSerializer):  # API регис
 
 
 class UserProfileSerializer(serializers.ModelSerializer):  # API профиль пользователя
+    email = serializers.ReadOnlyField()
+
     class Meta:
         model = User
         fields = ['username', 'first_name', 'last_name', 'email', 'avatar']
