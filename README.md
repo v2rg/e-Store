@@ -88,7 +88,7 @@ https://e-store-django.ru/api/user-order/номер_заказа/ — содер
 ## Требования
 - python 3.11
 - django 3.2
-- pillow 9.5.0
+- pillow
 - django-environ
 - django-extensions
 - djangorestframework
